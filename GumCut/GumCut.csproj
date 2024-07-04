@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <BaseOutputPath>$(SolutionDir)$(Configuration)\$(Platform)</BaseOutputPath>
+    <IntermediateOutputPath>$(SolutionDir)$(Configuration)\$(Platform)\$(AssemblyName)</IntermediateOutputPath>
+    <ApplicationIcon>Cut.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Cut.ico" />
+  </ItemGroup>
+  
+</Project>
