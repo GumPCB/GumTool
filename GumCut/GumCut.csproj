@@ -10,10 +10,17 @@
     <BaseOutputPath>$(SolutionDir)$(Configuration)\$(Platform)</BaseOutputPath>
     <IntermediateOutputPath>$(SolutionDir)$(Configuration)\$(Platform)\$(AssemblyName)</IntermediateOutputPath>
     <ApplicationIcon>Cut.ico</ApplicationIcon>
+    <AssemblyVersion>1.0</AssemblyVersion>
+    <FileVersion>1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="Cut.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\Segoe Fluent Icons.ttf" />
+    <!-- https://learn.microsoft.com/ko-kr/windows/apps/design/downloads/ -->
   </ItemGroup>
   
 </Project>

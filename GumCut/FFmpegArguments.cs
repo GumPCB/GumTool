@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,50 +9,214 @@ namespace GumCut
 {
     public static class FFmpegArguments
     {
-        public static string FastCut(in InputData data)
+        public static string FastCut(in InputData data, bool hide_banner)
         {
             // %FFMPEG_PATH% -hide_banner -loglevel warning -i %IN_FILE% -ss 00:10:00.000 -to 00:20:00.000 -movflags +faststart -c copy -y %OUT_FILE%
-            string arguments = new($"-hide_banner -loglevel warning -i \"{data.InputVideo}\" ");
+            string arguments = new($"-i \"{data.LoadVideo}\" ");
 
-            // "-ss 00:10:00.000 "
-            if (data.Start.Hour != 0 || data.Start.Minute != 0 || data.Start.Seconds != 0 || data.Start.Milliseconds != 0)
+            if (hide_banner)
             {
-                arguments += $"-ss {data.Start.Hour}:{data.Start.Minute}:{data.Start.Seconds}.{data.Start.Milliseconds} ";
-            }
-            // "-to 00:20:00.000 "
-            if (data.End.Hour != 0 || data.End.Minute != 0 || data.End.Seconds != 0 || data.End.Milliseconds != 0)
-            {
-                arguments += $"-to {data.End.Hour}:{data.End.Minute}:{data.End.Seconds}.{data.End.Milliseconds} ";
+                arguments = "-hide_banner -loglevel warning " + arguments;
             }
 
-            arguments += "-movflags +faststart -c copy ";
+            arguments += SS_TO(data);
+
+            if (data.Streaming)
+                arguments += "-movflags +faststart ";
 
             // "-y %OUT_FILE%"  // -y 이름이 같으면 덮어쓰기
-            arguments += $"-y \"{data.OutputVideo}\"";
+            arguments += $"-c copy -y \"{data.SaveVideo}\"";
 
             return arguments;
+        }
+
+        public static string Edit(in InputData data, bool hide_banner)
+        {
+            string arguments = new($"-i \"{data.LoadVideo}\" ");
+
+            if (hide_banner)
+            {
+                arguments = "-hide_banner -loglevel warning " + arguments;
+            }
+
+            arguments += SS_TO(data);
+
+            arguments += VF(data);
+
+            if(data.Streaming)
+                arguments += "-movflags +faststart ";
+
+            arguments += Encoder(data, arguments.Contains("-vf", StringComparison.Ordinal) == false);
+
+            arguments += $"-y \"{data.SaveVideo}\"";
+
+            return arguments;
+        }
+
+        public static string Image(in InputData data, bool hide_banner)
+        {
+            string arguments = new($"-i \"{data.LoadVideo}\" ");
+
+            if (hide_banner)
+            {
+                arguments = "-hide_banner -loglevel warning " + arguments;
+            }
+
+            arguments += SS_TO(data);
+
+            arguments += VF(data);
+
+            if (data.ImageFormat == 2 && data.Qscale != 0)
+            {
+                arguments += "-qscale:v " + data.Qscale + " ";
+            }
+
+            arguments += $"-y \"{ImageSaveFileName(data)}\"";
+
+            return arguments;
+        }
+
+        private static string SS_TO(in InputData data)
+        {
+            string time = string.Empty;
+
+            // "-ss 00:10:00.000 "
+            if (data.Start.IsZero == false)
+            {
+                time += $"-ss {data.Start} ";
+            }
+            // "-to 00:20:00.000 "
+            if (data.End.IsZero == false)
+            {
+                time += $"-to {data.End} ";
+            }
+
+            return time;
         }
 
         private static string VF(in InputData data)
         {
             string vf = string.Empty;
 
-            switch (data.Rotation) // 회전은 재인코딩 필요
+            // 90, -90 회전
+            if (data.Rotation == 90)
             {
-                case 90:    // "-vf transpose=1 "
-                    vf += "-vf transpose=1 ";
+                vf += "transpose=1";
+            }
+            else if (data.Rotation == 270)
+            {
+                vf += "transpose=2";
+            }
+
+            // 플립과 180 회전
+            bool hflip = data.HFlip;
+            bool vflip = data.VFlip;
+            if (data.Rotation == 180)
+            {
+                hflip = !hflip;
+                vflip = !vflip;
+            }
+            if (hflip == true)
+            {
+                vf += (vf.Length == 0 ? "" : ",") + "hflip";
+            }
+            if (vflip == true)
+            {
+                vf += (vf.Length == 0 ? "" : ",") + "vflip";
+            }
+
+            // fps 변경
+            if (data.Fps > 0.0)
+            {
+                vf += $"{(vf.Length == 0 ? "" : ",")}fps={data.Fps}";
+            }
+
+            // 사이즈 변경
+            if (data.Scale.IsZero == false)
+            {
+                vf += $"{(vf.Length == 0 ? "" : ",")}scale={data.Scale.ToStringNotZero}";
+            }
+
+            // 크롭
+            // ffmpeg.exe -i 2_cut.mp4 -filter:v "crop=iw/2:ih:0:0:keep_aspect=1" -c:a copy -y crop_1.mp4
+            // 가로크기 절반, 세로는 전체로, 0,0 부터 자름, keep_aspect=1 은 잘라진 크기와 관계없이 원본 비율대로 늘려서 보여줌
+            if (data.CropStart.IsZero == false || data.CropSize.IsZero == false)
+            {
+                vf += $"{(vf.Length == 0 ? "" : ",")}crop={data.CropSize.ToStringNotZero}:{data.CropStart}";
+            }
+
+            if (vf.Length != 0)
+            {
+                vf = $"-vf \"{vf}\" ";
+            }
+
+            return vf;
+        }
+
+        private static string Encoder(in InputData data, bool canVideoCopy)
+        {
+            string encoder = string.Empty;
+            
+            if (data.SelectedVideoEncoder == 0 && data.SelectedAudioEncoder == 0 && canVideoCopy)
+            {
+                return "-c copy ";
+            }
+
+            if (data.SelectedVideoEncoder != 0 || data.VideoEncoders.Count < data.SelectedVideoEncoder)
+            {
+                encoder = $"-c:v {data.VideoEncoders[data.SelectedVideoEncoder]} ";
+            }
+            else if (canVideoCopy)
+            {
+                encoder = "-c:v copy ";
+            }
+
+            if (data.SelectedAudioEncoder != 0 || data.AudioEncoders.Count < data.SelectedAudioEncoder)
+            {
+                encoder += $"-c:a {data.AudioEncoders[data.SelectedAudioEncoder]} ";
+            }
+            else
+            {
+                encoder += "-c:a copy ";
+            }
+
+            return encoder;
+        }
+
+        private static string ImageSaveFileName(in InputData data)
+        {
+            string filename = string.Empty;
+            if (data.SaveVideo.Contains("_cut."))
+            {
+                string[] split = data.SaveVideo.Split("_cut.", StringSplitOptions.RemoveEmptyEntries);
+                filename = split[0];
+            }
+            else if (data.SaveVideo.Contains('.'))
+            {
+                string[] split = data.SaveVideo.Split(Path.GetExtension(data.SaveVideo), StringSplitOptions.RemoveEmptyEntries);
+                filename = split[0];
+            }
+            else
+            {
+                filename = data.SaveVideo;
+            }
+
+            switch (data.ImageFormat)
+            {
+                case 0:
+                    filename += ".gif";
                     break;
-                case 180:   // "-vf "vflip,hflip" "
-                    vf += "-vf \"vflip,hflip\" ";
+                case 1:
+                    filename += $"_%0{data.SaveZeroCount}d.png";
                     break;
-                case 270:   // "-vf transpose=2 "
-                    vf += "-vf transpose=2 ";
+                case 2:
+                    filename += $"_%0{data.SaveZeroCount}d.jpg";
                     break;
                 default:
                     break;
             }
 
-            return vf;
+            return filename;
         }
     }
 
@@ -69,3 +234,5 @@ namespace GumCut
 // 초당 30프레임, 가로 640, 세로는 비율에 맞춰서 gif 로 변환
 // ffmpeg.exe -i 2.mp4 -vf fps=5 -y 2_%05d.png
 // 초당 5장씩 png로 출력
+// <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE96D; &#xE96E; &#xE96F; &#xE970; &#xE91B; &#xF4A9;"/>
+// <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xF4A9;"/>

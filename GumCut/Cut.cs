@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
+using System.Windows.Controls;
 
 namespace GumCut
 {
@@ -8,12 +10,25 @@ namespace GumCut
     {
         private InputData data = new();
         private bool working;
+        private bool fastCutTabControl = true;
+        private bool editTabControl;
+        private bool imageTabControl;
+        private bool openCmd;
         private string resultText = string.Empty;
         public Command FFmpegOpenButton { get; set; }
-        public Command InputVideoButton { get; set; }
-        public Command OutputVideoButton { get; set; }
+        public Command LoadVideoButton { get; set; }
+        public Command SaveVideoButton { get; set; }
         public Command CutButton { get; set; }
         public Command CmdButton { get; set; }
+        public Command EraseButton { get; set; }
+
+        private enum SelectedTab
+        {
+            FastCutTab,
+            EditTab,
+            ImageTab
+        }
+        private SelectedTab CurrentSelectedTab = SelectedTab.FastCutTab;
 
         public InputData Data
         {
@@ -30,6 +45,51 @@ namespace GumCut
             {
                 working = value;
                 OnPropertyChanged(nameof(Working));
+            }
+        }
+        public bool FastCutTabControl
+        {
+            get => fastCutTabControl; set
+            {
+                fastCutTabControl = value;
+                OnPropertyChanged(nameof(FastCutTabControl));
+                if (fastCutTabControl == false) return;
+
+                data.EditTabClear();
+                data.ImageTabClear();
+                CurrentSelectedTab = SelectedTab.FastCutTab;
+            }
+        }
+        public bool EditTabControl
+        {
+            get => editTabControl; set
+            {
+                editTabControl = value;
+                OnPropertyChanged(nameof(EditTabControl));
+                if (editTabControl == false) return;
+
+                data.ImageTabClear();
+                CurrentSelectedTab = SelectedTab.EditTab;
+            }
+        }
+        public bool ImageTabControl
+        {
+            get => imageTabControl; set
+            {
+                imageTabControl = value;
+                OnPropertyChanged(nameof(ImageTabControl));
+                if (imageTabControl == false) return;
+
+                data.EditTabClear();
+                CurrentSelectedTab = SelectedTab.ImageTab;
+            }
+        }
+        public bool OpenCmd
+        {
+            get => openCmd; set
+            {
+                openCmd = value;
+                OnPropertyChanged(nameof(OpenCmd));
             }
         }
         public string ResultText
@@ -51,11 +111,12 @@ namespace GumCut
         public Cut()
         {
             FFmpegOpenButton = new(FFmpegOpenExecutedCommand, EmptyCanExecuteCommand);
-            InputVideoButton = new(InputVideoExecutedCommand, EmptyCanExecuteCommand);
-            OutputVideoButton = new(OutputVideoExecutedCommand, OutputVideoCanExecuteCommand);
+            LoadVideoButton = new(LoadVideoExecutedCommand, EmptyCanExecuteCommand);
+            SaveVideoButton = new(SaveVideoExecutedCommand, SaveVideoCanExecuteCommand);
             CutButton = new(CutExecutedCommand, CutCanExecuteCommand);
             CmdButton = new(CmdExecutedCommand, EmptyCanExecuteCommand);
-
+            EraseButton = new(EraseExecutedCommand, EmptyCanExecuteCommand);
+            
             SetupfileLoad();
         }
 
@@ -72,6 +133,7 @@ namespace GumCut
                 return;
 
             data.FFmpegFile = line;
+            GetEncoderInfo();
         }
 
         private void SetupfileSave()
@@ -80,6 +142,100 @@ namespace GumCut
             using StreamWriter sw = new(fs);
             sw.WriteLine(data.FFmpegFile);
             sw.Close();
+
+            GetEncoderInfo();
+        }
+
+        private void GetEncoderInfo()
+        {
+            ResultText += "===== Get Encoder Info : ";
+            var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -encoders", false, true)).ContinueWith((antecedent) =>
+            {
+                SplitEncoderInfo(FFmpegResultText);
+                if (data.VideoEncoders.Count == 0)
+                {
+                    ResultText += "Fail =========\n";
+                }
+                else
+                {
+                    ResultText += "Success! =========\n";
+                }
+                FFmpegResultText = string.Empty;
+            });
+        }
+
+        private void SplitEncoderInfo(string ffmpegResult)
+        {
+            data.VideoEncoders.Clear();
+            data.AudioEncoders.Clear();
+
+            string[]? splitResult = ffmpegResult?.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            if (splitResult == null || splitResult.Length == 0) return;
+
+            foreach (string line in splitResult)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                string[] splits = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (splits.Length < 2)
+                    continue;
+
+                switch (splits[0][0])
+                {
+                    case 'A':
+                        data.AudioEncoders.Add(splits[1]);
+                        break;
+                    case 'V':
+                        data.VideoEncoders.Add(splits[1]);
+                        break;
+                    case 'S':
+                        data.SubtitleEncoders.Add(splits[1]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void GetLoadVideoInfo()
+        {
+            ResultText += "===== Get Video Info : \n";
+            var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + data.LoadVideo + "\"", false, false)).ContinueWith((antecedent) =>
+            {
+                if (SplitLoadVideoInfo(FFmpegResultText) == false)
+                {
+                    ResultText += "Fail =========\n";
+                    ResultText += FFmpegResultText;
+                }
+
+                FFmpegResultText = string.Empty;
+            });
+        }
+
+        private bool SplitLoadVideoInfo(string ffmpegResult)
+        {
+            string[]? splitResult = ffmpegResult?.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (splitResult == null || splitResult.Length == 0) return false;
+
+            int textLength = ResultText.Length;
+
+            foreach (string line in splitResult)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                if (line.Contains("Stream", StringComparison.Ordinal))
+                {
+                    ResultText += line + "\n";
+                }
+                else if (line.Contains("Duration", StringComparison.Ordinal))
+                {
+                    ResultText += line + "\n";
+                }
+            }
+
+            return textLength < ResultText.Length;
         }
 
         private bool EmptyCanExecuteCommand(object? obj)
@@ -106,7 +262,7 @@ namespace GumCut
             SetupfileSave();
         }
 
-        private void InputVideoExecutedCommand(object? obj)
+        private void LoadVideoExecutedCommand(object? obj)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
 
@@ -116,20 +272,20 @@ namespace GumCut
                 return;
 
             string filename = dialog.FileName;
-            data.InputVideo = filename;
+            data.LoadVideo = filename;
+            GetLoadVideoInfo();
 
-            string outfilename = $"{Path.GetDirectoryName(filename)}\\{Path.GetFileNameWithoutExtension(filename)}_cut{Path.GetExtension(filename)}";
-            data.OutputVideo = outfilename;
+            data.SaveVideo = $"{Path.GetDirectoryName(filename)}\\{Path.GetFileNameWithoutExtension(filename)}_cut{Path.GetExtension(filename)}";
         }
 
-        private void OutputVideoExecutedCommand(object? obj)
+        private void SaveVideoExecutedCommand(object? obj)
         {
-            string dotExrension = $"{Path.GetExtension(data.InputVideo)}";
+            string dotExrension = $"{Path.GetExtension(data.LoadVideo)}";
             var dialog = new Microsoft.Win32.SaveFileDialog
             {
-                FileName = Path.GetFileNameWithoutExtension(data.OutputVideo),
+                FileName = Path.GetFileNameWithoutExtension(data.SaveVideo),
                 DefaultExt = dotExrension,
-                Filter = $"({dotExrension})|*{dotExrension}"
+                Filter = $""
             };
 
             bool? result = dialog.ShowDialog();
@@ -137,13 +293,35 @@ namespace GumCut
             if (result != true)
                 return;
 
-            data.OutputVideo = dialog.FileName;
+            data.SaveVideo = dialog.FileName;
         }
 
-        private bool OutputVideoCanExecuteCommand(object? obj)
+        private bool SaveVideoCanExecuteCommand(object? obj)
         {
-            if (data.InputVideo.Length == 0) return false;
+            if (data.LoadVideo.Length == 0) return false;
             return true;
+        }
+
+        private string GetSelectedTabArguments()
+        {
+            string arguments = string.Empty;
+
+            switch (CurrentSelectedTab)
+            {
+                case SelectedTab.FastCutTab:
+                    arguments = FFmpegArguments.FastCut(data, !openCmd);
+                    break;
+                case SelectedTab.EditTab:
+                    arguments = FFmpegArguments.Edit(data, !openCmd);
+                    break;
+                case SelectedTab.ImageTab:
+                    arguments = FFmpegArguments.Image(data, !openCmd);
+                    break;
+                default:
+                    break;
+            }
+
+            return arguments;
         }
 
         private static string FFmpegResultText = string.Empty;
@@ -159,37 +337,44 @@ namespace GumCut
 
             Working = true;
             stopwatch.Restart();
-            ResultText = $"====== Working Start : {DateTime.Now.ToString("F")}\n";
+            ResultText += $"====== Working Start : {DateTime.Now.ToString("F")}\n";
 
             string ffmpegFile = new($"\"{data.FFmpegFile}\"");
-            string arguments = FFmpegArguments.FastCut(data);
+            string arguments = GetSelectedTabArguments();
 
-            var task = Task.Run(() => FFmpegAsync(ffmpegFile, arguments)).ContinueWith((antecedent) => 
+            var task = Task.Run(() => FFmpegAsync(ffmpegFile, arguments, openCmd, false)).ContinueWith((antecedent) => 
             {
                 Working = false;
                 stopwatch.Stop();
-                ResultText += (FFmpegResultText.Length > 0) ? FFmpegResultText : "========= Success! =========\n";
+                ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
                 ResultText += $"====== Working End : {DateTime.Now.ToString("F")} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds)\n";
                 FFmpegResultText = string.Empty;
             });
         }
 
-        public static async Task FFmpegAsync(string ffmpegFile, string arguments)
+        public static async Task FFmpegAsync(string ffmpegFile, string arguments, bool openWindow, bool isStandardOutput)
         {
             ProcessStartInfo cmd = new(ffmpegFile, arguments);
 
-            cmd.CreateNoWindow = true;
+            cmd.CreateNoWindow = !openWindow;
             cmd.UseShellExecute = false;
-            cmd.RedirectStandardOutput = false;
             cmd.RedirectStandardInput = false;
-            cmd.RedirectStandardError = true;
+            cmd.RedirectStandardOutput = isStandardOutput && !openWindow;
+            cmd.RedirectStandardError = !isStandardOutput && !openWindow;
 
             Process process = new();
             process.EnableRaisingEvents = false;
             process.StartInfo = cmd;
             process.Start();
 
-            FFmpegResultText += await process.StandardError.ReadToEndAsync();
+            if (isStandardOutput && !openWindow)
+            {
+                FFmpegResultText += await process.StandardOutput.ReadToEndAsync();
+            }
+            else if (!openWindow)
+            {
+                FFmpegResultText += await process.StandardError.ReadToEndAsync();
+            }
 
             await process.WaitForExitAsync();
             process.Close();
@@ -198,20 +383,21 @@ namespace GumCut
         private bool CutCanExecuteCommand(object? obj)
         {
             if (data.FFmpegFile.Length == 0) return false;
-            if (data.InputVideo.Length == 0) return false;
-            if (data.OutputVideo.Length == 0) return false;
-            if (data.Start.Checked == false && data.End.Checked == false)
-            {
-                long startSeconds = (data.Start.Hour * 10000000L) + (data.Start.Minute * 100000) + (data.Start.Seconds * 1000) + data.Start.Milliseconds;
-                long endSeconds = (data.End.Hour * 10000000L) + (data.End.Minute * 100000) + (data.End.Seconds * 1000) + data.End.Milliseconds;
-                if (endSeconds > 0 && startSeconds > endSeconds) return false;
-            }
+            if (data.LoadVideo.Length == 0) return false;
+            if (data.SaveVideo.Length == 0) return false;
+            if (data.Start.Checked == false && data.End.Checked == false && data.End.IsZero == false && data.Start > data.End) return false;
+
             return true;
         }
 
         private void CmdExecutedCommand(object? obj)
         {
-            ResultText = $"\"{data.FFmpegFile}\" {FFmpegArguments.FastCut(data)}\n";
+            ResultText += $"\"{data.FFmpegFile}\" {GetSelectedTabArguments()}\n";
+        }
+
+        private void EraseExecutedCommand(object? obj)
+        {
+            ResultText = string.Empty;
         }
 
         internal void DragAndDropFile(string fileName)
@@ -224,15 +410,27 @@ namespace GumCut
                 SetupfileSave();
                 return;
             }
-            else if (extension.Length > 0)
+            else if (extension.Length != 0)
             {
-                data.InputVideo = fileName;
-                data.OutputVideo = $"{Path.GetDirectoryName(fileName)}\\{Path.GetFileNameWithoutExtension(fileName)}_cut{Path.GetExtension(fileName)}";
+                data.LoadVideo = fileName;
+                GetLoadVideoInfo();
+                data.SaveVideo = $"{Path.GetDirectoryName(fileName)}\\{Path.GetFileNameWithoutExtension(fileName)}_cut{Path.GetExtension(fileName)}";
                 return;
             }
-            else if (data.InputVideo.Length > 0)
+            else
             {
-                data.OutputVideo = $"{fileName}\\{Path.GetFileNameWithoutExtension(data.InputVideo)}_cut{Path.GetExtension(data.InputVideo)}";
+                if (data.SaveVideo.Length != 0)
+                {
+                    data.SaveVideo = $"{fileName}\\{Path.GetFileNameWithoutExtension(data.SaveVideo)}{Path.GetExtension(data.SaveVideo)}";
+                }
+                else if (data.LoadVideo.Length != 0)
+                {
+                    data.SaveVideo = $"{fileName}\\{Path.GetFileNameWithoutExtension(data.LoadVideo)}_cut{Path.GetExtension(data.LoadVideo)}";
+                }
+                else
+                {
+                    data.SaveVideo = fileName;
+                }
             }
         }
     }

@@ -1,14 +1,10 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GumCut
 {
@@ -20,6 +16,29 @@ namespace GumCut
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void ScrollToEndTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ((TextBox)sender).ScrollToEnd();
+        }
+
+        private void IntTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void DoubleTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text == "." && ((TextBox)sender).Text.Contains('.', StringComparison.Ordinal))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            Regex regex = new("[^0-9.]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
 
         private void EhDragOver(object sender, DragEventArgs args)
@@ -52,6 +71,31 @@ namespace GumCut
                 }
             }
             return null;
+        }
+
+        private void HyperLink_Click(object sender, RoutedEventArgs e)
+        {
+            string url = ((Hyperlink)sender).NavigateUri.ToString();
+            var task = Task.Run(() => OpenUrlAsync(url));
+        }
+
+        public static async Task OpenUrlAsync(string url)
+        {
+            ProcessStartInfo cmd = new(url);
+
+            cmd.CreateNoWindow = false;
+            cmd.UseShellExecute = true;
+            cmd.RedirectStandardInput = false;
+            cmd.RedirectStandardOutput = false;
+            cmd.RedirectStandardError = false;
+
+            Process process = new();
+            process.EnableRaisingEvents = false;
+            process.StartInfo = cmd;
+            process.Start();
+
+            await process.WaitForExitAsync();
+            process.Close();
         }
     }
 }
