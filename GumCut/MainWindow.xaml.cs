@@ -13,6 +13,8 @@ namespace GumCut
     /// </summary>
     public partial class MainWindow : Window
     {
+        private BatchList? batchList;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -96,6 +98,20 @@ namespace GumCut
 
             await process.WaitForExitAsync();
             process.Close();
+        }
+
+        private void BatchListOpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (batchList == null)
+            {
+                batchList = new BatchList();
+                batchList.Owner = this;
+            }
+
+            if (batchList.IsVisible)
+                batchList.Hide();
+            else
+                batchList.Show();
         }
     }
 }

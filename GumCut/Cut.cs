@@ -15,12 +15,16 @@ namespace GumCut
         private bool imageTabControl;
         private bool openCmd;
         private string resultText = string.Empty;
+        private VideoCollection videoList = [];
+        private string batchSaveDirectory = string.Empty;
         public Command FFmpegOpenButton { get; set; }
         public Command LoadVideoButton { get; set; }
         public Command SaveVideoButton { get; set; }
         public Command CutButton { get; set; }
         public Command CmdButton { get; set; }
         public Command EraseButton { get; set; }
+        public Command BatchOpenDirectoryButton { get; set; }
+        public Command BatchSaveDirectoryButton { get; set; }
 
         private enum SelectedTab
         {
@@ -101,6 +105,24 @@ namespace GumCut
             }
         }
 
+        public VideoCollection VideoList
+        {
+            get => videoList; set
+            {
+                videoList = value;
+                OnPropertyChanged(nameof(VideoList));
+            }
+        }
+
+        public string BatchSaveDirectory
+        {
+            get => batchSaveDirectory; set
+            {
+                batchSaveDirectory = value;
+                OnPropertyChanged(nameof(BatchSaveDirectory));
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
@@ -116,7 +138,9 @@ namespace GumCut
             CutButton = new(CutExecutedCommand, CutCanExecuteCommand);
             CmdButton = new(CmdExecutedCommand, EmptyCanExecuteCommand);
             EraseButton = new(EraseExecutedCommand, EmptyCanExecuteCommand);
-            
+            BatchOpenDirectoryButton = new(BatchOpenDirectoryCommand, EmptyCanExecuteCommand);
+            BatchSaveDirectoryButton = new(BatchSaveDirectoryCommand, EmptyCanExecuteCommand);
+
             SetupfileLoad();
         }
 
@@ -254,7 +278,7 @@ namespace GumCut
 
             bool? result = dialog.ShowDialog();
 
-            if (result != true)
+            if (result == null || result != true)
                 return;
 
             data.FFmpegFile = dialog.FileName;
@@ -268,14 +292,14 @@ namespace GumCut
 
             bool? result = dialog.ShowDialog();
 
-            if (result != true)
+            if (result == null || result != true)
                 return;
 
             string filename = dialog.FileName;
             data.LoadVideo = filename;
             GetLoadVideoInfo();
 
-            data.SaveVideo = $"{Path.GetDirectoryName(filename)}\\{Path.GetFileNameWithoutExtension(filename)}_cut{Path.GetExtension(filename)}";
+            data.SaveVideo = MakeSaveName(filename);
         }
 
         private void SaveVideoExecutedCommand(object? obj)
@@ -290,7 +314,7 @@ namespace GumCut
 
             bool? result = dialog.ShowDialog();
 
-            if (result != true)
+            if (result == null || result != true)
                 return;
 
             data.SaveVideo = dialog.FileName;
@@ -400,6 +424,67 @@ namespace GumCut
             ResultText = string.Empty;
         }
 
+        private void BatchOpenDirectoryCommand(object? obj)
+        {
+            var dialog = new Microsoft.Win32.OpenFolderDialog();
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == null || result != true)
+                return;
+
+            DirectoryInfo directoryInfo = new DirectoryInfo(dialog.FolderName);
+            foreach (FileInfo file in directoryInfo.GetFiles())
+            {
+                VideoInfo info = new VideoInfo(file.FullName);
+                if (BatchSaveDirectory.Length != 0)
+                {
+                    info.SaveName = MakeSaveName(file.Name, BatchSaveDirectory);
+                }
+                VideoList.Add(info);
+            }
+        }
+
+        private void BatchSaveDirectoryCommand(object? obj)
+        {
+            var dialog = new Microsoft.Win32.OpenFolderDialog();
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == null || result != true)
+                return;
+
+            BatchSaveDirectory = dialog.FolderName;
+            foreach (VideoInfo info in VideoList)
+            {
+                info.SaveName = MakeSaveName(info.FileName, BatchSaveDirectory);
+            }
+        }
+
+        private string MakeSaveName(string loadFilename, string? directory = null)
+        {
+            string result = string.Empty;
+            if (directory != null && directory.Length != 0)
+            {
+                result = directory + "\\";
+            }
+            else
+            {
+                result = Path.GetDirectoryName(loadFilename) + "\\";
+            }
+
+            if (loadFilename.Contains("_cut", StringComparison.Ordinal))
+            {
+                result += Path.GetFileNameWithoutExtension(loadFilename) + Path.GetExtension(loadFilename);
+            }
+            else
+            {
+                result += Path.GetFileNameWithoutExtension(loadFilename) + "_cut" + Path.GetExtension(loadFilename);
+            }
+
+            return result;
+        }
+
         internal void DragAndDropFile(string fileName)
         {
             string extension = Path.GetExtension(fileName).ToLower();
@@ -414,18 +499,18 @@ namespace GumCut
             {
                 data.LoadVideo = fileName;
                 GetLoadVideoInfo();
-                data.SaveVideo = $"{Path.GetDirectoryName(fileName)}\\{Path.GetFileNameWithoutExtension(fileName)}_cut{Path.GetExtension(fileName)}";
+                data.SaveVideo = MakeSaveName(fileName);
                 return;
             }
             else
             {
                 if (data.SaveVideo.Length != 0)
                 {
-                    data.SaveVideo = $"{fileName}\\{Path.GetFileNameWithoutExtension(data.SaveVideo)}{Path.GetExtension(data.SaveVideo)}";
+                    data.SaveVideo = MakeSaveName(data.SaveVideo, fileName);
                 }
                 else if (data.LoadVideo.Length != 0)
                 {
-                    data.SaveVideo = $"{fileName}\\{Path.GetFileNameWithoutExtension(data.LoadVideo)}_cut{Path.GetExtension(data.LoadVideo)}";
+                    data.SaveVideo = MakeSaveName(data.LoadVideo, fileName);
                 }
                 else
                 {

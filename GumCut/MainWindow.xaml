@@ -22,29 +22,41 @@
 
             <Grid Margin="0,2,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="2"/>
-                    <RowDefinition/>
-                    <RowDefinition Height="2"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="FFmpeg File" VerticalAlignment="Center" Width="100"/>
-                <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding Data.FFmpegFile}"/>
-                <Button Content="&#xE8E5;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding FFmpegOpenButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
 
-                <TextBlock Text="Load Video" VerticalAlignment="Center" Width="100" Grid.Row="2"/>
-                <TextBox TextWrapping="NoWrap" Grid.Column="1" Grid.Row="2" Text="{Binding Data.LoadVideo}"/>
-                <Button Content="&#xE838;" Margin="2,0,0,0" Grid.Column="2" Grid.Row="2" Command="{Binding LoadVideoButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="2"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="2"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="FFmpeg File" VerticalAlignment="Center" Width="100"/>
+                    <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding Data.FFmpegFile}" FontSize="12"/>
+                    <Button Content="&#xE8E5;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding FFmpegOpenButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
 
-                <TextBlock Text="Save Video" VerticalAlignment="Center" Width="100" Grid.Row="4"/>
-                <TextBox TextWrapping="NoWrap" Grid.Column="1" Grid.Row="4" Text="{Binding Data.SaveVideo}"/>
-                <Button Content="&#xE792;" Margin="2,0,0,0" Grid.Column="2" Grid.Row="4" Command="{Binding SaveVideoButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                    <TextBlock Text="Load Video" VerticalAlignment="Center" Width="100" Grid.Row="2"/>
+                    <TextBox TextWrapping="NoWrap" Grid.Column="1" Grid.Row="2" Text="{Binding Data.LoadVideo}" FontSize="12"/>
+                    <Button Content="&#xE838;" Margin="2,0,0,0" Grid.Column="2" Grid.Row="2" Command="{Binding LoadVideoButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+
+                    <TextBlock Text="Save Video" VerticalAlignment="Center" Width="100" Grid.Row="4"/>
+                    <TextBox TextWrapping="NoWrap" Grid.Column="1" Grid.Row="4" Text="{Binding Data.SaveVideo}" FontSize="12"/>
+                    <Button Content="&#xE792;" Margin="2,0,0,0" Grid.Column="2" Grid.Row="4" Command="{Binding SaveVideoButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                </Grid>
+
+                <Grid Grid.Column="1">
+                    <Button Content="&#xE7C4;" Margin="2,0,0,0" Grid.Column="2" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Click="BatchListOpenButton_Click"/>
+                </Grid>
             </Grid>
+
 
             <Grid Margin="0,2,0,0">
                 <Grid.ColumnDefinitions>
