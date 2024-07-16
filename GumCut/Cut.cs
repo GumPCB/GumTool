@@ -25,6 +25,10 @@ namespace GumCut
         public Command EraseButton { get; set; }
         public Command BatchOpenDirectoryButton { get; set; }
         public Command BatchSaveDirectoryButton { get; set; }
+        public Command BatchRemoveSeletedButton { get; set; }
+        public Command BatchRemoveAllButton { get; set; }
+        public Command BatchMoveSeletedButton { get; set; }
+        public Command BatchMoveAllButton { get; set; }
 
         private enum SelectedTab
         {
@@ -140,6 +144,10 @@ namespace GumCut
             EraseButton = new(EraseExecutedCommand, EmptyCanExecuteCommand);
             BatchOpenDirectoryButton = new(BatchOpenDirectoryCommand, EmptyCanExecuteCommand);
             BatchSaveDirectoryButton = new(BatchSaveDirectoryCommand, EmptyCanExecuteCommand);
+            BatchRemoveSeletedButton = new(BatchRemoveSeletedCommand, EmptyCanExecuteCommand);
+            BatchRemoveAllButton = new(BatchRemoveAllCommand, EmptyCanExecuteCommand);
+            BatchMoveSeletedButton = new(BatchMoveSeletedCommand, EmptyCanExecuteCommand);
+            BatchMoveAllButton = new(BatchMoveAllCommand, EmptyCanExecuteCommand);
 
             SetupfileLoad();
         }
@@ -424,25 +432,151 @@ namespace GumCut
             ResultText = string.Empty;
         }
 
+        private void BatchGetInfo()
+        {
+            if (Working == true)
+                return;
+
+            string filename = string.Empty;
+            foreach (VideoInfo info in VideoList)
+            {
+                if (info.Encoder.Length == 0)
+                {
+                    filename = info.FileName;
+                    break;
+                }
+            }
+
+            if (filename.Length == 0)
+                return;
+            
+            Working = true;
+            var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + filename + "\"", false, false)).ContinueWith((antecedent) =>
+            {
+                VideoInfo temp = BatchSplitInfo(FFmpegResultText, filename);
+                if (temp.Encoder.Length == 0)
+                    temp.Encoder = "Not Found";
+                foreach (VideoInfo info in VideoList)
+                {
+                    if (info.Encoder.Length != 0 || info.FileName.Equals(temp.FileName) == false)
+                        continue;
+
+                    info.Encoder = temp.Encoder;
+                    info.Resolution = temp.Resolution;
+                    info.Duration = temp.Duration;
+                    info.FPS = temp.FPS;
+                    info.Bitrate = temp.Bitrate;
+
+                    if (BatchSaveDirectory.Length != 0)
+                    {
+                        info.SaveName = MakeSaveName(info.FileName, BatchSaveDirectory);
+                    }
+                    break;
+                }
+
+                FFmpegResultText = string.Empty;
+                Working = false;
+                BatchGetInfo();
+            });
+        }
+
+        private VideoInfo BatchSplitInfo(string ffmpegResult, string filename)
+        {
+            VideoInfo info = new(filename);
+            string[]? splitResult = ffmpegResult?.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (splitResult == null || splitResult.Length == 0) return info;
+
+            char[] delimiterChars = { ' ', ',', '.', ':' };
+            foreach (string line in splitResult)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                if (line.Contains("Stream", StringComparison.Ordinal) && line.Contains("Video", StringComparison.Ordinal) && !line.Contains("attached pic", StringComparison.Ordinal))
+                {
+                    string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    foreach (string split in splitLine)
+                    {
+                        if (split.Contains("Video", StringComparison.Ordinal))
+                        {
+                            string[] encoder = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                            for (int i = 0; i < encoder.Length; ++i)
+                            {
+                                if (encoder[i].Equals("Video:") && encoder.Length >= i + 2)
+                                {
+                                    info.Encoder = encoder[i + 1];
+                                    break;
+                                }
+                            }
+                        }
+                        else if (split.Contains("fps", StringComparison.Ordinal))
+                        {
+                            string[] fps = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                            if (fps.Length >= 2)
+                            {
+                                info.FPS = double.Parse(fps[0]);
+                            }
+                        }
+                        else if (split.Contains("/s", StringComparison.Ordinal))
+                        {
+                            info.Bitrate = split;
+                        }
+                        else if (split.Contains('x', StringComparison.Ordinal))
+                        {
+                            char[] resolutionDelimiterChars = { 'x', ' ' };
+                            string[] resolution = split.Split(resolutionDelimiterChars, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                            uint temp;
+                            if (resolution.Length < 2 || info.Resolution.Length != 0 || uint.TryParse(resolution[0], out temp) == false || uint.TryParse(resolution[1], out temp) == false)
+                                continue;
+
+                            info.Resolution = resolution[0] + 'x' + resolution[1];
+                        }
+                    }
+                }
+                else if (line.Contains("Duration", StringComparison.Ordinal))
+                {
+                    string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    foreach (string split in splitLine)
+                    {
+                        if (split.Contains("Duration", StringComparison.Ordinal))
+                        {
+                            string[] duration = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                            if (duration.Length >= 2)
+                            {
+                                info.Duration = duration[1];
+                            }
+                        }
+                    }
+                }
+            }
+
+            return info;
+        }
+
         private void BatchOpenDirectoryCommand(object? obj)
         {
             var dialog = new Microsoft.Win32.OpenFolderDialog();
 
+            dialog.Multiselect = true;
             bool? result = dialog.ShowDialog();
 
             if (result == null || result != true)
                 return;
 
-            DirectoryInfo directoryInfo = new DirectoryInfo(dialog.FolderName);
-            foreach (FileInfo file in directoryInfo.GetFiles())
+            foreach (string folderName in dialog.FolderNames)
             {
-                VideoInfo info = new VideoInfo(file.FullName);
-                if (BatchSaveDirectory.Length != 0)
+                DirectoryInfo directoryInfo = new DirectoryInfo(folderName);
+                foreach (FileInfo file in directoryInfo.GetFiles())
                 {
-                    info.SaveName = MakeSaveName(file.Name, BatchSaveDirectory);
+                    if (file.FullName.Contains("Thumbs.db", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    VideoInfo info = new(file.FullName);
+                    VideoList.Add(info);
                 }
-                VideoList.Add(info);
             }
+
+            BatchGetInfo();
         }
 
         private void BatchSaveDirectoryCommand(object? obj)
@@ -458,6 +592,65 @@ namespace GumCut
             foreach (VideoInfo info in VideoList)
             {
                 info.SaveName = MakeSaveName(info.FileName, BatchSaveDirectory);
+            }
+        }
+
+        private void BatchRemoveSeletedCommand(object? obj)
+        {
+            for (int i = VideoList.Count -1; i >= 0; --i)
+            {
+                if (VideoList[i].IsSelected)
+                {
+                    VideoList.RemoveAt(i);
+                }
+            }
+        }
+
+        private void BatchRemoveAllCommand(object? obj)
+        {
+            VideoList.Clear();
+        }
+
+        private void BatchMoveSeletedCommand(object? obj)
+        {
+            var dialog = new Microsoft.Win32.OpenFolderDialog();
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == null || result != true)
+                return;
+
+            foreach (VideoInfo info in VideoList)
+            {
+                if (info.IsSelected)
+                {
+                    string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
+                    File.Move(info.FileName, destFilename);
+                    if (File.Exists(destFilename))
+                    {
+                        info.FileName = destFilename;
+                    }
+                }
+            }
+        }
+
+        private void BatchMoveAllCommand(object? obj)
+        {
+            var dialog = new Microsoft.Win32.OpenFolderDialog();
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == null || result != true)
+                return;
+
+            foreach (VideoInfo info in VideoList)
+            {
+                string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
+                File.Move(info.FileName, destFilename);
+                if (File.Exists(destFilename))
+                {
+                    info.FileName = destFilename;
+                }
             }
         }
 
@@ -517,6 +710,24 @@ namespace GumCut
                     data.SaveVideo = fileName;
                 }
             }
+        }
+
+        internal void DragAndDropBatchDirectory(string[] directorys)
+        {
+            foreach (string folderName in directorys)
+            {
+                DirectoryInfo directoryInfo = new DirectoryInfo(folderName);
+                foreach (FileInfo file in directoryInfo.GetFiles())
+                {
+                    if (file.FullName.Contains("Thumbs.db", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    VideoInfo info = new(file.FullName);
+                    VideoList.Add(info);
+                }
+            }
+
+            BatchGetInfo();
         }
     }
 }

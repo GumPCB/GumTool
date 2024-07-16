@@ -18,8 +18,11 @@ namespace GumCut
         private string fileName = string.Empty;
         private string saveName = string.Empty;
         private string encoder = string.Empty;
-        private Size resolution = new();
-        private Time duration = new();
+        private string resolution = string.Empty;
+        private string duration = string.Empty;
+        private double fps;
+        private string bitrate = string.Empty;
+        public bool IsSelected;
 
         public VideoInfo(string _filename)
         {
@@ -28,7 +31,11 @@ namespace GumCut
 
         public string FileName
         {
-            get => fileName;
+            get => fileName; set
+            {
+                fileName = value;
+                OnPropertyChanged(nameof(FileName));
+            }
         }
         public string SaveName
         {
@@ -46,7 +53,7 @@ namespace GumCut
                 OnPropertyChanged(nameof(Encoder));
             }
         }
-        public Size Resolution
+        public string Resolution
         {
             get => resolution; set
             {
@@ -54,12 +61,28 @@ namespace GumCut
                 OnPropertyChanged(nameof(Resolution));
             }
         }
-        public Time Duration
+        public string Duration
         {
             get => duration; set
             {
                 duration = value;
                 OnPropertyChanged(nameof(Duration));
+            }
+        }
+        public double FPS
+        {
+            get => fps; set
+            {
+                fps = value;
+                OnPropertyChanged(nameof(FPS));
+            }
+        }
+        public string Bitrate
+        {
+            get => bitrate; set
+            {
+                bitrate = value;
+                OnPropertyChanged(nameof(Bitrate));
             }
         }
 

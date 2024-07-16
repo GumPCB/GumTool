@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GumCut"
         mc:Ignorable="d"
-        Title="Batch" Height="450" Width="800">
+        Title="Batch" Height="600" Width="1200">
     <Window.Resources>
         <local:Cut x:Key="KeyCut"/>
     </Window.Resources>
@@ -19,23 +19,35 @@
         </Grid.RowDefinitions>
         <StackPanel VerticalAlignment="Top">
             <Menu>
-                <MenuItem Header="Open">
+                <MenuItem Header="OpenDirectory">
                     <MenuItem Header="Video Directory" Command="{Binding BatchOpenDirectoryButton}"/>
                     <MenuItem Header="Save Directory" Command="{Binding BatchSaveDirectoryButton}"/>
                 </MenuItem>
 
-                <MenuItem Header="123" />
-                <MenuItem Header="123">
-                    <MenuItem Header="123" />
-                    <Button Content="&#xE838;" Command="{Binding BatchOpenDirectoryButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                    <Button Content="&#xE838;" Command="{Binding BatchOpenDirectoryButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                    <Button Content="&#xE838;" Command="{Binding BatchOpenDirectoryButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                <MenuItem Header="ListRemove">
+                    <MenuItem Header="Remove Seleted" Command="{Binding BatchRemoveSeletedButton}"/>
+                    <MenuItem Header="Remove All" Command="{Binding BatchRemoveAllButton}"/>
+                </MenuItem>
+
+                <MenuItem Header="FileMove">
+                    <MenuItem Header="Move Seleted" Command="{Binding BatchMoveSeletedButton}"/>
+                    <MenuItem Header="Move All" Command="{Binding BatchMoveAllButton}"/>
                 </MenuItem>
             </Menu>
         </StackPanel>
 
         <Grid Grid.Row="1">
-            <DataGrid ItemsSource="{Binding VideoList}" CanUserAddRows="False" />
+            <DataGrid ItemsSource="{Binding VideoList}" CanUserAddRows="False" CanUserDeleteRows="True" AutoGenerateColumns="False" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="BatchDragOver" PreviewDrop="BatchDrop" AllowDrop="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="FileName" IsReadOnly="True" Binding="{Binding FileName}"/>
+                    <DataGridTextColumn Header="Encoder" IsReadOnly="True" Binding="{Binding Encoder}"/>
+                    <DataGridTextColumn Header="Resolution" IsReadOnly="True" Binding="{Binding Resolution}"/>
+                    <DataGridTextColumn Header="Duration" IsReadOnly="True" Binding="{Binding Duration}"/>
+                    <DataGridTextColumn Header="FPS" IsReadOnly="True" Binding="{Binding FPS}"/>
+                    <DataGridTextColumn Header="Bitrate" IsReadOnly="True" Binding="{Binding Bitrate}"/>
+                    <DataGridTextColumn Header="SaveName" IsReadOnly="True" Binding="{Binding SaveName}"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
     </Grid>
 </Window>

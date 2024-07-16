@@ -31,7 +31,7 @@ namespace GumCut
         {
             get => minute; set
             {
-                minute = Math.Max(0, Math.Min(value, 60));
+                minute = Math.Max(0, Math.Min(value, 59));
                 OnPropertyChanged(nameof(Minute));
                 if (minute != 0)
                     Checked = false;
@@ -41,7 +41,7 @@ namespace GumCut
         {
             get => seconds; set
             {
-                seconds = Math.Max(0, Math.Min(value, 60));
+                seconds = Math.Max(0, Math.Min(value, 59));
                 OnPropertyChanged(nameof(Seconds));
                 if (seconds != 0)
                     Checked = false;
