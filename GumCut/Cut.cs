@@ -154,27 +154,85 @@ namespace GumCut
             BatchMoveAllButton = new(BatchMoveAllExecutedCommand, EmptyCanExecuteCommand);
 
             SetupfileLoad();
+            IniFileLoad();
         }
 
-        private const string SetupfileName = "GumFFmpegCut.ini";
+        private const string LevelsFile = ".\\ini\\levels.ini";
+        private const string PresetsFile = ".\\ini\\presets.ini";
+        private const string ProfileFile = ".\\ini\\profile.ini";
+        private const string TunesFile = ".\\ini\\tunes.ini";
+        private void IniFileLoad()
+        {
+            if (File.Exists(LevelsFile))
+            {
+                using StreamReader sr = new(LevelsFile);
+                string? line;
+                while (sr.EndOfStream == false)
+                {
+                    line = sr.ReadLine();
+                    if (line != null)
+                        data.Levels.Add(line);
+                }
+                sr.Close();
+            }
+            if (File.Exists(PresetsFile))
+            {
+                using StreamReader sr = new(PresetsFile);
+                string? line;
+                while (sr.EndOfStream == false)
+                {
+                    line = sr.ReadLine();
+                    if (line != null)
+                        data.Presets.Add(line);
+                }
+                sr.Close();
+            }
+            if (File.Exists(ProfileFile))
+            {
+                using StreamReader sr = new(ProfileFile);
+                string? line;
+                while (sr.EndOfStream == false)
+                {
+                    line = sr.ReadLine();
+                    if (line != null)
+                        data.Profiles.Add(line);
+                }
+                sr.Close();
+            }
+            if (File.Exists(TunesFile))
+            {
+                using StreamReader sr = new(TunesFile);
+                string? line;
+                while (sr.EndOfStream == false)
+                {
+                    line = sr.ReadLine();
+                    if (line != null)
+                        data.Tunes.Add(line);
+                }
+                sr.Close();
+            }
+        }
+
+        private const string SetupFile = ".\\ini\\PathFFmpeg.ini";
 
         private void SetupfileLoad()
         {
-            if (!File.Exists(SetupfileName))
+            if (!File.Exists(SetupFile))
                 return;
 
-            using StreamReader sr = new(SetupfileName);
+            using StreamReader sr = new(SetupFile);
             string? line = sr.ReadLine();
             if (line == null)
                 return;
 
+            sr.Close();
             data.FFmpegFile = line;
             GetEncoderInfo();
         }
 
         private void SetupfileSave()
         {
-            FileStream fs = new(SetupfileName, FileMode.Create);
+            FileStream fs = new(SetupFile, FileMode.Create);
             using StreamWriter sw = new(fs);
             sw.WriteLine(data.FFmpegFile);
             sw.Close();

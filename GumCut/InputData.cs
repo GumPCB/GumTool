@@ -124,8 +124,10 @@ namespace GumCut
         private List<string> videoEncoders = [];
         private List<string> audioEncoders = [];
         private List<string> subtitleEncoders = [];
-        private List<string> presets = [" ", "ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo"];
-        private List<string> tunes = [" ", "film", "animation", "grain", "stillimage", "fastdecode", "zerolatency", "psnr", "ssim"];
+        private List<string> presets = ["="];
+        private List<string> tunes = ["="];
+        private List<string> profiles = ["="];
+        private List<string> levels = ["="];
         private Time start = new();
         private Time end = new();
         private bool streaming = true;
@@ -140,13 +142,16 @@ namespace GumCut
         private int selectedAudioEncoder;   // Edit
         private int selectedPreset;         // Edit
         private int selectedTune;           // Edit
+        private int selectedProfile;        // Edit
+        private int selectedLevel;          // Edit
         private int bitrate;                // Edit
         private int bitratemax;             // Edit
         private int bufsize;                // Edit
         private double crf = -1.0;          // Edit
         private int qp = -1;                // Edit
         private int saveZeroCount = 5;      // Image
-        private int qscale;                 // Image
+        private int qscale;                 // Edit, Image
+        private int qscaleAudio;            // Edit
         private int imageFormat;            // Image
         private List<string> imageFormatType = ["GIF", "PNG", "JPG"];
         private string saveZeroName = "name_00001.jpg"; // Image
@@ -167,11 +172,15 @@ namespace GumCut
             SelectedAudioEncoder = 0;
             SelectedPreset = 0;
             SelectedTune = 0;
+            SelectedProfile = 0;
+            SelectedLevel = 0;
             Bitrate = 0;
             BitrateMax = 0;
             Bufsize = 0;
             CRF = -1.0;
             QP = -1;
+            Qscale = 0;
+            QscaleAudio = 0;
         }
 
         public void ImageTabClear()
@@ -239,8 +248,40 @@ namespace GumCut
                 OnPropertyChanged(nameof(SubtitleEncoders));
             }
         }
-        public List<string> Presets => presets;
-        public List<string> Tunes => tunes;
+        public List<string> Presets
+        {
+            get => presets; set
+            {
+                presets = value;
+                OnPropertyChanged(nameof(Presets));
+            }
+        }
+
+        public List<string> Tunes
+        {
+            get => tunes; set
+            {
+                tunes = value;
+                OnPropertyChanged(nameof(Tunes));
+            }
+        }
+
+        public List<string> Profiles
+        {
+            get => profiles; set
+            {
+                profiles = value;
+                OnPropertyChanged(nameof(Profiles));
+            }
+        }
+        public List<string> Levels
+        {
+            get => levels; set
+            {
+                levels = value;
+                OnPropertyChanged(nameof(Levels));
+            }
+        }
         public Time Start
         {
             get => start; set
@@ -353,6 +394,22 @@ namespace GumCut
                 OnPropertyChanged(nameof(SelectedTune));
             }
         }
+        public int SelectedProfile
+        {
+            get => selectedProfile; set
+            {
+                selectedProfile = value;
+                OnPropertyChanged(nameof(SelectedProfile));
+            }
+        }
+        public int SelectedLevel
+        {
+            get => selectedLevel; set
+            {
+                selectedLevel = value;
+                OnPropertyChanged(nameof(SelectedLevel));
+            }
+        }
         public int Bitrate
         {
             get => bitrate; set
@@ -414,8 +471,16 @@ namespace GumCut
         {
             get => qscale; set
             {
-                qscale = value;
+                qscale = Math.Max(0, Math.Min(value, 31));
                 OnPropertyChanged(nameof(Qscale));
+            }
+        }
+        public int QscaleAudio
+        {
+            get => qscaleAudio; set
+            {
+                qscaleAudio = Math.Max(0, Math.Min(value, 31));
+                OnPropertyChanged(nameof(QscaleAudio));
             }
         }
         public List<string> ImageFormatType

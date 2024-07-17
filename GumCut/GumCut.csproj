@@ -22,5 +22,13 @@
     <Resource Include="Fonts\Segoe Fluent Icons.ttf" />
     <!-- https://learn.microsoft.com/ko-kr/windows/apps/design/downloads/ -->
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(SolutionDir)GumCut\ini\*.*&quot; &quot;$(OutputPath)ini\*.*&quot;" />
+  </Target>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="if not exist &quot;$(OutputPath)ini&quot; mkdir &quot;$(OutputPath)ini&quot;" />
+  </Target>
   
 </Project>

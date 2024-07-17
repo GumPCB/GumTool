@@ -41,14 +41,13 @@ namespace GumCut
 
             arguments += SS_TO(data);
 
-            arguments += CRF(data);
+            string edit = CRF(data) + VF(data);
+            arguments += edit;
 
-            arguments += VF(data);
-
-            if(data.Streaming)
+            if (data.Streaming)
                 arguments += "-movflags +faststart ";
 
-            arguments += Encoder(data, arguments.Contains("-vf", StringComparison.Ordinal) == false);
+            arguments += Encoder(data, edit.Length == 0);
 
             arguments += $"-y \"{data.SaveVideo}\"";
 
@@ -135,6 +134,25 @@ namespace GumCut
                 bitrate += "-tune " + data.Tunes[data.SelectedTune] + " ";
             }
 
+            if (data.SelectedProfile != 0 && data.Profiles.Count > data.SelectedProfile)
+            {
+                bitrate += "-profile:v " + data.Profiles[data.SelectedProfile] + " ";
+            }
+
+            if (data.SelectedLevel != 0 && data.Levels.Count > data.SelectedLevel)
+            {
+                bitrate += "-level:v " + data.Levels[data.SelectedLevel] + " ";
+            }
+
+            if (data.Qscale != 0)
+            {
+                bitrate += "-qscale:v " + data.Qscale + " ";
+            }
+            if (data.QscaleAudio != 0)
+            {
+                bitrate += "-qscale:a " + data.QscaleAudio + " ";
+            }
+
             return bitrate;
         }
 
@@ -219,7 +237,7 @@ namespace GumCut
             {
                 encoder += $"-c:a {data.AudioEncoders[data.SelectedAudioEncoder]} ";
             }
-            else
+            else if (data.QscaleAudio == 0)
             {
                 encoder += "-c:a copy ";
             }
@@ -269,14 +287,10 @@ namespace GumCut
 // https://stackoverflow.com/questions/43578882/ffmpeg-concat-makes-video-longer
 // ffmpeg.exe -f concat -safe 0 -i sss.txt -movflags +faststart -c copy -y Sum.mp4
 // sss.txt => file 'Z:\bbb\3_cut.mp4'
-// 이어붙이기는 하지만 영상 넘어가는 부분이 끊김
 
-// 썸네일 추출
-// ffmpeg.exe -i 111.mp4 -ss 0:9:00.0 -to 0:10:0.0 -vf "yadif=0:-1:0,fps=5" -qscale:v 2 -y "Z:\thumb\111_%05d.jpg"
-// 9분에서 10분까지 초당 5장씩 jpg로 출력
-// ffmpeg.exe -i 2.mp4 -vf "fps=30,scale=640:-1" -y 2.gif
-// 초당 30프레임, 가로 640, 세로는 비율에 맞춰서 gif 로 변환
-// ffmpeg.exe -i 2.mp4 -vf fps=5 -y 2_%05d.png
-// 초당 5장씩 png로 출력
-// <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE96D; &#xE96E; &#xE96F; &#xE970; &#xE91B; &#xF4A9;"/>
-// <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xF4A9;"/>
+// ffmpeg.exe -hide_banner -h encoder=libx265
+// ffmpeg.exe -hide_banner -h encoder=hevc_nvenc
+// ffmpeg.exe -hide_banner -filters
+// ffmpeg.exe -hide_banner -h filter=yadif
+// ffmpeg.exe -hide_banner -hwaccels
+// ffmpeg.exe -hide_banner -codecs
