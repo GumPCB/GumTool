@@ -5,10 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GumCut"
         mc:Ignorable="d"
-        Title="GumCut" Width="650" Height="550" MinWidth="570" MinHeight="550" FontSize="16">
-    <Window.Resources>
-        <local:Cut x:Key="KeyCut"/>
-    </Window.Resources>
+        Title="GumCut" Width="600" Height="600" MinWidth="580" MinHeight="600" FontSize="16">
     <Window.DataContext>
         <StaticResource ResourceKey="KeyCut"/>
     </Window.DataContext>

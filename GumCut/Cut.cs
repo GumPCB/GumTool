@@ -27,10 +27,12 @@ namespace GumCut
         public Command EraseQPButton { get; set; }
         public Command BatchOpenDirectoryButton { get; set; }
         public Command BatchSaveDirectoryButton { get; set; }
-        public Command BatchRemoveSeletedButton { get; set; }
+        public Command BatchRemoveSelectedButton { get; set; }
         public Command BatchRemoveAllButton { get; set; }
-        public Command BatchMoveSeletedButton { get; set; }
+        public Command BatchMoveSelectedButton { get; set; }
         public Command BatchMoveAllButton { get; set; }
+        public Command BatchCutSelectedButton { get; set; }
+        public Command BatchCutAllButton { get; set; }
 
         private enum SelectedTab
         {
@@ -148,10 +150,12 @@ namespace GumCut
             EraseQPButton = new(EraseQPExecutedCommand, EmptyCanExecuteCommand);
             BatchOpenDirectoryButton = new(BatchOpenDirectoryExecutedCommand, EmptyCanExecuteCommand);
             BatchSaveDirectoryButton = new(BatchSaveDirectoryExecutedCommand, EmptyCanExecuteCommand);
-            BatchRemoveSeletedButton = new(BatchRemoveSeletedExecutedCommand, EmptyCanExecuteCommand);
+            BatchRemoveSelectedButton = new(BatchRemoveSelectedExecutedCommand, EmptyCanExecuteCommand);
             BatchRemoveAllButton = new(BatchRemoveAllExecutedCommand, EmptyCanExecuteCommand);
-            BatchMoveSeletedButton = new(BatchMoveSeletedExecutedCommand, EmptyCanExecuteCommand);
+            BatchMoveSelectedButton = new(BatchMoveSelectedExecutedCommand, EmptyCanExecuteCommand);
             BatchMoveAllButton = new(BatchMoveAllExecutedCommand, EmptyCanExecuteCommand);
+            BatchCutSelectedButton = new(BatchCutSelectedExecutedCommand, EmptyCanExecuteCommand);
+            BatchCutAllButton = new(BatchCutAllExecutedCommand, EmptyCanExecuteCommand);
 
             SetupfileLoad();
             IniFileLoad();
@@ -418,33 +422,17 @@ namespace GumCut
             return arguments;
         }
 
-        private static string FFmpegResultText = string.Empty;
-        private static Stopwatch stopwatch = new Stopwatch();
-
         private void CutExecutedCommand(object? obj)
         {
-            if (Working == true)
-            {
-                ResultText += "Working...\n";
-                return;
-            }
+            inputs.Clear();
+            outputs.Clear();
+            inputs.Add(data.LoadVideo);
+            outputs.Add(data.SaveVideo);
 
-            Working = true;
-            stopwatch.Restart();
-            ResultText += $"====== Working Start : {DateTime.Now.ToString("F")}\n";
-
-            string ffmpegFile = new($"\"{data.FFmpegFile}\"");
-            string arguments = GetSelectedTabArguments();
-
-            var task = Task.Run(() => FFmpegAsync(ffmpegFile, arguments, openCmd, false)).ContinueWith((antecedent) => 
-            {
-                Working = false;
-                stopwatch.Stop();
-                ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
-                ResultText += $"====== Working End : {DateTime.Now.ToString("F")} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds)\n";
-                FFmpegResultText = string.Empty;
-            });
+            RecursiveBatchCut();
         }
+
+        private static string FFmpegResultText = string.Empty;
 
         public static async Task FFmpegAsync(string ffmpegFile, string arguments, bool openWindow, bool isStandardOutput)
         {
@@ -667,7 +655,7 @@ namespace GumCut
             }
         }
 
-        private void BatchRemoveSeletedExecutedCommand(object? obj)
+        private void BatchRemoveSelectedExecutedCommand(object? obj)
         {
             for (int i = VideoList.Count -1; i >= 0; --i)
             {
@@ -683,7 +671,10 @@ namespace GumCut
             VideoList.Clear();
         }
 
-        private void BatchMoveSeletedExecutedCommand(object? obj)
+        private void BatchMoveSelectedExecutedCommand(object? obj) => BatchMove(false);
+        private void BatchMoveAllExecutedCommand(object? obj) => BatchMove(true);
+
+        private void BatchMove(bool IsAll)
         {
             var dialog = new Microsoft.Win32.OpenFolderDialog();
 
@@ -694,29 +685,9 @@ namespace GumCut
 
             foreach (VideoInfo info in VideoList)
             {
-                if (info.IsSelected)
-                {
-                    string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
-                    File.Move(info.FileName, destFilename);
-                    if (File.Exists(destFilename))
-                    {
-                        info.FileName = destFilename;
-                    }
-                }
-            }
-        }
+                if (info.IsSelected == false && IsAll == false)
+                    continue;
 
-        private void BatchMoveAllExecutedCommand(object? obj)
-        {
-            var dialog = new Microsoft.Win32.OpenFolderDialog();
-
-            bool? result = dialog.ShowDialog();
-
-            if (result == null || result != true)
-                return;
-
-            foreach (VideoInfo info in VideoList)
-            {
                 string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
                 File.Move(info.FileName, destFilename);
                 if (File.Exists(destFilename))
@@ -724,6 +695,64 @@ namespace GumCut
                     info.FileName = destFilename;
                 }
             }
+        }
+
+        private void BatchCutSelectedExecutedCommand(object? obj) => BatchCut(false);
+        private void BatchCutAllExecutedCommand(object? obj) => BatchCut(true);
+
+        private List<string> inputs = new();
+        private List<string> outputs = new();
+        private void BatchCut(bool IsAll)
+        {
+            inputs.Clear();
+            outputs.Clear();
+
+            foreach (VideoInfo info in VideoList)
+            {
+                if (info.IsSelected == false && IsAll == false)
+                    continue;
+
+                inputs.Add(info.FileName);
+                outputs.Add(info.SaveName);
+            }
+
+            RecursiveBatchCut();
+        }
+
+        private static Stopwatch stopwatch = new Stopwatch();
+
+        private void RecursiveBatchCut()
+        {
+            if (inputs.Count == 0 || outputs.Count == 0) return;
+
+            if (Working == true)
+            {
+                ResultText += "Working...\n";
+                return;
+            }
+
+            data.LoadVideo = inputs.First();
+            data.SaveVideo = outputs.First();
+            inputs.RemoveAt(0);
+            outputs.RemoveAt(0);
+
+            Working = true;
+            stopwatch.Restart();
+            ResultText += $"====== Working Start : {DateTime.Now.ToString("F")}\n";
+            ResultText += $"Working File : {data.LoadVideo}\n";
+
+            string ffmpegFile = new($"\"{data.FFmpegFile}\"");
+            string arguments = GetSelectedTabArguments();
+
+            var task = Task.Run(() => FFmpegAsync(ffmpegFile, arguments, openCmd, false)).ContinueWith((antecedent) =>
+            {
+                Working = false;
+                stopwatch.Stop();
+                ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
+                ResultText += $"====== Working End : {DateTime.Now.ToString("F")} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds)\n";
+                FFmpegResultText = string.Empty;
+                RecursiveBatchCut();
+            });
         }
 
         private string MakeSaveName(string loadFilename, string? directory = null)

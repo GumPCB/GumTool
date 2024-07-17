@@ -6,9 +6,6 @@
         xmlns:local="clr-namespace:GumCut"
         mc:Ignorable="d"
         Title="Batch" Height="600" Width="1200">
-    <Window.Resources>
-        <local:Cut x:Key="KeyCut"/>
-    </Window.Resources>
     <Window.DataContext>
         <StaticResource ResourceKey="KeyCut"/>
     </Window.DataContext>
@@ -25,13 +22,18 @@
                 </MenuItem>
 
                 <MenuItem Header="ListRemove">
-                    <MenuItem Header="Remove Seleted" Command="{Binding BatchRemoveSeletedButton}"/>
+                    <MenuItem Header="Remove Selected" Command="{Binding BatchRemoveSelectedButton}"/>
                     <MenuItem Header="Remove All" Command="{Binding BatchRemoveAllButton}"/>
                 </MenuItem>
 
                 <MenuItem Header="FileMove">
-                    <MenuItem Header="Move Seleted" Command="{Binding BatchMoveSeletedButton}"/>
+                    <MenuItem Header="Move Selected" Command="{Binding BatchMoveSelectedButton}"/>
                     <MenuItem Header="Move All" Command="{Binding BatchMoveAllButton}"/>
+                </MenuItem>
+
+                <MenuItem Header="Cut">
+                    <MenuItem Header="Cut Selected" Command="{Binding BatchCutSelectedButton}"/>
+                    <MenuItem Header="Cut All" Command="{Binding BatchCutAllButton}"/>
                 </MenuItem>
             </Menu>
         </StackPanel>
@@ -45,7 +47,7 @@
                     <DataGridTextColumn Header="Duration" IsReadOnly="True" Binding="{Binding Duration}"/>
                     <DataGridTextColumn Header="FPS" IsReadOnly="True" Binding="{Binding FPS}"/>
                     <DataGridTextColumn Header="Bitrate" IsReadOnly="True" Binding="{Binding Bitrate}"/>
-                    <DataGridTextColumn Header="SaveName" IsReadOnly="True" Binding="{Binding SaveName}"/>
+                    <DataGridTextColumn Header="SaveName" Binding="{Binding SaveName}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
