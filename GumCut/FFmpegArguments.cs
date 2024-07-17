@@ -72,7 +72,7 @@ namespace GumCut
                 arguments += "-qscale:v " + data.Qscale + " ";
             }
 
-            arguments += $"-y \"{ImageSaveFileName(data)}\"";
+            arguments += $"-an -y \"{ImageSaveFileName(data)}\"";
 
             return arguments;
         }

@@ -227,14 +227,15 @@ namespace GumCut
 
             using StreamReader sr = new(SetupFile);
             string? line = sr.ReadLine();
-            if (line == null)
-                return;
             string? opencmd = sr.ReadLine();
-
             sr.Close();
 
-            data.FFmpegFile = line;
-            GetEncoderInfo();
+            if (line != null)
+            {
+                data.FFmpegFile = line;
+                GetEncoderInfo();
+            }
+
             if (opencmd != null)
             {
                 OpenCmd = opencmd.Equals("1");
@@ -247,7 +248,6 @@ namespace GumCut
             using StreamWriter sw = new(fs);
             sw.WriteLine(data.FFmpegFile);
             sw.Write(OpenCmd ? '1' : '0');
-
             sw.Close();
         }
 
