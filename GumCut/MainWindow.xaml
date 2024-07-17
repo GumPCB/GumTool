@@ -5,25 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GumCut"
         mc:Ignorable="d"
-        Title="GumCut" Width="600" Height="600" MinWidth="580" MinHeight="600" FontSize="16">
+        Title="GumCut" Width="1200" Height="700" MinWidth="650" MinHeight="600" FontSize="16">
+    <Window.Resources>
+        <local:Cut x:Key="KeyCut"/>
+    </Window.Resources>
     <Window.DataContext>
         <StaticResource ResourceKey="KeyCut"/>
     </Window.DataContext>
-    
-    <Grid PreviewDragOver="EhDragOver" PreviewDrop="EhDrop">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <StackPanel VerticalAlignment="Top" Margin="5,3,5,0">
 
-            <Grid Margin="0,2,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="10*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="550" MinWidth="500"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0">
+        <Grid Grid.Column="0" PreviewDragOver="EhDragOver" PreviewDrop="EhDrop">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel VerticalAlignment="Top" Margin="5,3,5,0">
+
+                <Grid Margin="0,2,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="3*"/>
@@ -49,409 +53,454 @@
                     <Button Content="&#xE792;" Margin="2,0,0,0" Grid.Column="2" Grid.Row="4" Command="{Binding SaveVideoButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
                 </Grid>
 
-                <Grid Grid.Column="1">
-                    <Button Content="&#xE7C4;" Margin="2,0,0,0" Grid.Column="2" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Click="BatchListOpenButton_Click"/>
-                </Grid>
-            </Grid>
 
+                <Grid Margin="0,2,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <Grid Margin="0,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="4*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="2"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Column="0" Text="Start Time" VerticalAlignment="Center" Width="100"/>
+                            <CheckBox Grid.Column="1" Content="&#xEA52; " VerticalAlignment="Center" IsChecked="{Binding Data.Start.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                            <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Hour}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            <TextBlock Grid.Column="3" Text=" : " VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Minute}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            <TextBlock Grid.Column="5" Text=" : " VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="6" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Seconds}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            <TextBlock Grid.Column="7" Text=" . " VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="8" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
 
-            <Grid Margin="0,2,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <Grid Margin="0,0,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="4*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="3*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition Height="2"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Column="0" Text="Start Time" VerticalAlignment="Center" Width="100"/>
-                        <CheckBox Grid.Column="1" Content="&#xEA52; " VerticalAlignment="Center" IsChecked="{Binding Data.Start.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Hour}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                        <TextBlock Grid.Column="3" Text=" : " VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Minute}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                        <TextBlock Grid.Column="5" Text=" : " VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="6" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Seconds}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                        <TextBlock Grid.Column="7" Text=" . " VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="8" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            <TextBlock Grid.Column="0" Grid.Row="2" Text="End Time" VerticalAlignment="Center" Width="100"/>
+                            <CheckBox Grid.Column="1" Grid.Row="2" Content="&#xE8B5; " VerticalAlignment="Center" IsChecked="{Binding Data.End.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" />
+                            <TextBox Grid.Column="2" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Hour}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            <TextBlock Grid.Column="3" Grid.Row="2" Text=" : " VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Minute}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            <TextBlock Grid.Column="5" Grid.Row="2" Text=" : " VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="6" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Seconds}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            <TextBlock Grid.Column="7" Grid.Row="2" Text=" . " VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="8" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                        </Grid>
 
-                        <TextBlock Grid.Column="0" Grid.Row="2" Text="End Time" VerticalAlignment="Center" Width="100"/>
-                        <CheckBox Grid.Column="1" Grid.Row="2" Content="&#xE8B5; " VerticalAlignment="Center" IsChecked="{Binding Data.End.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" />
-                        <TextBox Grid.Column="2" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Hour}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                        <TextBlock Grid.Column="3" Grid.Row="2" Text=" : " VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Minute}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                        <TextBlock Grid.Column="5" Grid.Row="2" Text=" : " VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="6" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Seconds}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                        <TextBlock Grid.Column="7" Grid.Row="2" Text=" . " VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="8" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                    </Grid>
-
-                    <!-- ======================================== FastCut ======================================== -->
-                    <TabControl Margin="0,4,0,0">
-                        <TabItem IsSelected="{Binding FastCutTabControl}">
-                            <TabItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xEB9D;" Margin="0,3,0,0" FontSize="18"/>
-                                    <TextBlock Text="Cut" Margin="2,0,0,0" />
-                                </StackPanel>
-                            </TabItem.Header>
-                            <StackPanel>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
-                                    <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" Cursor="Hand" >GumCut v1.0 
+                        <!-- ======================================== FastCut ======================================== -->
+                        <TabControl Margin="0,4,0,0">
+                            <TabItem IsSelected="{Binding FastCutTabControl}">
+                                <TabItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xEB9D;" Margin="0,3,0,0" FontSize="18"/>
+                                        <TextBlock Text="Cut" Margin="2,0,0,0" />
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <StackPanel>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
+                                        <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Cursor="Hand" >GumCut v1.0 
                                         <Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="">gumpcb.tistory.com</Hyperlink>
-                                    </TextBlock>
-                                    
-                                </Grid>
-                            </StackPanel>
-                        </TabItem>
+                                        </TextBlock>
 
-                        <!-- ======================================== Edit ======================================== -->
-                        <TabItem IsSelected="{Binding EditTabControl}">
-                            <TabItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xF7EE;" Margin="0,3,0,0" FontSize="18"/>
-                                    <TextBlock Text="Edit" Margin="2,0,0,0" />
+                                    </Grid>
                                 </StackPanel>
-                            </TabItem.Header>
-                            <StackPanel>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Encoder" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="Video " VerticalAlignment="Center"/>
-                                    <ComboBox Grid.Column="2" ItemsSource="{Binding Data.VideoEncoders}" SelectedIndex="{Binding Data.SelectedVideoEncoder}" />
-                                    <TextBlock Grid.Column="3" Text=" Audio " VerticalAlignment="Center"/>
-                                    <ComboBox Grid.Column="4" ItemsSource="{Binding Data.AudioEncoders}" SelectedIndex="{Binding Data.SelectedAudioEncoder}" />
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Text="Preset " VerticalAlignment="Center" Width="100" TextAlignment="Right"/>
-                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Data.Presets}" SelectedIndex="{Binding Data.SelectedPreset}" />
-                                    <TextBlock Grid.Column="2" Text=" Tune " VerticalAlignment="Center"/>
-                                    <ComboBox Grid.Column="3" ItemsSource="{Binding Data.Tunes}" SelectedIndex="{Binding Data.SelectedTune}" />
+                            </TabItem>
 
-                                    <TextBlock Text="Profile " Grid.Row="2" VerticalAlignment="Center" Width="100" TextAlignment="Right"/>
-                                    <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Data.Profiles}" SelectedIndex="{Binding Data.SelectedProfile}" />
-                                    <TextBlock Grid.Column="2" Grid.Row="2" Text=" Level " VerticalAlignment="Center"/>
-                                    <ComboBox Grid.Column="3" Grid.Row="2" ItemsSource="{Binding Data.Levels}" SelectedIndex="{Binding Data.SelectedLevel}" />
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Bitrate" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="&#xF61F;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Bitrate}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Text="M, max" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.BitrateMax}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="5" Text="M, buffer" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="6" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Bufsize}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="7" Text="M" VerticalAlignment="Center"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Quality" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="CRF" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CRF}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
-                                    <Button Grid.Column="3" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseCRFButton}" Margin="2,0,0,0"/>
-                                    <TextBlock Grid.Column="4" Text=" QP" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="5" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.QP}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <Button Grid.Column="6" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseQPButton}" Margin="2,0,0,0"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Qscale " VerticalAlignment="Center" Width="100" TextAlignment="Right"/>
-                                    <TextBlock Grid.Column="1" Text="Video " VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Qscale}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Text=" Audio " VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.QscaleAudio}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Resize" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="&#xE8AB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Scale.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Text="&#xE8CB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Scale.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            <!-- ======================================== Edit ======================================== -->
+                            <TabItem IsSelected="{Binding EditTabControl}">
+                                <TabItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xF7EE;" Margin="0,3,0,0" FontSize="18"/>
+                                        <TextBlock Text="Edit" Margin="2,0,0,0" />
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <StackPanel>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Encoder" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="Video " VerticalAlignment="Center"/>
+                                        <ComboBox Grid.Column="2" ItemsSource="{Binding Data.VideoEncoders}" SelectedIndex="{Binding Data.SelectedVideoEncoder}" />
+                                        <TextBlock Grid.Column="3" Text=" Audio " VerticalAlignment="Center"/>
+                                        <ComboBox Grid.Column="4" ItemsSource="{Binding Data.AudioEncoders}" SelectedIndex="{Binding Data.SelectedAudioEncoder}" />
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="2"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Preset " VerticalAlignment="Center" Width="100" TextAlignment="Right"/>
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding Data.Presets}" SelectedIndex="{Binding Data.SelectedPreset}" />
+                                        <TextBlock Grid.Column="2" Text=" Tune " VerticalAlignment="Center"/>
+                                        <ComboBox Grid.Column="3" ItemsSource="{Binding Data.Tunes}" SelectedIndex="{Binding Data.SelectedTune}" />
 
-                                    <TextBlock Grid.Column="0" Grid.Row="2" Text="Crop Start" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Grid.Row="2" Text="&#xEA5B;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropStart.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Grid.Row="2" Text="&#xEA5B;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
-                                        <TextBlock.RenderTransform><TransformGroup><ScaleTransform/><SkewTransform/><RotateTransform Angle="90"/><TranslateTransform/></TransformGroup></TextBlock.RenderTransform>
-                                    </TextBlock>
-                                    <TextBox Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropStart.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Text="Profile " Grid.Row="2" VerticalAlignment="Center" Width="100" TextAlignment="Right"/>
+                                        <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Data.Profiles}" SelectedIndex="{Binding Data.SelectedProfile}" />
+                                        <TextBlock Grid.Column="2" Grid.Row="2" Text=" Level " VerticalAlignment="Center"/>
+                                        <ComboBox Grid.Column="3" Grid.Row="2" ItemsSource="{Binding Data.Levels}" SelectedIndex="{Binding Data.SelectedLevel}" />
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Bitrate" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="&#xF61F;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Bitrate}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Text="M, max" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.BitrateMax}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="5" Text="M, buffer" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="6" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Bufsize}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="7" Text="M" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Quality" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="CRF" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CRF}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
+                                        <Button Grid.Column="3" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseCRFButton}" Margin="2,0,0,0"/>
+                                        <TextBlock Grid.Column="4" Text=" QP" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="5" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.QP}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <Button Grid.Column="6" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseQPButton}" Margin="2,0,0,0"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Qscale " VerticalAlignment="Center" Width="100" TextAlignment="Right"/>
+                                        <TextBlock Grid.Column="1" Text="Video " VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Qscale}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Text=" Audio " VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.QscaleAudio}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="2"/>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="2"/>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="2"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Resize" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="&#xE8AB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Scale.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Text="&#xE8CB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Scale.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
 
-                                    <TextBlock Grid.Column="0" Grid.Row="4" Text="Crop Size" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Grid.Row="4" Text="&#xE8AB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" Grid.Row="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropSize.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Grid.Row="4" Text="&#xE8CB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="4" Grid.Row="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropSize.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="FPS" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="&#xE8B9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Fps}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Rotation" VerticalAlignment="Center" Width="100"/>
-                                    <Slider Minimum="0" Maximum="270" TickFrequency="90" IsSnapToTickEnabled="True" TickPlacement="Both"  Grid.Column="1" Value="{Binding Data.Rotation}"/>
-                                    <TextBlock VerticalAlignment="Center" TextAlignment="Center" Width="30" Grid.Column="2" Text="{Binding Data.Rotation}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Flip" VerticalAlignment="Center" Width="100"/>
-                                    <CheckBox Grid.Column="1" Content="&#xE8AB;" VerticalAlignment="Center" IsChecked="{Binding Data.HFlip}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                                    <CheckBox Grid.Column="2" Content="&#xE8CB;" VerticalAlignment="Center" IsChecked="{Binding Data.VFlip}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
-                                    <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                                </Grid>
-                            </StackPanel>
-                        </TabItem>
+                                        <TextBlock Grid.Column="0" Grid.Row="2" Text="Crop Start" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Grid.Row="2" Text="&#xEA5B;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropStart.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Grid.Row="2" Text="&#xEA5B;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                                            <TextBlock.RenderTransform><TransformGroup><ScaleTransform/><SkewTransform/><RotateTransform Angle="90"/><TranslateTransform/></TransformGroup></TextBlock.RenderTransform></TextBlock>
+                                        <TextBox Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropStart.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
 
-                        <!-- ======================================== Image ======================================== -->
-                        <TabItem IsSelected="{Binding ImageTabControl}">
-                            <TabItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xF4A9;" Margin="0,3,0,0" FontSize="18"/>
-                                    <TextBlock Text="Image" Margin="2,0,0,0" />
+                                        <TextBlock Grid.Column="0" Grid.Row="4" Text="Crop Size" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Grid.Row="4" Text="&#xE8AB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" Grid.Row="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropSize.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Grid.Row="4" Text="&#xE8CB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="4" Grid.Row="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropSize.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="FPS" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="&#xE8B9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Fps}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Rotation" VerticalAlignment="Center" Width="100"/>
+                                        <Slider Minimum="0" Maximum="270" TickFrequency="90" IsSnapToTickEnabled="True" TickPlacement="Both"  Grid.Column="1" Value="{Binding Data.Rotation}"/>
+                                        <TextBlock VerticalAlignment="Center" TextAlignment="Center" Width="30" Grid.Column="2" Text="{Binding Data.Rotation}"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Flip" VerticalAlignment="Center" Width="100"/>
+                                        <CheckBox Grid.Column="1" Content="&#xE8AB;" VerticalAlignment="Center" IsChecked="{Binding Data.HFlip}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                                        <CheckBox Grid.Column="2" Content="&#xE8CB;" VerticalAlignment="Center" IsChecked="{Binding Data.VFlip}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
+                                        <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                                    </Grid>
                                 </StackPanel>
-                            </TabItem.Header>
-                            <StackPanel>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Format" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="&#xE91B;" VerticalAlignment="Center" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                                    <ComboBox Grid.Column="3" ItemsSource="{Binding Data.ImageFormatType}" SelectedIndex="{Binding Data.ImageFormat}"  />
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Name Suffix" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="&#xE894;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center" Opacity="0.6"/>
-                                    <TextBlock Grid.Column="1" Text="&#xF4A9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.SaveZeroCount}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Text="{Binding Data.SaveZeroName}" VerticalAlignment="Center" FontSize="11" Margin="2,0,0,0"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="JPG Quality" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="&#xE7C5;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Qscale}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Text="1~31(Higher numbers mean lower quality.)" VerticalAlignment="Center" FontSize="11" Margin="2,0,0,0"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Resize" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="&#xE8AB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Scale.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Text="&#xE8CB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Scale.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            </TabItem>
 
-                                    <TextBlock Grid.Column="0" Grid.Row="2" Text="Crop Start" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Grid.Row="2" Text="&#xEA5B;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropStart.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Grid.Row="2" Text="&#xEA5B;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
-                                        <TextBlock.RenderTransform><TransformGroup><ScaleTransform/><SkewTransform/><RotateTransform Angle="90"/><TranslateTransform/></TransformGroup></TextBlock.RenderTransform></TextBlock>
-                                    <TextBox Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropStart.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                            <!-- ======================================== Image ======================================== -->
+                            <TabItem IsSelected="{Binding ImageTabControl}">
+                                <TabItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xF4A9;" Margin="0,3,0,0" FontSize="18"/>
+                                        <TextBlock Text="Image" Margin="2,0,0,0" />
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <StackPanel>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="2"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Format" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="&#xE91B;" VerticalAlignment="Center" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                                        <ComboBox Grid.Column="3" ItemsSource="{Binding Data.ImageFormatType}" SelectedIndex="{Binding Data.ImageFormat}"  />
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Name Suffix" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="&#xE894;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center" Opacity="0.6"/>
+                                        <TextBlock Grid.Column="1" Text="&#xF4A9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.SaveZeroCount}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding Data.SaveZeroName}" VerticalAlignment="Center" FontSize="11" Margin="2,0,0,0"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="JPG Quality" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="&#xE7C5;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Qscale}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Text="1~31(Higher numbers mean lower quality.)" VerticalAlignment="Center" FontSize="11" Margin="2,0,0,0"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="2"/>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="2"/>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="2"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Resize" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="&#xE8AB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Scale.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Text="&#xE8CB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Scale.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
 
-                                    <TextBlock Grid.Column="0" Grid.Row="4" Text="Crop Size" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Grid.Row="4" Text="&#xE8AB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" Grid.Row="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropSize.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Grid.Row="4" Text="&#xE8CB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="4" Grid.Row="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropSize.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="FPS" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="&#xE8B9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Fps}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Rotation" VerticalAlignment="Center" Width="100"/>
-                                    <Slider Minimum="0" Maximum="270" TickFrequency="90" IsSnapToTickEnabled="True" TickPlacement="Both"  Grid.Column="1" Value="{Binding Data.Rotation}"/>
-                                    <TextBlock VerticalAlignment="Center" TextAlignment="Center" Width="30" Grid.Column="2" Text="{Binding Data.Rotation}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Flip" VerticalAlignment="Center" Width="100"/>
-                                    <CheckBox Grid.Column="1" Content="&#xE8AB;" VerticalAlignment="Center" IsChecked="{Binding Data.HFlip}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                                    <CheckBox Grid.Column="2" Content="&#xE8CB;" VerticalAlignment="Center" IsChecked="{Binding Data.VFlip}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                                </Grid>
-                            </StackPanel>
-                        </TabItem>
-                    </TabControl>
-                </StackPanel>
-                <Grid Margin="2,0,0,0" Grid.Column="1" >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="2*"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Button Content="&#xE786;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="64" Grid.Row="0" Command="{Binding CutButton}"/>
+                                        <TextBlock Grid.Column="0" Grid.Row="2" Text="Crop Start" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Grid.Row="2" Text="&#xEA5B;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropStart.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Grid.Row="2" Text="&#xEA5B;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                                            <TextBlock.RenderTransform><TransformGroup><ScaleTransform/><SkewTransform/><RotateTransform Angle="90"/><TranslateTransform/></TransformGroup></TextBlock.RenderTransform></TextBlock>
+                                        <TextBox Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropStart.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
 
-                    <Grid Margin="2,2,0,0" Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="2"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Open Cmd" VerticalAlignment="Center"/>
-                        <CheckBox Grid.Column="2" Content="&#xE737;" VerticalAlignment="Center" IsChecked="{Binding OpenCmd}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                    </Grid>
+                                        <TextBlock Grid.Column="0" Grid.Row="4" Text="Crop Size" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Grid.Row="4" Text="&#xE8AB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" Grid.Row="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropSize.Width}" Margin="2,0,2,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                        <TextBlock Grid.Column="3" Grid.Row="4" Text="&#xE8CB;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="4" Grid.Row="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CropSize.Height}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="FPS" VerticalAlignment="Center" Width="100"/>
+                                        <TextBlock Grid.Column="1" Text="&#xE8B9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Fps}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Rotation" VerticalAlignment="Center" Width="100"/>
+                                        <Slider Minimum="0" Maximum="270" TickFrequency="90" IsSnapToTickEnabled="True" TickPlacement="Both"  Grid.Column="1" Value="{Binding Data.Rotation}"/>
+                                        <TextBlock VerticalAlignment="Center" TextAlignment="Center" Width="30" Grid.Column="2" Text="{Binding Data.Rotation}"/>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Flip" VerticalAlignment="Center" Width="100"/>
+                                        <CheckBox Grid.Column="1" Content="&#xE8AB;" VerticalAlignment="Center" IsChecked="{Binding Data.HFlip}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                                        <CheckBox Grid.Column="2" Content="&#xE8CB;" VerticalAlignment="Center" IsChecked="{Binding Data.VFlip}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                                    </Grid>
+                                </StackPanel>
+                            </TabItem>
+                        </TabControl>
+                    </StackPanel>
+                    <Grid Margin="2,0,0,0" Grid.Column="1" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Button Content="&#xE786;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="64" Grid.Row="0" Command="{Binding CutButton}"/>
 
-                    <Grid Margin="0,2,0,0" Grid.Row="2" >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="2"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Button Content="&#xE756;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="24" Grid.Column="0" Command="{Binding CmdButton}"/>
-                        <Button Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="24" Grid.Column="2" Command="{Binding EraseButton}"/>
+                        <Grid Margin="2,2,0,0" Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Open Cmd" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Column="2" Content="&#xE737;" VerticalAlignment="Center" IsChecked="{Binding OpenCmd}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                        </Grid>
+
+                        <Grid Margin="0,2,0,0" Grid.Row="2" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Content="&#xE756;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="24" Grid.Column="0" Command="{Binding CmdButton}"/>
+                            <Button Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="24" Grid.Column="2" Command="{Binding EraseButton}"/>
+                        </Grid>
                     </Grid>
                 </Grid>
+                <Grid Margin="0,2,0,0" Height="6">
+                    <ProgressBar IsIndeterminate="{Binding Working}"/>
+                </Grid>
+            </StackPanel>
+            <TextBox Margin="5,2,5,5" TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="1" VerticalScrollBarVisibility="Auto" FontSize="14" TextChanged="ScrollToEndTextBox_TextChanged"/>
+        </Grid>
+        
+        
+
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="6" Background="DarkSlateBlue"/>
+
+        <!-- ======================================== Batch ======================================== -->
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel VerticalAlignment="Top">
+                <Menu FontSize="16">
+                    <MenuItem Header="OpenDirectory">
+                        <MenuItem Header="Video Directory" Command="{Binding BatchOpenDirectoryButton}"/>
+                        <MenuItem Header="Save Directory" Command="{Binding BatchSaveDirectoryButton}"/>
+                    </MenuItem>
+
+                    <MenuItem Header="ListRemove">
+                        <MenuItem Header="Remove Selected" Command="{Binding BatchRemoveSelectedButton}"/>
+                        <MenuItem Header="Remove All" Command="{Binding BatchRemoveAllButton}"/>
+                    </MenuItem>
+
+                    <MenuItem Header="FileMove">
+                        <MenuItem Header="Move Selected" Command="{Binding BatchMoveSelectedButton}"/>
+                        <MenuItem Header="Move All" Command="{Binding BatchMoveAllButton}"/>
+                    </MenuItem>
+
+                    <MenuItem Header="&#xE786;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="30">
+                        <MenuItem Header="&#xE762;" Command="{Binding BatchCutSelectedButton}"/>
+                        <MenuItem Header="&#xE71D;" Command="{Binding BatchCutAllButton}"/>
+                    </MenuItem>
+                </Menu>
+            </StackPanel>
+
+            <Grid Grid.Row="1">
+                <DataGrid ItemsSource="{Binding VideoList}" CanUserAddRows="False" CanUserDeleteRows="True" AutoGenerateColumns="False" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="BatchDragOver" PreviewDrop="BatchDrop" AllowDrop="True" FontSize="12">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="FileName" IsReadOnly="True" Binding="{Binding FileName}"/>
+                        <DataGridTextColumn Header="Encoder" IsReadOnly="True" Binding="{Binding Encoder}"/>
+                        <DataGridTextColumn Header="Resolution" IsReadOnly="True" Binding="{Binding Resolution}"/>
+                        <DataGridTextColumn Header="Duration" IsReadOnly="True" Binding="{Binding Duration}"/>
+                        <DataGridTextColumn Header="FPS" IsReadOnly="True" Binding="{Binding FPS}"/>
+                        <DataGridTextColumn Header="Bitrate" IsReadOnly="True" Binding="{Binding Bitrate}"/>
+                        <DataGridTextColumn Header="SaveName" Binding="{Binding SaveName}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </Grid>
-            <Grid Margin="0,2,0,0" Height="6">
-                <ProgressBar IsIndeterminate="{Binding Working}"/>
-            </Grid>
-        </StackPanel>
-        <TextBox Margin="5,2,5,5" TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="1" VerticalScrollBarVisibility="Auto" FontSize="14" TextChanged="ScrollToEndTextBox_TextChanged"/>
+        </Grid>
     </Grid>
 </Window>

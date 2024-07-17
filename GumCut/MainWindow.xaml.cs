@@ -13,8 +13,6 @@ namespace GumCut
     /// </summary>
     public partial class MainWindow : Window
     {
-        private BatchList? batchList;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -100,18 +98,50 @@ namespace GumCut
             process.Close();
         }
 
-        private void BatchListOpenButton_Click(object sender, RoutedEventArgs e)
+        private void VideoList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (batchList == null)
+            foreach (VideoInfo info in e.AddedItems)
             {
-                batchList = new BatchList();
-                batchList.Owner = this;
+                info.IsSelected = true;
             }
+            foreach (VideoInfo info in e.RemovedItems)
+            {
+                info.IsSelected = false;
+            }
+        }
 
-            if (batchList.IsVisible)
-                batchList.Hide();
-            else
-                batchList.Show();
+        private void BatchDragOver(object sender, DragEventArgs args)
+        {
+            args.Effects = IsDirectory(args) != null ? DragDropEffects.Copy : DragDropEffects.None;
+            args.Handled = true;
+        }
+
+        private void BatchDrop(object sender, DragEventArgs args)
+        {
+            args.Handled = true;
+
+            var directorys = IsDirectory(args);
+            if (directorys == null) return;
+
+            (DataContext as Cut)?.DragAndDropBatchDirectory(directorys);
+        }
+
+        private string[]? IsDirectory(DragEventArgs args)
+        {
+            if (args.Data.GetDataPresent(DataFormats.FileDrop, true))
+            {
+                var directorys = args.Data.GetData(DataFormats.FileDrop, true) as string[];
+                if (directorys != null)
+                {
+                    foreach (var directory in directorys)
+                    {
+                        if (Directory.Exists(directory) == false)
+                            return null;
+                    }
+                    return directorys;
+                }
+            }
+            return null;
         }
     }
 }

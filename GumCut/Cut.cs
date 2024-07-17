@@ -720,6 +720,12 @@ namespace GumCut
                 if (info.IsSelected == false && IsAll == false)
                     continue;
 
+                if (info.SaveName.Length == 0)
+                {
+                    ResultText += "====== ERROR : EMPTY SaveName\n";
+                    return;
+                }
+
                 inputs.Add(info.FileName);
                 outputs.Add(info.SaveName);
             }
