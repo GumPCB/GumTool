@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GumCut"
         mc:Ignorable="d"
-        Title="GumCut" Width="650" Height="550" MinWidth="520" MinHeight="500" FontSize="16">
+        Title="GumCut" Width="650" Height="550" MinWidth="570" MinHeight="550" FontSize="16">
     <Window.Resources>
         <local:Cut x:Key="KeyCut"/>
     </Window.Resources>
@@ -117,7 +117,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Streaming" VerticalAlignment="Center" Width="100"/>
+                                    <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
                                     <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
                                 </Grid>
                                 <Grid Margin="0,2,0,0">
@@ -154,6 +154,58 @@
                                     <ComboBox Grid.Column="2" ItemsSource="{Binding Data.VideoEncoders}" SelectedIndex="{Binding Data.SelectedVideoEncoder}" />
                                     <TextBlock Grid.Column="3" Text=" Audio " VerticalAlignment="Center"/>
                                     <ComboBox Grid.Column="4" ItemsSource="{Binding Data.AudioEncoders}" SelectedIndex="{Binding Data.SelectedAudioEncoder}" />
+                                </Grid>
+                                <Grid Margin="0,2,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Preset" VerticalAlignment="Center" Width="100"/>
+                                    <TextBlock Grid.Column="1" Text="&#xE81E;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="2" ItemsSource="{Binding Data.Presets}" SelectedIndex="{Binding Data.SelectedPreset}" />
+                                    <TextBlock Grid.Column="3" Text=" Tune " VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="4" ItemsSource="{Binding Data.Tunes}" SelectedIndex="{Binding Data.SelectedTune}" />
+                                </Grid>
+                                <Grid Margin="0,2,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Bitrate" VerticalAlignment="Center" Width="100"/>
+                                    <TextBlock Grid.Column="1" Text="&#xF61F;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Bitrate}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                    <TextBlock Grid.Column="3" Text="M, max" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.BitrateMax}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                    <TextBlock Grid.Column="5" Text="M, buffer" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="6" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Bufsize}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                    <TextBlock Grid.Column="7" Text="M" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Margin="0,2,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Quality" VerticalAlignment="Center" Width="100"/>
+                                    <TextBlock Grid.Column="1" Text="CRF" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.CRF}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
+                                    <Button Grid.Column="3" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseCRFButton}" Margin="2,0,0,0"/>
+                                    <TextBlock Grid.Column="4" Text=" QP" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="5" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.QP}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput"/>
+                                    <Button Grid.Column="6" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseQPButton}" Margin="2,0,0,0"/>
                                 </Grid>
                                 <Grid Margin="0,2,0,0">
                                     <Grid.ColumnDefinitions>
@@ -227,7 +279,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Streaming" VerticalAlignment="Center" Width="100"/>
+                                    <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
                                     <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
                                 </Grid>
                             </StackPanel>
@@ -276,7 +328,7 @@
                                     <TextBlock Grid.Column="0" Text="JPG Quality" VerticalAlignment="Center" Width="100"/>
                                     <TextBlock Grid.Column="1" Text="&#xE7C5;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Qscale}" Margin="2,0,0,0" PreviewTextInput="DoubleTextBox_PreviewTextInput"/>
-                                    <TextBlock Grid.Column="3" Text="1~31(Higher numbers mean lower quality.)" VerticalAlignment="Center" FontSize="11" Margin="2,0,0,0" Cursor="Hand"/>
+                                    <TextBlock Grid.Column="3" Text="1~31(Higher numbers mean lower quality.)" VerticalAlignment="Center" FontSize="11" Margin="2,0,0,0"/>
                                 </Grid>
                                 <Grid Margin="0,2,0,0">
                                     <Grid.ColumnDefinitions>

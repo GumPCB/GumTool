@@ -124,6 +124,8 @@ namespace GumCut
         private List<string> videoEncoders = [];
         private List<string> audioEncoders = [];
         private List<string> subtitleEncoders = [];
+        private List<string> presets = [" ", "ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo"];
+        private List<string> tunes = [" ", "film", "animation", "grain", "stillimage", "fastdecode", "zerolatency", "psnr", "ssim"];
         private Time start = new();
         private Time end = new();
         private bool streaming = true;
@@ -136,6 +138,13 @@ namespace GumCut
         private int rotation;               // Edit, Image
         private int selectedVideoEncoder;   // Edit
         private int selectedAudioEncoder;   // Edit
+        private int selectedPreset;         // Edit
+        private int selectedTune;           // Edit
+        private int bitrate;                // Edit
+        private int bitratemax;             // Edit
+        private int bufsize;                // Edit
+        private double crf = -1.0;          // Edit
+        private int qp = -1;                // Edit
         private int saveZeroCount = 5;      // Image
         private int qscale;                 // Image
         private int imageFormat;            // Image
@@ -144,28 +153,35 @@ namespace GumCut
 
         public void EditTabClear()
         {
-            scale.Width = 0;
-            scale.Height = 0;
-            cropStart.Width = 0;
-            cropStart.Height = 0;
-            cropSize.Width = 0;
-            cropSize.Height = 0;
+            Scale.Width = 0;
+            Scale.Height = 0;
+            CropStart.Width = 0;
+            CropStart.Height = 0;
+            CropSize.Width = 0;
+            CropSize.Height = 0;
             Fps = 0;
             HFlip = false;
             VFlip = false;
             Rotation = 0;
             SelectedVideoEncoder = 0;
             SelectedAudioEncoder = 0;
+            SelectedPreset = 0;
+            SelectedTune = 0;
+            Bitrate = 0;
+            BitrateMax = 0;
+            Bufsize = 0;
+            CRF = -1.0;
+            QP = -1;
         }
 
         public void ImageTabClear()
         {
-            scale.Width = 0;
-            scale.Height = 0;
-            cropStart.Width = 0;
-            cropStart.Height = 0;
-            cropSize.Width = 0;
-            cropSize.Height = 0;
+            Scale.Width = 0;
+            Scale.Height = 0;
+            CropStart.Width = 0;
+            CropStart.Height = 0;
+            CropSize.Width = 0;
+            CropSize.Height = 0;
             Fps = 0;
             HFlip = false;
             VFlip = false;
@@ -223,6 +239,8 @@ namespace GumCut
                 OnPropertyChanged(nameof(SubtitleEncoders));
             }
         }
+        public List<string> Presets => presets;
+        public List<string> Tunes => tunes;
         public Time Start
         {
             get => start; set
@@ -319,6 +337,62 @@ namespace GumCut
                 OnPropertyChanged(nameof(SelectedAudioEncoder));
             }
         }
+        public int SelectedPreset
+        {
+            get => selectedPreset; set
+            {
+                selectedPreset = value;
+                OnPropertyChanged(nameof(SelectedPreset));
+            }
+        }
+        public int SelectedTune
+        {
+            get => selectedTune; set
+            {
+                selectedTune = value;
+                OnPropertyChanged(nameof(SelectedTune));
+            }
+        }
+        public int Bitrate
+        {
+            get => bitrate; set
+            {
+                bitrate = value;
+                OnPropertyChanged(nameof(Bitrate));
+            }
+        }
+        public int BitrateMax
+        {
+            get => bitratemax; set
+            {
+                bitratemax = value;
+                OnPropertyChanged(nameof(BitrateMax));
+            }
+        }
+        public int Bufsize
+        {
+            get => bufsize; set
+            {
+                bufsize = value;
+                OnPropertyChanged(nameof(Bufsize));
+            }
+        }
+        public double CRF
+        {
+            get => crf; set
+            {
+                crf = value;
+                OnPropertyChanged(nameof(CRF));
+            }
+        }
+        public int QP
+        {
+            get => qp; set
+            {
+                qp = value;
+                OnPropertyChanged(nameof(QP));
+            }
+        }
         public int ImageFormat
         {
             get => imageFormat; set
@@ -360,6 +434,7 @@ namespace GumCut
                 OnPropertyChanged(nameof(SaveZeroName));
             }
         }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

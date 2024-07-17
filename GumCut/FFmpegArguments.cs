@@ -41,6 +41,8 @@ namespace GumCut
 
             arguments += SS_TO(data);
 
+            arguments += CRF(data);
+
             arguments += VF(data);
 
             if(data.Streaming)
@@ -92,6 +94,48 @@ namespace GumCut
             }
 
             return time;
+        }
+
+        private static string CRF(in InputData data)
+        {
+            string bitrate = string.Empty;
+
+            if (data.Bitrate != 0)
+            {
+                bitrate = "-b:v " + data.Bitrate + "M ";
+            }
+
+            if (data.BitrateMax != 0)
+            {
+                bitrate += "-maxrate " + data.BitrateMax + "M ";
+            }
+
+            if (data.Bufsize != 0)
+            {
+                bitrate += "-bufsize " + data.Bufsize + "M ";
+            }
+
+            if (data.CRF > -1.0)
+            {
+                bitrate += "-crf " + data.CRF + " ";
+            }
+
+            if (data.QP > -1)
+            {
+                bitrate += "-qp " + data.QP + " ";
+            }
+
+            if (data.SelectedPreset != 0 && data.Presets.Count > data.SelectedPreset)
+            {
+                bitrate += "-preset " + data.Presets[data.SelectedPreset] + " ";
+            }
+
+            if (data.SelectedTune != 0 && data.Tunes.Count > data.SelectedTune)
+            {
+                bitrate += "-tune " + data.Tunes[data.SelectedTune] + " ";
+            }
+
+            return bitrate;
         }
 
         private static string VF(in InputData data)
@@ -162,7 +206,7 @@ namespace GumCut
                 return "-c copy ";
             }
 
-            if (data.SelectedVideoEncoder != 0 || data.VideoEncoders.Count < data.SelectedVideoEncoder)
+            if (data.SelectedVideoEncoder != 0 && data.VideoEncoders.Count > data.SelectedVideoEncoder)
             {
                 encoder = $"-c:v {data.VideoEncoders[data.SelectedVideoEncoder]} ";
             }
@@ -171,7 +215,7 @@ namespace GumCut
                 encoder = "-c:v copy ";
             }
 
-            if (data.SelectedAudioEncoder != 0 || data.AudioEncoders.Count < data.SelectedAudioEncoder)
+            if (data.SelectedAudioEncoder != 0 && data.AudioEncoders.Count > data.SelectedAudioEncoder)
             {
                 encoder += $"-c:a {data.AudioEncoders[data.SelectedAudioEncoder]} ";
             }

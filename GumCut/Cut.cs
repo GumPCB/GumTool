@@ -23,6 +23,8 @@ namespace GumCut
         public Command CutButton { get; set; }
         public Command CmdButton { get; set; }
         public Command EraseButton { get; set; }
+        public Command EraseCRFButton { get; set; }
+        public Command EraseQPButton { get; set; }
         public Command BatchOpenDirectoryButton { get; set; }
         public Command BatchSaveDirectoryButton { get; set; }
         public Command BatchRemoveSeletedButton { get; set; }
@@ -142,12 +144,14 @@ namespace GumCut
             CutButton = new(CutExecutedCommand, CutCanExecuteCommand);
             CmdButton = new(CmdExecutedCommand, EmptyCanExecuteCommand);
             EraseButton = new(EraseExecutedCommand, EmptyCanExecuteCommand);
-            BatchOpenDirectoryButton = new(BatchOpenDirectoryCommand, EmptyCanExecuteCommand);
-            BatchSaveDirectoryButton = new(BatchSaveDirectoryCommand, EmptyCanExecuteCommand);
-            BatchRemoveSeletedButton = new(BatchRemoveSeletedCommand, EmptyCanExecuteCommand);
-            BatchRemoveAllButton = new(BatchRemoveAllCommand, EmptyCanExecuteCommand);
-            BatchMoveSeletedButton = new(BatchMoveSeletedCommand, EmptyCanExecuteCommand);
-            BatchMoveAllButton = new(BatchMoveAllCommand, EmptyCanExecuteCommand);
+            EraseCRFButton = new(EraseCRFExecutedCommand, EmptyCanExecuteCommand);
+            EraseQPButton = new(EraseQPExecutedCommand, EmptyCanExecuteCommand);
+            BatchOpenDirectoryButton = new(BatchOpenDirectoryExecutedCommand, EmptyCanExecuteCommand);
+            BatchSaveDirectoryButton = new(BatchSaveDirectoryExecutedCommand, EmptyCanExecuteCommand);
+            BatchRemoveSeletedButton = new(BatchRemoveSeletedExecutedCommand, EmptyCanExecuteCommand);
+            BatchRemoveAllButton = new(BatchRemoveAllExecutedCommand, EmptyCanExecuteCommand);
+            BatchMoveSeletedButton = new(BatchMoveSeletedExecutedCommand, EmptyCanExecuteCommand);
+            BatchMoveAllButton = new(BatchMoveAllExecutedCommand, EmptyCanExecuteCommand);
 
             SetupfileLoad();
         }
@@ -432,6 +436,16 @@ namespace GumCut
             ResultText = string.Empty;
         }
 
+        private void EraseCRFExecutedCommand(object? obj)
+        {
+            data.CRF = -1.0;
+        }
+
+        private void EraseQPExecutedCommand(object? obj)
+        {
+            data.QP = -1;
+        }
+
         private void BatchGetInfo()
         {
             if (Working == true)
@@ -553,7 +567,7 @@ namespace GumCut
             return info;
         }
 
-        private void BatchOpenDirectoryCommand(object? obj)
+        private void BatchOpenDirectoryExecutedCommand(object? obj)
         {
             var dialog = new Microsoft.Win32.OpenFolderDialog();
 
@@ -579,7 +593,7 @@ namespace GumCut
             BatchGetInfo();
         }
 
-        private void BatchSaveDirectoryCommand(object? obj)
+        private void BatchSaveDirectoryExecutedCommand(object? obj)
         {
             var dialog = new Microsoft.Win32.OpenFolderDialog();
 
@@ -595,7 +609,7 @@ namespace GumCut
             }
         }
 
-        private void BatchRemoveSeletedCommand(object? obj)
+        private void BatchRemoveSeletedExecutedCommand(object? obj)
         {
             for (int i = VideoList.Count -1; i >= 0; --i)
             {
@@ -606,12 +620,12 @@ namespace GumCut
             }
         }
 
-        private void BatchRemoveAllCommand(object? obj)
+        private void BatchRemoveAllExecutedCommand(object? obj)
         {
             VideoList.Clear();
         }
 
-        private void BatchMoveSeletedCommand(object? obj)
+        private void BatchMoveSeletedExecutedCommand(object? obj)
         {
             var dialog = new Microsoft.Win32.OpenFolderDialog();
 
@@ -634,7 +648,7 @@ namespace GumCut
             }
         }
 
-        private void BatchMoveAllCommand(object? obj)
+        private void BatchMoveAllExecutedCommand(object? obj)
         {
             var dialog = new Microsoft.Win32.OpenFolderDialog();
 
