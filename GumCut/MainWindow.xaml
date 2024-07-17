@@ -120,7 +120,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Cursor="Hand" >GumCut v1.0 
+                                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Cursor="Hand" >GumCut v1.1 
                                         <Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="">gumpcb.tistory.com</Hyperlink>
                                         </TextBlock>
 
