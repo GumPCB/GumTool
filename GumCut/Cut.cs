@@ -102,6 +102,7 @@ namespace GumCut
             {
                 openCmd = value;
                 OnPropertyChanged(nameof(OpenCmd));
+                SetupfileSave();
             }
         }
         public string ResultText
@@ -217,7 +218,7 @@ namespace GumCut
             }
         }
 
-        private const string SetupFile = ".\\ini\\PathFFmpeg.ini";
+        private const string SetupFile = ".\\ini\\Setup.ini";
 
         private void SetupfileLoad()
         {
@@ -228,10 +229,16 @@ namespace GumCut
             string? line = sr.ReadLine();
             if (line == null)
                 return;
+            string? opencmd = sr.ReadLine();
 
             sr.Close();
+
             data.FFmpegFile = line;
             GetEncoderInfo();
+            if (opencmd != null)
+            {
+                OpenCmd = opencmd.Equals("1");
+            }
         }
 
         private void SetupfileSave()
@@ -239,9 +246,9 @@ namespace GumCut
             FileStream fs = new(SetupFile, FileMode.Create);
             using StreamWriter sw = new(fs);
             sw.WriteLine(data.FFmpegFile);
-            sw.Close();
+            sw.Write(OpenCmd ? '1' : '0');
 
-            GetEncoderInfo();
+            sw.Close();
         }
 
         private void GetEncoderInfo()
@@ -358,6 +365,7 @@ namespace GumCut
             data.FFmpegFile = dialog.FileName;
 
             SetupfileSave();
+            GetEncoderInfo();
         }
 
         private void LoadVideoExecutedCommand(object? obj)
@@ -787,6 +795,7 @@ namespace GumCut
             {
                 data.FFmpegFile = fileName;
                 SetupfileSave();
+                GetEncoderInfo();
                 return;
             }
             else if (extension.Length != 0)
