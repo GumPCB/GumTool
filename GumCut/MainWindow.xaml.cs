@@ -112,7 +112,7 @@ namespace GumCut
 
         private void BatchDragOver(object sender, DragEventArgs args)
         {
-            args.Effects = IsDirectory(args) != null ? DragDropEffects.Copy : DragDropEffects.None;
+            args.Effects = IsFilesOrDirectorys(args) != null ? DragDropEffects.Copy : DragDropEffects.None;
             args.Handled = true;
         }
 
@@ -120,25 +120,25 @@ namespace GumCut
         {
             args.Handled = true;
 
-            var directorys = IsDirectory(args);
-            if (directorys == null) return;
+            var files = IsFilesOrDirectorys(args);
+            if (files == null) return;
 
-            (DataContext as Cut)?.DragAndDropBatchDirectory(directorys);
+            (DataContext as Cut)?.DragAndDropBatch(files);
         }
 
-        private string[]? IsDirectory(DragEventArgs args)
+        private string[]? IsFilesOrDirectorys(DragEventArgs args)
         {
             if (args.Data.GetDataPresent(DataFormats.FileDrop, true))
             {
-                var directorys = args.Data.GetData(DataFormats.FileDrop, true) as string[];
-                if (directorys != null)
+                var files = args.Data.GetData(DataFormats.FileDrop, true) as string[];
+                if (files != null)
                 {
-                    foreach (var directory in directorys)
+                    foreach (var file in files)
                     {
-                        if (Directory.Exists(directory) == false)
+                        if (File.Exists(file) == false && Directory.Exists(file) == false)
                             return null;
                     }
-                    return directorys;
+                    return files;
                 }
             }
             return null;

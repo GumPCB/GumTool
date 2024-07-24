@@ -631,19 +631,7 @@ namespace GumCut
             if (result == null || result != true)
                 return;
 
-            foreach (string folderName in dialog.FolderNames)
-            {
-                DirectoryInfo directoryInfo = new DirectoryInfo(folderName);
-                foreach (FileInfo file in directoryInfo.GetFiles())
-                {
-                    if (file.FullName.Contains("Thumbs.db", StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    VideoInfo info = new(file.FullName);
-                    VideoList.Add(info);
-                }
-            }
-
+            AddVideoList(dialog.FolderNames);
             BatchGetInfo();
         }
 
@@ -828,22 +816,43 @@ namespace GumCut
             }
         }
 
-        internal void DragAndDropBatchDirectory(string[] directorys)
+        internal void DragAndDropBatch(string[] files)
         {
-            foreach (string folderName in directorys)
-            {
-                DirectoryInfo directoryInfo = new DirectoryInfo(folderName);
-                foreach (FileInfo file in directoryInfo.GetFiles())
-                {
-                    if (file.FullName.Contains("Thumbs.db", StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    VideoInfo info = new(file.FullName);
-                    VideoList.Add(info);
-                }
-            }
+            AddVideoList(files);
 
             BatchGetInfo();
+        }
+
+        private void AddVideoList(string[] files)
+        {
+            foreach (string file in files)
+            {
+                if (Directory.Exists(file))
+                {
+                    DirectoryInfo directoryInfo = new DirectoryInfo(file);
+                    foreach (FileInfo info in directoryInfo.GetFiles())
+                    {
+                        AddFileVideoList(info.FullName);
+                    }
+                    foreach (DirectoryInfo info in directoryInfo.GetDirectories())
+                    {
+                        AddVideoList([info.FullName]);
+                    }
+                }
+                else if (File.Exists(file))
+                {
+                    AddFileVideoList(file);
+                }
+            }
+        }
+
+        private void AddFileVideoList(string file)
+        {
+            if (file.Contains("Thumbs.db", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            VideoInfo info = new(file);
+            VideoList.Add(info);
         }
     }
 }
