@@ -143,5 +143,15 @@ namespace GumCut
             }
             return null;
         }
+
+        private void SelectAllTextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            ((TextBox)sender).SelectAll();
+        }
+
+        private void SelectAllTextBox_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            ((TextBox)sender).SelectAll();
+        }
     }
 }
