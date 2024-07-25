@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GumCut"
         mc:Ignorable="d"
-        Title="GumCut" Width="1200" Height="700" MinWidth="650" MinHeight="600" FontSize="16">
+        Title="GumCut v1.2" Width="1200" Height="700" MinWidth="850" MinHeight="600" FontSize="16">
     <Window.Resources>
         <local:Cut x:Key="KeyCut"/>
     </Window.Resources>
@@ -15,17 +15,18 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="550" MinWidth="500"/>
+            <ColumnDefinition Width="400" MinWidth="360"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" PreviewDragOver="EhDragOver" PreviewDrop="EhDrop">
+        <Grid Grid.Column="0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel VerticalAlignment="Top" Margin="5,3,5,0">
+            <StackPanel VerticalAlignment="Top" Margin="2,0,2,0">
 
                 <Grid Margin="0,2,0,0">
                     <Grid.ColumnDefinitions>
@@ -33,71 +34,14 @@
                         <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="2"/>
-                        <RowDefinition/>
-                        <RowDefinition Height="2"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
                     <TextBlock Text="FFmpeg File" VerticalAlignment="Center" Width="100"/>
                     <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding Data.FFmpegFile}" FontSize="12"/>
                     <Button Content="&#xE8E5;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding FFmpegOpenButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-
-                    <TextBlock Text="Load Video" VerticalAlignment="Center" Width="100" Grid.Row="2"/>
-                    <TextBox TextWrapping="NoWrap" Grid.Column="1" Grid.Row="2" Text="{Binding Data.LoadVideo}" FontSize="12" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                    <Button Content="&#xE838;" Margin="2,0,0,0" Grid.Column="2" Grid.Row="2" Command="{Binding LoadVideoButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-
-                    <TextBlock Text="Save Video" VerticalAlignment="Center" Width="100" Grid.Row="4"/>
-                    <TextBox TextWrapping="NoWrap" Grid.Column="1" Grid.Row="4" Text="{Binding Data.SaveVideo}" FontSize="12" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                    <Button Content="&#xE792;" Margin="2,0,0,0" Grid.Column="2" Grid.Row="4" Command="{Binding SaveVideoButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
                 </Grid>
 
 
                 <Grid Margin="0,2,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <Grid Margin="0,0,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="4*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="3*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="2"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Column="0" Text="Start Time" VerticalAlignment="Center" Width="100"/>
-                            <CheckBox Grid.Column="1" Content="&#xEA52; " VerticalAlignment="Center" IsChecked="{Binding Data.Start.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                            <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Hour}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                            <TextBlock Grid.Column="3" Text=" : " VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Minute}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                            <TextBlock Grid.Column="5" Text=" : " VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="6" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Seconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                            <TextBlock Grid.Column="7" Text=" . " VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="8" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-
-                            <TextBlock Grid.Column="0" Grid.Row="2" Text="End Time" VerticalAlignment="Center" Width="100"/>
-                            <CheckBox Grid.Column="1" Grid.Row="2" Content="&#xE8B5; " VerticalAlignment="Center" IsChecked="{Binding Data.End.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" />
-                            <TextBox Grid.Column="2" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Hour}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                            <TextBlock Grid.Column="3" Grid.Row="2" Text=" : " VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Minute}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                            <TextBlock Grid.Column="5" Grid.Row="2" Text=" : " VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="6" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Seconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                            <TextBlock Grid.Column="7" Grid.Row="2" Text=" . " VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="8" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                        </Grid>
-
                         <!-- ======================================== FastCut ======================================== -->
                         <TabControl Margin="0,4,0,0">
                             <TabItem IsSelected="{Binding FastCutTabControl}">
@@ -115,15 +59,6 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
                                         <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                                    </Grid>
-                                    <Grid Margin="0,2,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Cursor="Hand" >GumCut v1.1 
-                                        <Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="">gumpcb.tistory.com</Hyperlink>
-                                        </TextBlock>
-
                                     </Grid>
                                 </StackPanel>
                             </TabItem>
@@ -417,87 +352,175 @@
                             </TabItem>
                         </TabControl>
                     </StackPanel>
-                    <Grid Margin="2,0,0,0" Grid.Column="1" >
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="2*"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Button Content="&#xE786;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="64" Grid.Row="0" Command="{Binding CutButton}"/>
-
-                        <Grid Margin="2,2,0,0" Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="2"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Open Cmd" VerticalAlignment="Center"/>
-                            <CheckBox Grid.Column="2" Content="&#xE737;" VerticalAlignment="Center" IsChecked="{Binding OpenCmd}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                        </Grid>
-
-                        <Grid Margin="0,2,0,0" Grid.Row="2" >
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="2"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Button Content="&#xE756;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="24" Grid.Column="0" Command="{Binding CmdButton}"/>
-                            <Button Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="24" Grid.Column="2" Command="{Binding EraseButton}"/>
-                        </Grid>
+                    <Grid Margin="0,2,2,0" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <TextBlock><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">gumpcb.tistory.com</Hyperlink>
+                        </TextBlock>
                     </Grid>
                 </Grid>
-                <Grid Margin="0,2,0,0" Height="6">
-                    <ProgressBar IsIndeterminate="{Binding Working}"/>
+
+                <!-- ======================================== Time ======================================== -->
+                <Grid Margin="2,2,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="2"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Text="Start Time" VerticalAlignment="Center" Width="100"/>
+                    <CheckBox Grid.Column="1" Content="&#xEA52; " VerticalAlignment="Center" IsChecked="{Binding Data.Start.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Hour}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                    <TextBlock Grid.Column="3" Text=" : " VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Minute}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                    <TextBlock Grid.Column="5" Text=" : " VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="6" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Seconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                    <TextBlock Grid.Column="7" Text=" . " VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="8" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+
+                    <TextBlock Grid.Column="0" Grid.Row="2" Text="End Time" VerticalAlignment="Center" Width="100"/>
+                    <CheckBox Grid.Column="1" Grid.Row="2" Content="&#xE8B5; " VerticalAlignment="Center" IsChecked="{Binding Data.End.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" />
+                    <TextBox Grid.Column="2" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Hour}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                    <TextBlock Grid.Column="3" Grid.Row="2" Text=" : " VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Minute}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                    <TextBlock Grid.Column="5" Grid.Row="2" Text=" : " VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="6" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Seconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                    <TextBlock Grid.Column="7" Grid.Row="2" Text=" . " VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="8" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                </Grid>
+
+                <Grid Margin="2,2,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="2"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="2"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="2"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Open Cmd" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Column="2" Content="&#xE737;" VerticalAlignment="Center" IsChecked="{Binding OpenCmd}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                    <Button Grid.Column="4" Content="&#xE756;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding CmdButton}"/>
+                    <Button Grid.Column="6" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseButton}"/>
                 </Grid>
             </StackPanel>
-            <TextBox Margin="5,2,5,5" TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="1" VerticalScrollBarVisibility="Auto" FontSize="14" TextChanged="ScrollToEndTextBox_TextChanged"/>
-        </Grid>
-        
-        
 
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="6" Background="DarkSlateBlue"/>
+            <Grid Margin="0,2,0,0" Grid.Row="1" Height="6">
+                <ProgressBar IsIndeterminate="{Binding Working}"/>
+            </Grid>
+
+            <TextBox TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="2" VerticalScrollBarVisibility="Auto" FontSize="14" TextChanged="ScrollToEndTextBox_TextChanged"/>
+        </Grid>
+
+
+        <GridSplitter Grid.Column="1" Margin="0,2,0,0" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="6" Background="DarkSlateBlue"/>
 
         <!-- ======================================== Batch ======================================== -->
-
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel VerticalAlignment="Top">
-                <Menu FontSize="16">
-                    <MenuItem Header="OpenDirectory">
-                        <MenuItem Header="Video Directory" Command="{Binding BatchOpenDirectoryButton}"/>
-                        <MenuItem Header="Save Directory" Command="{Binding BatchSaveDirectoryButton}"/>
-                    </MenuItem>
+                <Grid Margin="2,2,2,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="2"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="2"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
 
-                    <MenuItem Header="ListRemove">
-                        <MenuItem Header="Remove Selected" Command="{Binding BatchRemoveSelectedButton}"/>
-                        <MenuItem Header="Remove All" Command="{Binding BatchRemoveAllButton}"/>
-                    </MenuItem>
+                            <Button Grid.Column="0" Grid.Row="0" Content="Load File" Command="{Binding BatchOpenFileButton}"/>
+                            <Button Grid.Column="0" Grid.Row="2" Content="Load Directory" Command="{Binding BatchOpenDirectoryButton}"/>
 
-                    <MenuItem Header="FileMove">
-                        <MenuItem Header="Move Selected" Command="{Binding BatchMoveSelectedButton}"/>
-                        <MenuItem Header="Move All" Command="{Binding BatchMoveAllButton}"/>
-                    </MenuItem>
+                            <Button Grid.Column="2" Grid.Row="0" Content="File Move (Select)" Command="{Binding BatchMoveSelectedButton}"/>
+                            <Button Grid.Column="2" Grid.Row="2" Content="File Move (All)" Command="{Binding BatchMoveAllButton}"/>
 
-                    <MenuItem Header="&#xE786;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="30">
-                        <MenuItem Header="&#xE762;" Command="{Binding BatchCutSelectedButton}"/>
-                        <MenuItem Header="&#xE71D;" Command="{Binding BatchCutAllButton}"/>
-                    </MenuItem>
-                </Menu>
+                            <Button Grid.Column="4" Grid.Row="0" Content="List Remove (Select)" Command="{Binding BatchRemoveSelectedButton}"/>
+                            <Button Grid.Column="4" Grid.Row="2" Content="List Remove (All)" Command="{Binding BatchRemoveAllButton}"/>
+                        </Grid>
+                        <Grid Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Content=" Save Directory " Command="{Binding BatchSaveDirectoryButton}"/>
+                            <TextBox TextWrapping="NoWrap" Grid.Column="2" Text="{Binding BatchSaveDirectory}" FontSize="12" IsReadOnly="True"/>
+                        </Grid>
+                        <Grid Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="SaveFileName" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding BatchReplaceNameOld}" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                            <TextBlock Grid.Column="3" Text=" -> " VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding BatchReplaceNameNew}" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                            <Button Grid.Column="6" Content="Replace" Command="{Binding BatchReplaceNameButton}"/>
+                        </Grid>
+                    </StackPanel>
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="2"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Button x:Name="button" Grid.Row="0" Command="{Binding BatchCutSelectedButton}"/>
+                        <Button x:Name="button1" Grid.Row="2" Command="{Binding BatchCutAllButton}"/>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" IsEnabled="{Binding IsEnabled, ElementName=button}" >
+                            <TextBlock Text="&#xE786;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="48"/>
+                            <TextBlock Text=" (Select)" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" IsEnabled="{Binding IsEnabled, ElementName=button1}" >
+                            <TextBlock Text="&#xE786;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="48"/>
+                            <TextBlock Text=" (All)" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+                
+                <Grid Margin="0,2,0,0" Height="6">
+                    <ProgressBar Maximum="{Binding BatchProgressMaximum}" Value="{Binding BatchProgressCurrent}"/>
+                </Grid>
             </StackPanel>
 
             <Grid Grid.Row="1">
                 <DataGrid ItemsSource="{Binding VideoList}" CanUserAddRows="False" CanUserDeleteRows="True" AutoGenerateColumns="False" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="BatchDragOver" PreviewDrop="BatchDrop" AllowDrop="True" FontSize="12">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="FileName" IsReadOnly="True" Binding="{Binding FileName}"/>
+                        <DataGridTextColumn Header="LoadFile" IsReadOnly="True" Binding="{Binding FileName}"/>
+                        <DataGridTextColumn Header="SaveFileName" Binding="{Binding SaveName}"/>
                         <DataGridTextColumn Header="Encoder" IsReadOnly="True" Binding="{Binding Encoder}"/>
                         <DataGridTextColumn Header="Resolution" IsReadOnly="True" Binding="{Binding Resolution}"/>
                         <DataGridTextColumn Header="Duration" IsReadOnly="True" Binding="{Binding Duration}"/>
                         <DataGridTextColumn Header="FPS" IsReadOnly="True" Binding="{Binding FPS}"/>
                         <DataGridTextColumn Header="Bitrate" IsReadOnly="True" Binding="{Binding Bitrate}"/>
-                        <DataGridTextColumn Header="SaveName" Binding="{Binding SaveName}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
