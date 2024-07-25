@@ -112,6 +112,40 @@ namespace GumCut
             return null;
         }
 
+        private void SaveDirectoryDragOver(object sender, DragEventArgs args)
+        {
+            args.Effects = IsDirectory(args) != null ? DragDropEffects.Copy : DragDropEffects.None;
+            args.Handled = true;
+        }
+
+        private void SaveDirectoryDrop(object sender, DragEventArgs args)
+        {
+            args.Handled = true;
+
+            var directory = IsDirectory(args);
+            if (directory == null) return;
+
+            (DataContext as Cut)?.DragAndDropSaveDirectory(directory);
+        }
+
+        private string? IsDirectory(DragEventArgs args)
+        {
+            if (args.Data.GetDataPresent(DataFormats.FileDrop, true))
+            {
+                var directorys = args.Data.GetData(DataFormats.FileDrop, true) as string[];
+                if (directorys != null)
+                {
+                    foreach (var directory in directorys)
+                    {
+                        if (Directory.Exists(directory) == true)
+                            return directory;
+                    }
+                    return null;
+                }
+            }
+            return null;
+        }
+
         private void SelectAllTextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             ((TextBox)sender).SelectAll();

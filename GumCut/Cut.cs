@@ -762,6 +762,11 @@ namespace GumCut
             BatchGetInfo();
         }
 
+        internal void DragAndDropSaveDirectory(string directory)
+        {
+            BatchSaveDirectory = directory;
+        }
+
         private void AddVideoList(string[] files)
         {
             foreach (string file in files)
