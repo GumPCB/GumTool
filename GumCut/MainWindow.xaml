@@ -406,11 +406,14 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="2"/>
                         <ColumnDefinition/>
+                        <ColumnDefinition Width="2"/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Open Cmd" VerticalAlignment="Center"/>
                     <CheckBox Grid.Column="2" Content="&#xE737;" VerticalAlignment="Center" IsChecked="{Binding OpenCmd}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
                     <Button Grid.Column="4" Content="&#xE756;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding CmdButton}"/>
-                    <Button Grid.Column="6" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseButton}"/>
+                    <Button Grid.Column="6" Content="&#xE954;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding VideoInfoButton}"/>
+                    <Button Grid.Column="8" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseButton}"/>
                 </Grid>
             </StackPanel>
 
