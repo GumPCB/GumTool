@@ -21,6 +21,8 @@ namespace GumCut
 
             arguments += SS_TO(data);
 
+            arguments += "-map 0 ";
+
             if (data.Streaming)
                 arguments += "-movflags +faststart ";
 
@@ -40,6 +42,8 @@ namespace GumCut
             }
 
             arguments += SS_TO(data);
+
+            arguments += "-map 0 ";
 
             string edit = CRF(data) + VF(data);
             arguments += edit;
@@ -318,11 +322,11 @@ namespace GumCut
 
             if (data.SelectedSubtitleEncoder > 0 && data.SubtitleEncoders.Count > data.SelectedSubtitleEncoder)
             {
-                result = $"-c:s {data.SubtitleEncoders[data.SelectedSubtitleEncoder]} -y \"";
+                result = $"-c:s {data.SubtitleEncoders[data.SelectedSubtitleEncoder]} -vn -an -y \"";
             }
             else
             {
-                result = $"-c:s copy -y \"";
+                result = $"-c:s copy -vn -an -y \"";
             }
 
             // 폴더경로와 파일명
