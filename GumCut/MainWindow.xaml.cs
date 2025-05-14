@@ -66,6 +66,11 @@ namespace GumCut
             process.Close();
         }
 
+        private void Subtitles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            (DataContext as Cut)?.SelectionChangedSubtitles();
+        }
+
         private void VideoList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             foreach (VideoInfo info in e.AddedItems)
@@ -76,6 +81,7 @@ namespace GumCut
             {
                 info.IsSelected = false;
             }
+            (DataContext as Cut)?.UpdateSubtitles();
         }
 
         private void BatchDragOver(object sender, DragEventArgs args)

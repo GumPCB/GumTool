@@ -77,6 +77,36 @@ namespace GumCut
             return arguments;
         }
 
+        public static string Subtitle(in InputData data, bool hide_banner)
+        {
+            // %FFMPEG_PATH% -hide_banner -loglevel warning -i %IN_FILE% -map %STREAM_NUM% -c:s copy -y %OUT_FILE%
+            string arguments = new($"-i \"{data.LoadVideo}\" ");
+
+            if (hide_banner)
+            {
+                arguments = "-hide_banner -loglevel warning " + arguments;
+            }
+
+            arguments += SS_TO(data);
+
+            if (data.SelectedSubtitle >= 0 && data.Subtitles.Count > data.SelectedSubtitle)
+            {
+                string[] splitSubtitle = data.Subtitles[data.SelectedSubtitle].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (splitSubtitle.Length > 0)
+                {
+                    arguments += $"-map {splitSubtitle[0]} ";
+                }
+                else
+                {
+                    arguments += "-map 0:s ";
+                }
+            }
+
+            arguments += SubtitleEncoderAndFileName(data);
+
+            return arguments;
+        }
+
         private static string SS_TO(in InputData data)
         {
             string time = string.Empty;
@@ -279,6 +309,72 @@ namespace GumCut
             }
 
             return filename;
+        }
+
+        private static string SubtitleEncoderAndFileName(in InputData data)
+        {
+            // $"-c:s copy -y \""
+            string result = string.Empty;
+
+            if (data.SelectedSubtitleEncoder > 0 && data.SubtitleEncoders.Count > data.SelectedSubtitleEncoder)
+            {
+                result = $"-c:s {data.SubtitleEncoders[data.SelectedSubtitleEncoder]} -y \"";
+            }
+            else
+            {
+                result = $"-c:s copy -y \"";
+            }
+
+            // 폴더경로와 파일명
+            if (data.SaveVideo.Contains('.'))
+            {
+                string[] split = data.SaveVideo.Split(Path.GetExtension(data.SaveVideo), StringSplitOptions.RemoveEmptyEntries);
+                result += split[0];
+            }
+            else
+            {
+                result += data.SaveVideo;
+            }
+
+            // 확장자
+            string ext = string.Empty;
+            if (data.SelectedSubtitleEncoder > 0 && data.SubtitleEncoders.Count > data.SelectedSubtitleEncoder)
+            {
+                foreach (string subtitleExt in data.SubtitleExtensions)
+                {
+                    if (subtitleExt.Contains(data.SubtitleEncoders[data.SelectedSubtitleEncoder], StringComparison.Ordinal))
+                    {
+                        ext = $"{subtitleExt.Substring(subtitleExt.IndexOf('=') + 1)}";
+                        break;
+                    }
+                }
+            }
+            else if (data.SelectedSubtitle >= 0 && data.Subtitles.Count != 0 && data.Subtitles.Count > data.SelectedSubtitle)
+            {
+                string[] splitSubtitle = data.Subtitles[data.SelectedSubtitle].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                foreach (string split in splitSubtitle)
+                {
+                    foreach (string subtitleExt in data.SubtitleExtensions)
+                    {
+                        if (subtitleExt.Contains(split, StringComparison.Ordinal))
+                        {
+                            ext = $"{subtitleExt.Substring(subtitleExt.IndexOf('=') + 1)}";
+                            break;
+                        }
+                    }
+                    if (ext.Length != 0)
+                        break;
+                }
+            }
+
+            if (ext.Length == 0)
+            {
+                ext = "mkv";
+            }
+
+            result += $".{ext}\"";
+            return result;
         }
     }
 

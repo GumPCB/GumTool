@@ -117,13 +117,14 @@ namespace GumCut
 
     public class InputData : INotifyPropertyChanged
     {
-
         private string fFmpegFile = string.Empty;
         private string loadVideo = string.Empty;
         private string saveVideo = string.Empty;
         private List<string> videoEncoders = [];
         private List<string> audioEncoders = [];
         private List<string> subtitleEncoders = [];
+        private List<string> subtitleEncoderDescriptions = [];
+        private List<string> subtitleExtensions = ["="];
         private List<string> presets = ["="];
         private List<string> tunes = ["="];
         private List<string> profiles = ["="];
@@ -140,6 +141,7 @@ namespace GumCut
         private int rotation;               // Edit, Image
         private int selectedVideoEncoder;   // Edit
         private int selectedAudioEncoder;   // Edit
+        private int selectedSubtitleEncoder;// Subtitle
         private int selectedPreset;         // Edit
         private int selectedTune;           // Edit
         private int selectedProfile;        // Edit
@@ -152,9 +154,11 @@ namespace GumCut
         private int saveZeroCount = 5;      // Image
         private int qscale;                 // Edit, Image
         private int qscaleAudio;            // Edit
-        private int imageFormat;            // Image
+        private int imageFormat = 1;        // Image
         private List<string> imageFormatType = ["GIF", "PNG", "JPG"];
         private string saveZeroName = "name_00001.jpg"; // Image
+        private int selectedSubtitle;       // Subtitle
+        private List<string> subtitles = [];// Subtitle
 
         public void EditTabClear()
         {
@@ -195,9 +199,15 @@ namespace GumCut
             HFlip = false;
             VFlip = false;
             Rotation = 0;
-            ImageFormat = 0;
+            ImageFormat = 1;
             SaveZeroCount = 5;
             Qscale = 0;
+        }
+
+        public void SubtitleTabClear()
+        {
+            SelectedSubtitleEncoder = 0;
+            Subtitles = [];
         }
 
         public string FFmpegFile
@@ -248,6 +258,23 @@ namespace GumCut
                 OnPropertyChanged(nameof(SubtitleEncoders));
             }
         }
+        public List<string> SubtitleEncoderDescriptions
+        {
+            get => subtitleEncoderDescriptions; set
+            {
+                subtitleEncoderDescriptions = value;
+                OnPropertyChanged(nameof(SubtitleEncoderDescriptions));
+            }
+        }
+        public List<string> SubtitleExtensions
+        {
+            get => subtitleExtensions; set
+            {
+                subtitleExtensions = value;
+                OnPropertyChanged(nameof(SubtitleExtensions));
+            }
+        }
+        
         public List<string> Presets
         {
             get => presets; set
@@ -378,6 +405,14 @@ namespace GumCut
                 OnPropertyChanged(nameof(SelectedAudioEncoder));
             }
         }
+        public int SelectedSubtitleEncoder
+        {
+            get => selectedSubtitleEncoder; set
+            {
+                selectedSubtitleEncoder = value;
+                OnPropertyChanged(nameof(SelectedSubtitleEncoder));
+            }
+        }
         public int SelectedPreset
         {
             get => selectedPreset; set
@@ -500,6 +535,29 @@ namespace GumCut
             }
         }
 
+        public int SelectedSubtitle
+        {
+            get => selectedSubtitle;
+            set
+            {
+                selectedSubtitle = value;
+                OnPropertyChanged(nameof(SelectedSubtitle));
+            }
+        }
+
+        public List<string> Subtitles
+        {
+            get => subtitles;
+            set
+            {
+                if (subtitles.Equals(value))
+                    return;
+
+                subtitles = value;
+                OnPropertyChanged(nameof(Subtitles));
+                SelectedSubtitle = 0;
+            }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

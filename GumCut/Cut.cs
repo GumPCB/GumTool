@@ -11,6 +11,7 @@ namespace GumCut
         private bool fastCutTabControl = true;
         private bool editTabControl;
         private bool imageTabControl;
+        private bool subtitleTabControl;
         private bool openCmd;
         private string resultText = string.Empty;
         private VideoCollection videoList = [];
@@ -40,7 +41,8 @@ namespace GumCut
         {
             FastCutTab,
             EditTab,
-            ImageTab
+            ImageTab,
+            SubtitleTab
         }
         private SelectedTab CurrentSelectedTab = SelectedTab.FastCutTab;
 
@@ -71,6 +73,7 @@ namespace GumCut
 
                 data.EditTabClear();
                 data.ImageTabClear();
+                data.SubtitleTabClear();
                 CurrentSelectedTab = SelectedTab.FastCutTab;
             }
         }
@@ -83,6 +86,7 @@ namespace GumCut
                 if (editTabControl == false) return;
 
                 data.ImageTabClear();
+                data.SubtitleTabClear();
                 CurrentSelectedTab = SelectedTab.EditTab;
             }
         }
@@ -95,7 +99,22 @@ namespace GumCut
                 if (imageTabControl == false) return;
 
                 data.EditTabClear();
+                data.SubtitleTabClear();
                 CurrentSelectedTab = SelectedTab.ImageTab;
+            }
+        }
+        public bool SubtitleTabControl
+        {
+            get => subtitleTabControl; set
+            {
+                subtitleTabControl = value;
+                OnPropertyChanged(nameof(SubtitleTabControl));
+                if (subtitleTabControl == false) return;
+
+                data.EditTabClear();
+                data.ImageTabClear();
+                CurrentSelectedTab = SelectedTab.SubtitleTab;
+                UpdateSubtitles();
             }
         }
         public bool OpenCmd
@@ -201,6 +220,7 @@ namespace GumCut
         private const string PresetsFile = ".\\ini\\presets.ini";
         private const string ProfileFile = ".\\ini\\profile.ini";
         private const string TunesFile = ".\\ini\\tunes.ini";
+        private const string SubtitleExtensionFile = ".\\ini\\subtitleExtension.ini";
         private void IniFileLoad()
         {
             if (File.Exists(LevelsFile))
@@ -248,6 +268,18 @@ namespace GumCut
                     line = sr.ReadLine();
                     if (line != null)
                         data.Tunes.Add(line);
+                }
+                sr.Close();
+            }
+            if (File.Exists(SubtitleExtensionFile))
+            {
+                using StreamReader sr = new(SubtitleExtensionFile);
+                string? line;
+                while (sr.EndOfStream == false)
+                {
+                    line = sr.ReadLine();
+                    if (line != null)
+                        data.SubtitleExtensions.Add(line);
                 }
                 sr.Close();
             }
@@ -315,6 +347,8 @@ namespace GumCut
         {
             data.VideoEncoders.Clear();
             data.AudioEncoders.Clear();
+            data.SubtitleEncoders.Clear();
+            data.SubtitleEncoderDescriptions.Clear();
 
             string[]? splitResult = ffmpegResult?.Split('\n', StringSplitOptions.RemoveEmptyEntries);
             if (splitResult == null || splitResult.Length == 0) return;
@@ -338,6 +372,7 @@ namespace GumCut
                         break;
                     case 'S':
                         data.SubtitleEncoders.Add(splits[1]);
+                        data.SubtitleEncoderDescriptions.Add(line.Substring(splits[0].Length + splits[1].Length + 2).Trim());
                         break;
                     default:
                         break;
@@ -384,6 +419,9 @@ namespace GumCut
                     break;
                 case SelectedTab.ImageTab:
                     arguments = FFmpegArguments.Image(data, !openCmd);
+                    break;
+                case SelectedTab.SubtitleTab:
+                    arguments = FFmpegArguments.Subtitle(data, !openCmd);
                     break;
                 default:
                     break;
@@ -554,7 +592,10 @@ namespace GumCut
             }
 
             if (filename.Length == 0)
+            {
+                UpdateSubtitles();
                 return;
+            }
             
             Working = true;
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + filename + "\"", false, false)).ContinueWith((antecedent) =>
@@ -573,6 +614,7 @@ namespace GumCut
                     info.FPS = temp.FPS;
                     info.Bitrate = temp.Bitrate;
                     info.SaveName = Path.GetFileNameWithoutExtension(info.FileName) + "_cut" + Path.GetExtension(info.FileName);
+                    info.Subtitles = temp.Subtitles;
                     break;
                 }
 
@@ -652,6 +694,22 @@ namespace GumCut
                                 info.Bitrate = bitrate[1];
                             }
                         }
+                    }
+                }
+                else if (line.Contains("Stream", StringComparison.Ordinal) && line.Contains("Subtitle", StringComparison.Ordinal))
+                {
+                    string subtitle = line.Substring(line.IndexOf('#') + 1);
+                    if (subtitle.Length != 0)
+                    {
+                        subtitle = subtitle.Replace("Subtitle: ", null)
+                            .Replace(": ", " ")
+                            .Replace('(', ' ')
+                            .Replace(',', ' ')
+                            .Replace(")", null)
+                            .Replace('[', ' ')
+                            .Replace("]", null)
+                            .Replace("  ", " ");
+                        info.Subtitles.Add(subtitle.Trim());
                     }
                 }
             }
@@ -867,6 +925,47 @@ namespace GumCut
 
             VideoInfo info = new(file);
             VideoList.Add(info);
+        }
+
+        internal void SelectionChangedSubtitles()
+        {
+            if (data.SelectedSubtitle < 0 || data.Subtitles.Count == 0 || data.Subtitles.Count <= data.SelectedSubtitle)
+                return;
+
+            data.SelectedSubtitleEncoder = 0;
+
+            string[] splitSubtitle = data.Subtitles[data.SelectedSubtitle].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (splitSubtitle.Length == 0)
+                return;
+
+            for (int i = 0; i < data.SubtitleEncoders.Count; ++i)
+            {
+                foreach (string split in splitSubtitle)
+                {
+                    if (data.SubtitleEncoders[i].Contains(split, StringComparison.Ordinal) || data.SubtitleEncoderDescriptions[i].Contains(split, StringComparison.Ordinal))
+                    {
+                        data.SelectedSubtitleEncoder = i;
+                        return;
+                    }
+                }
+            }
+        }
+
+        internal void UpdateSubtitles()
+        {
+            if (subtitleTabControl == false || VideoList.Count == 0)
+                return;
+
+            foreach (VideoInfo info in VideoList)
+            {
+                if (info.IsSelected == true)
+                {
+                    data.Subtitles = info.Subtitles;
+                    return;
+                }
+            }
+
+            data.Subtitles = VideoList[0].Subtitles;
         }
     }
 }

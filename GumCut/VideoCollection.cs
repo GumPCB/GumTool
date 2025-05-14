@@ -23,6 +23,7 @@ namespace GumCut
         private double fps;
         private string bitrate = string.Empty;
         public bool IsSelected;
+        public List<string> Subtitles = [];
 
         public VideoInfo(string _filename)
         {

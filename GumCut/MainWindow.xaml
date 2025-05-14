@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GumCut"
         mc:Ignorable="d"
-        Title="GumCut v1.2" Width="1200" Height="700" MinWidth="850" MinHeight="600" FontSize="16">
+        Title="GumCut v1.3" Width="1200" Height="700" MinWidth="850" MinHeight="600" FontSize="16">
     <Window.Resources>
         <local:Cut x:Key="KeyCut"/>
     </Window.Resources>
@@ -350,10 +350,39 @@
                                     </Grid>
                                 </StackPanel>
                             </TabItem>
+
+                            <!-- ======================================== Subtitle ======================================== -->
+                            <TabItem IsSelected="{Binding SubtitleTabControl}">
+                                <TabItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xED1E;" Margin="0,3,0,0" FontSize="18"/>
+                                        <TextBlock Text="Subtitle" Margin="2,0,0,0" />
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <StackPanel>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Encoder" VerticalAlignment="Center" Width="100"/>
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding Data.SubtitleEncoders}" SelectedIndex="{Binding Data.SelectedSubtitleEncoder}" />
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Subtitle" VerticalAlignment="Center" Width="100"/>
+                                        <ListBox Grid.Column="1" MaxHeight="350" ItemsSource="{Binding Data.Subtitles}" SelectedIndex="{Binding Data.SelectedSubtitle}" SelectionChanged="Subtitles_SelectionChanged"/>
+                                    </Grid>
+                                </StackPanel>
+                            </TabItem>
+
                         </TabControl>
                     </StackPanel>
                     <Grid Margin="0,2,2,0" HorizontalAlignment="Right" VerticalAlignment="Top">
-                        <TextBlock><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">gumpcb.tistory.com</Hyperlink>
+                        <TextBlock><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">GumPCB</Hyperlink>
                         </TextBlock>
                     </Grid>
                 </Grid>
