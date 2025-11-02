@@ -17,11 +17,13 @@ namespace GumCut
     {
         private string fileName = string.Empty;
         private string saveName = string.Empty;
-        private string encoder = string.Empty;
+        private string vcodec = string.Empty;
         private string resolution = string.Empty;
         private string duration = string.Empty;
         private double fps;
-        private string bitrate = string.Empty;
+        private string vbitrate = string.Empty;
+        private string acodec = string.Empty;
+        private string abitrate = string.Empty;
         public bool IsSelected;
         public List<string> Subtitles = [];
 
@@ -46,12 +48,12 @@ namespace GumCut
                 OnPropertyChanged(nameof(SaveName));
             }
         }
-        public string Encoder
+        public string vCodec
         {
-            get => encoder; set
+            get => vcodec; set
             {
-                encoder = value;
-                OnPropertyChanged(nameof(Encoder));
+                vcodec = value;
+                OnPropertyChanged(nameof(vCodec));
             }
         }
         public string Resolution
@@ -78,12 +80,28 @@ namespace GumCut
                 OnPropertyChanged(nameof(FPS));
             }
         }
-        public string Bitrate
+        public string vBitrate
         {
-            get => bitrate; set
+            get => vbitrate; set
             {
-                bitrate = value;
-                OnPropertyChanged(nameof(Bitrate));
+                vbitrate = value;
+                OnPropertyChanged(nameof(vBitrate));
+            }
+        }
+        public string aCodec
+        {
+            get => acodec; set
+            {
+                acodec = value;
+                OnPropertyChanged(nameof(aCodec));
+            }
+        }
+        public string aBitrate
+        {
+            get => abitrate; set
+            {
+                abitrate = value;
+                OnPropertyChanged(nameof(aBitrate));
             }
         }
 

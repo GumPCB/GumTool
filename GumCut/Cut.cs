@@ -584,7 +584,7 @@ namespace GumCut
             string filename = string.Empty;
             foreach (VideoInfo info in VideoList)
             {
-                if (info.Encoder.Length == 0)
+                if (info.vCodec.Length == 0)
                 {
                     filename = info.FileName;
                     break;
@@ -601,18 +601,20 @@ namespace GumCut
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + filename + "\"", false, false)).ContinueWith((antecedent) =>
             {
                 VideoInfo temp = BatchSplitInfo(FFmpegResultText, filename);
-                if (temp.Encoder.Length == 0)
-                    temp.Encoder = "Not Found";
+                if (temp.vCodec.Length == 0)
+                    temp.vCodec = "Not Found";
                 foreach (VideoInfo info in VideoList)
                 {
-                    if (info.Encoder.Length != 0 || info.FileName.Equals(temp.FileName) == false)
+                    if (info.vCodec.Length != 0 || info.FileName.Equals(temp.FileName) == false)
                         continue;
 
-                    info.Encoder = temp.Encoder;
+                    info.vCodec = temp.vCodec;
                     info.Resolution = temp.Resolution;
                     info.Duration = temp.Duration;
                     info.FPS = temp.FPS;
-                    info.Bitrate = temp.Bitrate;
+                    info.vBitrate = temp.vBitrate;
+                    info.aCodec = temp.aCodec;
+                    info.aBitrate = temp.aBitrate;
                     info.SaveName = Path.GetFileNameWithoutExtension(info.FileName) + "_cut" + Path.GetExtension(info.FileName);
                     info.Subtitles = temp.Subtitles;
                     break;
@@ -648,7 +650,7 @@ namespace GumCut
                             {
                                 if (encoder[i].Equals("Video:") && encoder.Length >= i + 2)
                                 {
-                                    info.Encoder = encoder[i + 1];
+                                    info.vCodec = encoder[i + 1];
                                     break;
                                 }
                             }
@@ -661,6 +663,10 @@ namespace GumCut
                                 info.FPS = double.Parse(fps[0]);
                             }
                         }
+                        else if (split.Contains("b/s", StringComparison.Ordinal))
+                        {
+                            info.vBitrate = split;
+                        }
                         else if (split.Contains('x', StringComparison.Ordinal))
                         {
                             char[] resolutionDelimiterChars = { 'x', ' ' };
@@ -670,6 +676,31 @@ namespace GumCut
                                 continue;
 
                             info.Resolution = resolution[0] + 'x' + resolution[1];
+                        }
+                    }
+                }
+                else if (line.Contains("Stream", StringComparison.Ordinal) && line.Contains("Audio", StringComparison.Ordinal))
+                {
+                    string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    foreach (string split in splitLine)
+                    {
+                        if (split.Contains("Audio", StringComparison.Ordinal))
+                        {
+                            string[] encoder = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                            for (int i = 0; i < encoder.Length; ++i)
+                            {
+                                if (encoder[i].Equals("Audio:") && encoder.Length >= i + 2)
+                                {
+                                    info.aCodec = encoder[i + 1];
+                                    break;
+                                }
+                            }
+                        }
+                        else if (split.Contains("b/s", StringComparison.Ordinal))
+                        {
+                            string[] bitrate = split.Split('(', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                            if (bitrate.Length >= 1)
+                                info.aBitrate = bitrate[0];
                         }
                     }
                 }
@@ -684,14 +715,6 @@ namespace GumCut
                             if (duration.Length >= 2)
                             {
                                 info.Duration = duration[1];
-                            }
-                        }
-                        else if (split.Contains("bitrate", StringComparison.Ordinal))
-                        {
-                            string[] bitrate = split.Split(':', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            if (bitrate.Length >= 2)
-                            {
-                                info.Bitrate = bitrate[1];
                             }
                         }
                     }

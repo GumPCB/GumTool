@@ -548,11 +548,13 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="LoadFile" IsReadOnly="True" Binding="{Binding FileName}"/>
                         <DataGridTextColumn Header="SaveFileName" Binding="{Binding SaveName}"/>
-                        <DataGridTextColumn Header="Encoder" IsReadOnly="True" Binding="{Binding Encoder}"/>
+                        <DataGridTextColumn Header="vCodec" IsReadOnly="True" Binding="{Binding vCodec}"/>
+                        <DataGridTextColumn Header="aCodec" IsReadOnly="True" Binding="{Binding aCodec}"/>
                         <DataGridTextColumn Header="Resolution" IsReadOnly="True" Binding="{Binding Resolution}"/>
                         <DataGridTextColumn Header="Duration" IsReadOnly="True" Binding="{Binding Duration}"/>
                         <DataGridTextColumn Header="FPS" IsReadOnly="True" Binding="{Binding FPS}"/>
-                        <DataGridTextColumn Header="Bitrate" IsReadOnly="True" Binding="{Binding Bitrate}"/>
+                        <DataGridTextColumn Header="vBitrate" IsReadOnly="True" Binding="{Binding vBitrate}"/>
+                        <DataGridTextColumn Header="aBitrate" IsReadOnly="True" Binding="{Binding aBitrate}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
