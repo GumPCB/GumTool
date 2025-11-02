@@ -555,6 +555,7 @@
                         <DataGridTextColumn Header="FPS" IsReadOnly="True" Binding="{Binding FPS}"/>
                         <DataGridTextColumn Header="vBitrate" IsReadOnly="True" Binding="{Binding vBitrate}"/>
                         <DataGridTextColumn Header="aBitrate" IsReadOnly="True" Binding="{Binding aBitrate}"/>
+                        <DataGridTextColumn Header="Pixel" IsReadOnly="True" Binding="{Binding Pixel}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

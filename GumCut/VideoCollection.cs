@@ -21,6 +21,7 @@ namespace GumCut
         private string resolution = string.Empty;
         private string duration = string.Empty;
         private double fps;
+        private string pixel = string.Empty;
         private string vbitrate = string.Empty;
         private string acodec = string.Empty;
         private string abitrate = string.Empty;
@@ -78,6 +79,14 @@ namespace GumCut
             {
                 fps = value;
                 OnPropertyChanged(nameof(FPS));
+            }
+        }
+        public string Pixel
+        {
+            get => pixel; set
+            {
+                pixel = value;
+                OnPropertyChanged(nameof(Pixel));
             }
         }
         public string vBitrate

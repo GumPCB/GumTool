@@ -612,6 +612,7 @@ namespace GumCut
                     info.Resolution = temp.Resolution;
                     info.Duration = temp.Duration;
                     info.FPS = temp.FPS;
+                    info.Pixel = temp.Pixel;
                     info.vBitrate = temp.vBitrate;
                     info.aCodec = temp.aCodec;
                     info.aBitrate = temp.aBitrate;
@@ -643,7 +644,7 @@ namespace GumCut
                     string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     foreach (string split in splitLine)
                     {
-                        if (split.Contains("Video", StringComparison.Ordinal))
+                        if (split.Contains("Video", StringComparison.Ordinal) && info.vCodec.Length == 0)
                         {
                             string[] encoder = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             for (int i = 0; i < encoder.Length; ++i)
@@ -655,6 +656,14 @@ namespace GumCut
                                 }
                             }
                         }
+                        else if (info.Pixel.Length == 0 && (split.Contains("yuv", StringComparison.Ordinal) || split.Contains("nv", StringComparison.Ordinal) || split.Contains("rgb", StringComparison.Ordinal) || split.Contains("bgr", StringComparison.Ordinal) || split.Contains("gbr", StringComparison.Ordinal)))
+                        {
+                            string[] pixel = split.Split('(', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                            if (pixel.Length >= 1)
+                            {
+                                info.Pixel = pixel[0];
+                            }
+                        }
                         else if (split.Contains("fps", StringComparison.Ordinal))
                         {
                             string[] fps = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -663,11 +672,11 @@ namespace GumCut
                                 info.FPS = double.Parse(fps[0]);
                             }
                         }
-                        else if (split.Contains("b/s", StringComparison.Ordinal))
+                        else if (split.Contains("b/s", StringComparison.Ordinal) && info.vBitrate.Length == 0)
                         {
                             info.vBitrate = split;
                         }
-                        else if (split.Contains('x', StringComparison.Ordinal))
+                        else if (split.Contains('x', StringComparison.Ordinal) && info.Resolution.Length == 0)
                         {
                             char[] resolutionDelimiterChars = { 'x', ' ' };
                             string[] resolution = split.Split(resolutionDelimiterChars, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -684,7 +693,7 @@ namespace GumCut
                     string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     foreach (string split in splitLine)
                     {
-                        if (split.Contains("Audio", StringComparison.Ordinal))
+                        if (split.Contains("Audio", StringComparison.Ordinal) && info.aCodec.Length == 0)
                         {
                             string[] encoder = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             for (int i = 0; i < encoder.Length; ++i)
@@ -696,7 +705,7 @@ namespace GumCut
                                 }
                             }
                         }
-                        else if (split.Contains("b/s", StringComparison.Ordinal))
+                        else if (split.Contains("b/s", StringComparison.Ordinal) && info.aBitrate.Length == 0)
                         {
                             string[] bitrate = split.Split('(', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             if (bitrate.Length >= 1)
@@ -715,6 +724,7 @@ namespace GumCut
                             if (duration.Length >= 2)
                             {
                                 info.Duration = duration[1];
+                                break;
                             }
                         }
                     }
