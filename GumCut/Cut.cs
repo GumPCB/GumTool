@@ -910,6 +910,9 @@ namespace GumCut
 
         private void BatchReplaceNameExecutedCommand(object? obj)
         {
+            if (batchReplaceNameOld.Length == 0)
+                return;
+
             foreach (VideoInfo info in VideoList)
             {
                 info.SaveName = info.SaveName.Replace(batchReplaceNameOld, batchReplaceNameNew);
