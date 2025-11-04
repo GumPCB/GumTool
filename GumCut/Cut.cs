@@ -845,6 +845,11 @@ namespace GumCut
         private List<string> outputs = new();
         private void BatchCut(bool IsAll)
         {
+            if (!Directory.Exists(BatchSaveDirectory))
+            {
+                Directory.CreateDirectory(BatchSaveDirectory);
+            }
+
             inputs.Clear();
             outputs.Clear();
 
