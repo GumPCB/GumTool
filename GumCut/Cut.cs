@@ -16,8 +16,8 @@ namespace GumCut
         private string resultText = string.Empty;
         private VideoCollection videoList = [];
         private string batchSaveDirectory = string.Empty;
-        private int batchProgressCurrent;
-        private int batchProgressMaximum;
+        private long batchProgressCurrent;
+        private long batchProgressMaximum;
         private string batchReplaceNameOld = "_cut";
         private string batchReplaceNameNew = string.Empty;
         public Command FFmpegOpenButton { get; set; }
@@ -153,7 +153,7 @@ namespace GumCut
                 SetupfileSave();
             }
         }
-        public int BatchProgressCurrent
+        public long BatchProgressCurrent
         {
             get => batchProgressCurrent; set
             {
@@ -161,7 +161,7 @@ namespace GumCut
                 OnPropertyChanged(nameof(BatchProgressCurrent));
             }
         }
-        public int BatchProgressMaximum
+        public long BatchProgressMaximum
         {
             get => batchProgressMaximum; set
             {
@@ -841,8 +841,9 @@ namespace GumCut
             return true;
         }
 
-        private List<string> inputs = new();
-        private List<string> outputs = new();
+        private readonly List<string> inputs = [];
+        private readonly List<string> outputs = [];
+        private readonly List<long> durations = [];  // milliseconds
         private void BatchCut(bool IsAll)
         {
             if (!Directory.Exists(BatchSaveDirectory))
@@ -852,6 +853,9 @@ namespace GumCut
 
             inputs.Clear();
             outputs.Clear();
+            durations.Clear();
+            BatchProgressCurrent = 0L;
+            BatchProgressMaximum = 0L;
 
             foreach (VideoInfo info in VideoList)
             {
@@ -866,10 +870,17 @@ namespace GumCut
 
                 inputs.Add(info.FileName);
                 outputs.Add(BatchSaveDirectory + "\\" + info.SaveName);
-            }
 
-            BatchProgressCurrent = 0;
-            BatchProgressMaximum = inputs.Count;
+                long duration = 0L;
+                if (TimeSpan.TryParse(info.Duration, out TimeSpan ts))
+                    duration = (long)(ts.TotalMilliseconds);
+
+                if (duration == 0L)
+                    duration = 1L;
+
+                BatchProgressMaximum += duration;
+                durations.Add(duration);
+            }
 
             RecursiveBatchCut();
         }
@@ -904,11 +915,12 @@ namespace GumCut
                 Working = false;
                 stopwatch.Stop();
                 ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
-                ResultText += $"====== Working End : {DateTime.Now.ToString("F")} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds)\n";
+                ResultText += $"====== Working End : {DateTime.Now:F} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds, {(double)durations.First() / stopwatch.ElapsedMilliseconds:N3}x)\n";
                 data.LoadVideo = string.Empty;
                 data.SaveVideo = string.Empty;
                 FFmpegResultText = string.Empty;
-                ++BatchProgressCurrent;
+                BatchProgressCurrent += durations.First();
+                durations.RemoveAt(0);
                 RecursiveBatchCut();
             });
         }
