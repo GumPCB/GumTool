@@ -37,15 +37,6 @@ namespace GumCut
         public Command BatchCutAllButton { get; set; }
         public Command BatchReplaceNameButton { get; set; }
 
-        private enum SelectedTab
-        {
-            FastCutTab,
-            EditTab,
-            ImageTab,
-            SubtitleTab
-        }
-        private SelectedTab CurrentSelectedTab = SelectedTab.FastCutTab;
-
         public InputData Data
         {
             get => data;
@@ -74,7 +65,6 @@ namespace GumCut
                 data.EditTabClear();
                 data.ImageTabClear();
                 data.SubtitleTabClear();
-                CurrentSelectedTab = SelectedTab.FastCutTab;
                 UpdateStreams();
             }
         }
@@ -88,7 +78,6 @@ namespace GumCut
 
                 data.ImageTabClear();
                 data.SubtitleTabClear();
-                CurrentSelectedTab = SelectedTab.EditTab;
                 UpdateStreams();
             }
         }
@@ -102,7 +91,6 @@ namespace GumCut
 
                 data.EditTabClear();
                 data.SubtitleTabClear();
-                CurrentSelectedTab = SelectedTab.ImageTab;
             }
         }
         public bool SubtitleTabControl
@@ -115,7 +103,6 @@ namespace GumCut
 
                 data.EditTabClear();
                 data.ImageTabClear();
-                CurrentSelectedTab = SelectedTab.SubtitleTab;
                 UpdateSubtitles();
             }
         }
@@ -136,7 +123,6 @@ namespace GumCut
                 OnPropertyChanged(nameof(ResultText));
             }
         }
-
         public VideoCollection VideoList
         {
             get => videoList; set
@@ -145,7 +131,6 @@ namespace GumCut
                 OnPropertyChanged(nameof(VideoList));
             }
         }
-
         public string BatchSaveDirectory
         {
             get => batchSaveDirectory; set
@@ -412,27 +397,19 @@ namespace GumCut
 
         private string GetSelectedTabArguments()
         {
-            string arguments = string.Empty;
+            if (fastCutTabControl == true)
+                return FFmpegArguments.FastCut(data, !openCmd);
 
-            switch (CurrentSelectedTab)
-            {
-                case SelectedTab.FastCutTab:
-                    arguments = FFmpegArguments.FastCut(data, !openCmd);
-                    break;
-                case SelectedTab.EditTab:
-                    arguments = FFmpegArguments.Edit(data, !openCmd);
-                    break;
-                case SelectedTab.ImageTab:
-                    arguments = FFmpegArguments.Image(data, !openCmd);
-                    break;
-                case SelectedTab.SubtitleTab:
-                    arguments = FFmpegArguments.Subtitle(data, !openCmd);
-                    break;
-                default:
-                    break;
-            }
+            if (editTabControl == true)
+                return FFmpegArguments.Edit(data, !openCmd);
 
-            return arguments;
+            if (imageTabControl == true)
+                return FFmpegArguments.Image(data, !openCmd);
+
+            if (subtitleTabControl == true)
+                return FFmpegArguments.Subtitle(data, !openCmd);
+
+            return string.Empty;
         }
 
         private static string FFmpegResultText = string.Empty;
