@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace GumCut
 {
@@ -21,7 +16,7 @@ namespace GumCut
 
             arguments += SS_TO(data);
 
-            arguments += "-map 0 ";
+            arguments += MAP(data);
 
             if (data.Streaming)
                 arguments += "-movflags +faststart ";
@@ -43,7 +38,7 @@ namespace GumCut
 
             arguments += SS_TO(data);
 
-            arguments += "-map 0 ";
+            arguments += MAP(data);
 
             string edit = CRF(data) + VF(data);
             arguments += edit;
@@ -127,6 +122,39 @@ namespace GumCut
             }
 
             return time;
+        }
+
+        private static string MAP(in InputData data)
+        {
+            string map = string.Empty;
+
+            bool allSelectStream = true;
+            foreach (var stream in data.Streams)
+            {
+                if (!stream.Checked)
+                {
+                    allSelectStream = false;
+                    continue;
+                }
+
+                string[] line = stream.Line.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (line.Length > 0)
+                {
+                    if (line[0].StartsWith("0:"))
+                    {
+                        map += $"-map {line[0]} ";
+                    }
+                    else
+                    {
+                        map += $"-map 0:{line[0]} ";
+                    }
+                }
+            }
+
+            if (allSelectStream || map.Length == 0)
+                map = "-map 0 ";
+
+            return map;
         }
 
         private static string CRF(in InputData data)

@@ -81,6 +81,7 @@ namespace GumCut
             {
                 info.IsSelected = false;
             }
+            (DataContext as Cut)?.UpdateStreams();
             (DataContext as Cut)?.UpdateSubtitles();
         }
 

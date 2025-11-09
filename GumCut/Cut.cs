@@ -75,6 +75,7 @@ namespace GumCut
                 data.ImageTabClear();
                 data.SubtitleTabClear();
                 CurrentSelectedTab = SelectedTab.FastCutTab;
+                UpdateStreams();
             }
         }
         public bool EditTabControl
@@ -88,6 +89,7 @@ namespace GumCut
                 data.ImageTabClear();
                 data.SubtitleTabClear();
                 CurrentSelectedTab = SelectedTab.EditTab;
+                UpdateStreams();
             }
         }
         public bool ImageTabControl
@@ -330,16 +332,19 @@ namespace GumCut
             ResultText += "===== Get Encoder Info : ";
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -encoders", false, true)).ContinueWith((antecedent) =>
             {
-                SplitEncoderInfo(FFmpegResultText);
-                if (data.VideoEncoders.Count == 0)
+                App.Current.Dispatcher.Invoke((System.Action)delegate
                 {
-                    ResultText += "Fail =========\n";
-                }
-                else
-                {
-                    ResultText += "Success! =========\n";
-                }
-                FFmpegResultText = string.Empty;
+                    SplitEncoderInfo(FFmpegResultText);
+                    if (data.VideoEncoders.Count == 0)
+                    {
+                        ResultText += "Fail =========\n";
+                    }
+                    else
+                    {
+                        ResultText += "Success! =========\n";
+                    }
+                    FFmpegResultText = string.Empty;
+                });
             });
         }
 
@@ -525,14 +530,17 @@ namespace GumCut
             ResultText += "===== Get Video Info : " + fileName + "\n";
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + fileName + "\"", false, false)).ContinueWith((antecedent) =>
             {
-                if (SplitVideoInfo(FFmpegResultText) == false)
+                App.Current.Dispatcher.Invoke((System.Action)delegate
                 {
-                    ResultText += "Fail =========\n";
-                    ResultText += FFmpegResultText;
-                }
+                    if (SplitVideoInfo(FFmpegResultText) == false)
+                    {
+                        ResultText += "Fail =========\n";
+                        ResultText += FFmpegResultText;
+                    }
 
-                FFmpegResultText = string.Empty;
-                GetVideoInfo();
+                    FFmpegResultText = string.Empty;
+                    GetVideoInfo();
+                });
             });
         }
 
@@ -593,37 +601,44 @@ namespace GumCut
 
             if (filename.Length == 0)
             {
+                UpdateStreams();
                 UpdateSubtitles();
                 return;
             }
-            
+
             Working = true;
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + filename + "\"", false, false)).ContinueWith((antecedent) =>
             {
-                VideoInfo temp = BatchSplitInfo(FFmpegResultText, filename);
-                if (temp.vCodec.Length == 0)
-                    temp.vCodec = "Not Found";
-                foreach (VideoInfo info in VideoList)
+                App.Current.Dispatcher.Invoke((System.Action)delegate
                 {
-                    if (info.vCodec.Length != 0 || info.FileName.Equals(temp.FileName) == false)
-                        continue;
+                    VideoInfo temp = BatchSplitInfo(FFmpegResultText, filename);
+                    if (temp.vCodec.Length == 0)
+                        temp.vCodec = "Not Found";
+                    if (temp.aCodec.Length == 0)
+                        temp.aCodec = "Not Found";
+                    foreach (VideoInfo info in VideoList)
+                    {
+                        if (info.vCodec.Length != 0 || info.FileName.Equals(temp.FileName) == false)
+                            continue;
 
-                    info.vCodec = temp.vCodec;
-                    info.Resolution = temp.Resolution;
-                    info.Duration = temp.Duration;
-                    info.FPS = temp.FPS;
-                    info.Pixel = temp.Pixel;
-                    info.vBitrate = temp.vBitrate;
-                    info.aCodec = temp.aCodec;
-                    info.aBitrate = temp.aBitrate;
-                    info.SaveName = Path.GetFileNameWithoutExtension(info.FileName) + "_cut" + Path.GetExtension(info.FileName);
-                    info.Subtitles = temp.Subtitles;
-                    break;
-                }
+                        info.vCodec = temp.vCodec;
+                        info.Resolution = temp.Resolution;
+                        info.Duration = temp.Duration;
+                        info.FPS = temp.FPS;
+                        info.Pixel = temp.Pixel;
+                        info.vBitrate = temp.vBitrate;
+                        info.aCodec = temp.aCodec;
+                        info.aBitrate = temp.aBitrate;
+                        info.SaveName = Path.GetFileNameWithoutExtension(info.FileName) + "_cut" + Path.GetExtension(info.FileName);
+                        info.Streams = temp.Streams;
+                        info.Subtitles = temp.Subtitles;
+                        break;
+                    }
 
-                FFmpegResultText = string.Empty;
-                Working = false;
-                BatchGetInfo();
+                    FFmpegResultText = string.Empty;
+                    Working = false;
+                    BatchGetInfo();
+                });
             });
         }
 
@@ -638,6 +653,21 @@ namespace GumCut
             {
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
+
+                if (line.Contains("Stream", StringComparison.Ordinal))
+                {
+                    string stream = line.Substring(line.IndexOf('#') + 1);
+                    if (stream.Length != 0)
+                    {
+                        stream = stream.Replace(": ", " ")
+                            .Replace('(', ' ')
+                            .Replace(")", null)
+                            .Replace('[', ' ')
+                            .Replace("]", null)
+                            .Replace("  ", " ");
+                        info.Streams.Add(stream.Trim());
+                    }
+                }
 
                 if (line.Contains("Stream", StringComparison.Ordinal) && line.Contains("Video", StringComparison.Ordinal) && !line.Contains("attached pic", StringComparison.Ordinal))
                 {
@@ -737,7 +767,6 @@ namespace GumCut
                         subtitle = subtitle.Replace("Subtitle: ", null)
                             .Replace(": ", " ")
                             .Replace('(', ' ')
-                            .Replace(',', ' ')
                             .Replace(")", null)
                             .Replace('[', ' ')
                             .Replace("]", null)
@@ -792,7 +821,7 @@ namespace GumCut
 
         private void BatchRemoveSelectedExecutedCommand(object? obj)
         {
-            for (int i = VideoList.Count -1; i >= 0; --i)
+            for (int i = VideoList.Count - 1; i >= 0; --i)
             {
                 if (VideoList[i].IsSelected)
                 {
@@ -912,16 +941,19 @@ namespace GumCut
 
             var task = Task.Run(() => FFmpegAsync(ffmpegFile, arguments, openCmd, false)).ContinueWith((antecedent) =>
             {
-                Working = false;
-                stopwatch.Stop();
-                ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
-                ResultText += $"====== Working End : {DateTime.Now:F} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds, {(double)durations.First() / stopwatch.ElapsedMilliseconds:N3}x)\n";
-                data.LoadVideo = string.Empty;
-                data.SaveVideo = string.Empty;
-                FFmpegResultText = string.Empty;
-                BatchProgressCurrent += durations.First();
-                durations.RemoveAt(0);
-                RecursiveBatchCut();
+                App.Current.Dispatcher.Invoke((System.Action)delegate
+                {
+                    Working = false;
+                    stopwatch.Stop();
+                    ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
+                    ResultText += $"====== Working End : {DateTime.Now:F} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds, {(double)durations.First() / stopwatch.ElapsedMilliseconds:N3}x)\n";
+                    data.LoadVideo = string.Empty;
+                    data.SaveVideo = string.Empty;
+                    FFmpegResultText = string.Empty;
+                    BatchProgressCurrent += durations.First();
+                    durations.RemoveAt(0);
+                    RecursiveBatchCut();
+                });
             });
         }
 
@@ -1019,6 +1051,41 @@ namespace GumCut
             }
 
             data.Subtitles = VideoList[0].Subtitles;
+        }
+
+        internal void UpdateStreams()
+        {
+            if ((fastCutTabControl == false && editTabControl == false) || VideoList.Count == 0)
+                return;
+
+            int selectedIndex = 0;
+            for (int i = 0; i < VideoList.Count; ++i)
+            {
+                if (VideoList[i].IsSelected == true)
+                {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            while (data.Streams.Count > VideoList[selectedIndex].Streams.Count)
+            {
+                data.Streams.Remove(data.Streams[data.Streams.Count - 1]);
+            }
+            if (data.Streams.Count < VideoList[selectedIndex].Streams.Count)
+            {
+                int addCount = VideoList[selectedIndex].Streams.Count - data.Streams.Count;
+                for (int i = 0; i < addCount; ++i)
+                {
+                    data.Streams.Add(new Stream());
+                }
+            }
+
+            for (int i = 0; i < VideoList[selectedIndex].Streams.Count; ++i)
+            {
+                data.Streams[i].Checked = false;
+                data.Streams[i].Line = VideoList[selectedIndex].Streams[i];
+            }
         }
     }
 }

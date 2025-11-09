@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace GumCut
 {
@@ -115,6 +116,40 @@ namespace GumCut
         }
     }
 
+    public class StreamCollection : ObservableCollection<Stream>
+    {
+    }
+
+    public class Stream : INotifyPropertyChanged
+    {
+        private bool _checked = false;
+        private string line = string.Empty;
+
+        public bool Checked
+        {
+            get => _checked; set
+            {
+                _checked = value;
+                OnPropertyChanged(nameof(Checked));
+            }
+        }
+        public string Line
+        {
+            get => line; set
+            {
+                line = value;
+                OnPropertyChanged(nameof(Line));
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
     public class InputData : INotifyPropertyChanged
     {
         private string fFmpegFile = string.Empty;
@@ -159,6 +194,7 @@ namespace GumCut
         private string saveZeroName = "name_00001.jpg"; // Image
         private int selectedSubtitle;       // Subtitle
         private List<string> subtitles = [];// Subtitle
+        private StreamCollection streams = [];  // Cut, Edit
 
         public void EditTabClear()
         {
@@ -534,7 +570,6 @@ namespace GumCut
                 OnPropertyChanged(nameof(SaveZeroName));
             }
         }
-
         public int SelectedSubtitle
         {
             get => selectedSubtitle;
@@ -544,7 +579,6 @@ namespace GumCut
                 OnPropertyChanged(nameof(SelectedSubtitle));
             }
         }
-
         public List<string> Subtitles
         {
             get => subtitles;
@@ -556,6 +590,15 @@ namespace GumCut
                 subtitles = value;
                 OnPropertyChanged(nameof(Subtitles));
                 SelectedSubtitle = 0;
+            }
+        }
+        public StreamCollection Streams
+        {
+            get => streams;
+            set
+            {
+                streams = value;
+                OnPropertyChanged(nameof(Streams));
             }
         }
 

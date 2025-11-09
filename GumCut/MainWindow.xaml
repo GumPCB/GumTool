@@ -57,6 +57,25 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Stream" VerticalAlignment="Center" Width="100"/>
+                                        <ListView Grid.Column="1" MaxHeight="350" SelectionMode="Multiple" ItemsSource="{Binding Data.Streams}">
+                                            <ListView.Resources>
+                                                <Style TargetType="{x:Type ListViewItem}">
+                                                    <Setter Property="IsSelected" Value="{Binding Checked}"/>
+                                                </Style>
+                                            </ListView.Resources>
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox Content="{Binding Line}" IsChecked="{Binding Checked}" FontSize="12"/>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
                                         <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
                                         <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
                                     </Grid>
@@ -231,6 +250,25 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Stream" VerticalAlignment="Center" Width="100"/>
+                                        <ListView Grid.Column="1" MaxHeight="120" SelectionMode="Multiple" ItemsSource="{Binding Data.Streams}">
+                                            <ListView.Resources>
+                                                <Style TargetType="{x:Type ListViewItem}">
+                                                    <Setter Property="IsSelected" Value="{Binding Checked}"/>
+                                                </Style>
+                                            </ListView.Resources>
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox Content="{Binding Line}" IsChecked="{Binding Checked}" FontSize="12"/>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </Grid>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
                                         <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
                                         <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
                                     </Grid>
@@ -374,7 +412,7 @@
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="Subtitle" VerticalAlignment="Center" Width="100"/>
-                                        <ListBox Grid.Column="1" MaxHeight="350" ItemsSource="{Binding Data.Subtitles}" SelectedIndex="{Binding Data.SelectedSubtitle}" SelectionChanged="Subtitles_SelectionChanged"/>
+                                        <ListBox Grid.Column="1" MaxHeight="350" ItemsSource="{Binding Data.Subtitles}" SelectedIndex="{Binding Data.SelectedSubtitle}" SelectionChanged="Subtitles_SelectionChanged" FontSize="12"/>
                                     </Grid>
                                 </StackPanel>
                             </TabItem>

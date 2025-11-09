@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
 
 namespace GumCut
 {
@@ -26,6 +20,7 @@ namespace GumCut
         private string acodec = string.Empty;
         private string abitrate = string.Empty;
         public bool IsSelected;
+        public List<string> Streams = [];
         public List<string> Subtitles = [];
 
         public VideoInfo(string _filename)
