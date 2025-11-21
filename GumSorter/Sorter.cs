@@ -17,9 +17,10 @@ namespace GumSorter
         private bool working;
         private long currentWorked = 0;
         private string tempDirectory = "temp";
-        private uint thumbnailCount = 5;
+        private uint thumbnailCount = 10;
         private string thumbnailImage;
         private List<string> thumbnailImages = [];
+        private int currentThumbnailIndex = 1;
         private bool isClosingDeleteThumbnail = false;
         private bool isVisibleThumbnailName = false;
         private List<string> createdthumbnailDirectorys = [];
@@ -79,7 +80,12 @@ namespace GumSorter
             {
                 selectedVideoIndex = value;
                 OnPropertyChanged(nameof(SelectedVideoIndex));
+                OnPropertyChanged(nameof(SelectedVideoIndexCount));
             }
+        }
+        public int SelectedVideoIndexCount
+        {
+            get => selectedVideoIndex + 1;
         }
         public bool Working
         {
@@ -121,6 +127,22 @@ namespace GumSorter
             {
                 thumbnailImage = value;
                 OnPropertyChanged(nameof(ThumbnailImage));
+            }
+        }
+        public List<string> ThumbnailImages
+        {
+            get => thumbnailImages; set
+            {
+                thumbnailImages = value;
+                OnPropertyChanged(nameof(ThumbnailImages));
+            }
+        }
+        public int CurrentThumbnailIndex
+        {
+            get => currentThumbnailIndex; set
+            {
+                currentThumbnailIndex = value;
+                OnPropertyChanged(nameof(CurrentThumbnailIndex));
             }
         }
         public bool IsClosingDeleteThumbnail
@@ -374,13 +396,9 @@ namespace GumSorter
 
         private void VideoListRemoveSelectedExecutedCommand(object? obj)
         {
-            for (int i = VideoList.Count - 1; i >= 0; --i)
-            {
-                if (VideoList[i].IsSelected)
-                {
-                    VideoList.RemoveAt(i);
-                }
-            }
+            if (selectedVideoIndex < 0 || selectedVideoIndex >= VideoList.Count) return;
+
+            VideoList.RemoveAt(selectedVideoIndex);
         }
 
         private void VideoListRemoveAllExecutedCommand(object? obj)
@@ -390,14 +408,10 @@ namespace GumSorter
 
         private void VideoListDeleteSelectedExecutedCommand(object? obj)
         {
-            for (int i = VideoList.Count - 1; i >= 0; --i)
-            {
-                if (VideoList[i].IsSelected)
-                {
-                    AddDeleteList(VideoList[i]);
-                    VideoList.RemoveAt(i);
-                }
-            }
+            if (selectedVideoIndex < 0 || selectedVideoIndex >= VideoList.Count) return;
+
+            AddDeleteList(VideoList[selectedVideoIndex]);
+            VideoList.RemoveAt(selectedVideoIndex);
         }
 
         private void VideoListDeleteAllExecutedCommand(object? obj)
@@ -538,13 +552,10 @@ namespace GumSorter
 
         private void ToDirectoryNameSelectedExecutedCommand(object? obj)
         {
-            foreach (VideoInfo info in VideoList)
-            {
-                if (info.IsSelected == false)
-                    continue;
-                string directoryName = Path.GetDirectoryName(info.FileName) ?? string.Empty;
-                info.SaveName = directoryName.Length > 0 ? Path.GetFileName(directoryName) + Path.GetExtension(info.FileName) : info.SaveName;
-            }
+            if (selectedVideoIndex < 0 || selectedVideoIndex >= VideoList.Count) return;
+
+            string directoryName = Path.GetDirectoryName(VideoList[selectedVideoIndex].FileName) ?? string.Empty;
+            VideoList[selectedVideoIndex].SaveName = directoryName.Length > 0 ? Path.GetFileName(directoryName) + Path.GetExtension(VideoList[selectedVideoIndex].FileName) : VideoList[selectedVideoIndex].SaveName;
         }
         private void ToDirectoryNameAllExecutedCommand(object? obj)
         {
@@ -557,16 +568,13 @@ namespace GumSorter
 
         private void ApplyChangeSelectedExecutedCommand(object? obj)
         {
-            foreach (VideoInfo info in VideoList)
+            if (selectedVideoIndex < 0 || selectedVideoIndex >= VideoList.Count) return;
+
+            string destFilename = Path.GetDirectoryName(VideoList[selectedVideoIndex].FileName) + "\\" + VideoList[selectedVideoIndex].SaveName;
+            File.Move(VideoList[selectedVideoIndex].FileName, destFilename);
+            if (File.Exists(destFilename))
             {
-                if (info.IsSelected == false)
-                    continue;
-                string destFilename = Path.GetDirectoryName(info.FileName) + "\\" + info.SaveName;
-                File.Move(info.FileName, destFilename);
-                if (File.Exists(destFilename))
-                {
-                    info.FileName = destFilename;
-                }
+                VideoList[selectedVideoIndex].FileName = destFilename;
             }
         }
         private void ApplyChangeAllExecutedCommand(object? obj)
@@ -638,7 +646,7 @@ namespace GumSorter
 
         internal void VideoSelectionChanged(VideoInfo videoInfo)
         {
-            thumbnailImages = videoInfo.Thumbnails;
+            ThumbnailImages = videoInfo.Thumbnails;
             NextThumbnailImage();
         }
         internal void AddDeleteList(VideoInfo deleted)
@@ -646,6 +654,8 @@ namespace GumSorter
             if (deleted == null || DeleteList.Any(v => v.FileName.Equals(deleted.FileName, StringComparison.OrdinalIgnoreCase)))
                 return;
 
+            deleted.SaveName = Path.GetFileNameWithoutExtension(deleted.FileName) + Path.GetExtension(deleted.FileName);
+            deleted.IsSelected = false;
             DeleteList.Add(deleted);
         }
 
@@ -755,7 +765,7 @@ namespace GumSorter
                 {
                     if (thumbnailImage == DefaultThumbnailImage && VideoList.Count > 0 && VideoList[SelectedVideoIndex].FileName.Equals(info.FileName))
                     {
-                        thumbnailImages = VideoList[SelectedVideoIndex].Thumbnails;
+                        ThumbnailImages = VideoList[SelectedVideoIndex].Thumbnails;
                         NextThumbnailImage();
                     }
                     CurrentWorked++;
@@ -812,7 +822,7 @@ namespace GumSorter
 
                     if (thumbnailImage == DefaultThumbnailImage && VideoList.Count > 0 && VideoList[SelectedVideoIndex].FileName.Equals(data.LoadVideo))
                     {
-                        thumbnailImages = VideoList[SelectedVideoIndex].Thumbnails;
+                        ThumbnailImages = VideoList[SelectedVideoIndex].Thumbnails;
                         NextThumbnailImage();
                     }
 
@@ -881,6 +891,7 @@ namespace GumSorter
                 if (ThumbnailImage != DefaultThumbnailImage)
                 {
                     ThumbnailImage = DefaultThumbnailImage;
+                    CurrentThumbnailIndex = 1;
                 }
                 return;
             }
@@ -892,6 +903,7 @@ namespace GumSorter
                 currentIndex = 0;
             }
             ThumbnailImage = thumbnailImages[currentIndex];
+            CurrentThumbnailIndex = currentIndex + 1;
         }
 
         internal void PreviousThumbnailImage()
@@ -901,6 +913,7 @@ namespace GumSorter
                 if (ThumbnailImage != DefaultThumbnailImage)
                 {
                     ThumbnailImage = DefaultThumbnailImage;
+                    CurrentThumbnailIndex = 1;
                 }
                 return;
             }
@@ -912,12 +925,14 @@ namespace GumSorter
                 currentIndex = thumbnailImages.Count - 1;
             }
             ThumbnailImage = thumbnailImages[currentIndex];
+            CurrentThumbnailIndex = currentIndex + 1;
         }
 
         internal void ClearThumbnailImage()
         {
-            thumbnailImages = [];
+            ThumbnailImages = [];
             ThumbnailImage = DefaultThumbnailImage;
+            CurrentThumbnailIndex = 1;
         }
     }
 }

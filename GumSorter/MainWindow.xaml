@@ -348,7 +348,7 @@
                                         <ListView.ItemTemplate>
                                             <DataTemplate>
                                                 <StackPanel>
-                                                    <TextBlock Text="{Binding FileName}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding SaveName}" VerticalAlignment="Center"/>
                                                     <StackPanel Orientation="Horizontal" >
                                                         <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"/>
                                                         <TextBlock Text=" | " VerticalAlignment="Center"/>
@@ -389,13 +389,15 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1"/>
+                            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1"/>
                         </Grid>
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="2"/>
@@ -406,15 +408,28 @@
                         <TextBlock Grid.Column="1" Text="{Binding DeleteList.Count}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         <Border Grid.Column="2" Height="18" BorderBrush="Gray" BorderThickness="1"/>
                         <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE786;" FontSize="18"/>
-                        <TextBlock Grid.Column="4" Text="{Binding VideoList.Count}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding SelectedVideoIndexCount}" VerticalAlignment="Center"/>
+                            <TextBlock Text=" / " VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding VideoList.Count}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Border Grid.Column="5" Height="18" BorderBrush="Gray" BorderThickness="1"/>
+                        <TextBlock Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE91B;" FontSize="18"/>
+                        <StackPanel Grid.Column="7" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding CurrentThumbnailIndex}" VerticalAlignment="Center"/>
+                            <TextBlock Text=" / " VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ThumbnailImages.Count}" VerticalAlignment="Center"/>
+                        </StackPanel>
                     </Grid>
                     <Grid Grid.Row="2">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1"/>
+                            <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1"/>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -430,6 +445,10 @@
                             <StackPanel>
                                 <TextBlock Text="{Binding FileName}" VerticalAlignment="Center"/>
                                 <StackPanel Orientation="Horizontal" >
+                                    <TextBlock Text="-> " VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SaveName}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" >
                                     <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"/>
                                     <TextBlock Text=" | " VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding vCodec}" VerticalAlignment="Center"/>
@@ -437,10 +456,6 @@
                                     <TextBlock Text="{Binding aCodec}" VerticalAlignment="Center"/>
                                     <TextBlock Text=" | " VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding Pixel}" VerticalAlignment="Center"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" >
-                                    <TextBlock Text="-> " VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SaveName}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </StackPanel>
                         </DataTemplate>
