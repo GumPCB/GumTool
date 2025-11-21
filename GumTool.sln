@@ -5,6 +5,10 @@ VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumCut", "GumCut\GumCut.csproj", "{C09D3FC5-F4E9-48CE-A354-3982B8365C9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumSorter", "GumSorter\GumSorter.csproj", "{C94A8122-BFC8-4C7E-8D45-8E776E99BB38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumTool", "GumTool\GumTool.csproj", "{C8E89717-35B8-4C21-BEC7-F86EF7BEC2DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{C09D3FC5-F4E9-48CE-A354-3982B8365C9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C09D3FC5-F4E9-48CE-A354-3982B8365C9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C09D3FC5-F4E9-48CE-A354-3982B8365C9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C94A8122-BFC8-4C7E-8D45-8E776E99BB38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C94A8122-BFC8-4C7E-8D45-8E776E99BB38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C94A8122-BFC8-4C7E-8D45-8E776E99BB38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C94A8122-BFC8-4C7E-8D45-8E776E99BB38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8E89717-35B8-4C21-BEC7-F86EF7BEC2DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8E89717-35B8-4C21-BEC7-F86EF7BEC2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8E89717-35B8-4C21-BEC7-F86EF7BEC2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8E89717-35B8-4C21-BEC7-F86EF7BEC2DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

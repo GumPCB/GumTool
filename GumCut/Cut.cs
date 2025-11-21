@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using GumTool;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 
@@ -317,7 +318,7 @@ namespace GumCut
             ResultText += "===== Get Encoder Info : ";
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -encoders", false, true)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((System.Action)delegate
+                App.Current.Dispatcher.Invoke((Action)delegate
                 {
                     SplitEncoderInfo(FFmpegResultText);
                     if (data.VideoEncoders.Count == 0)
@@ -381,7 +382,7 @@ namespace GumCut
             {
                 FileName = "ffmpeg",
                 DefaultExt = ".exe",
-                Filter = "FFmpeg file (.exe)|ffmpeg.exe"
+                Filter = "FFmpeg file (.exe)|*.exe"
             };
 
             bool? result = dialog.ShowDialog();
@@ -507,7 +508,7 @@ namespace GumCut
             ResultText += "===== Get Video Info : " + fileName + "\n";
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + fileName + "\"", false, false)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((System.Action)delegate
+                App.Current.Dispatcher.Invoke((Action)delegate
                 {
                     if (SplitVideoInfo(FFmpegResultText) == false)
                     {
@@ -586,9 +587,9 @@ namespace GumCut
             Working = true;
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + filename + "\"", false, false)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((System.Action)delegate
+                App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    VideoInfo temp = BatchSplitInfo(FFmpegResultText, filename);
+                    VideoInfo temp = VideoInfo.SplitInfo(FFmpegResultText, filename);
                     if (temp.vCodec.Length == 0)
                         temp.vCodec = "Not Found";
                     if (temp.aCodec.Length == 0)
@@ -617,143 +618,6 @@ namespace GumCut
                     BatchGetInfo();
                 });
             });
-        }
-
-        private VideoInfo BatchSplitInfo(string ffmpegResult, string filename)
-        {
-            VideoInfo info = new(filename);
-            string[]? splitResult = ffmpegResult?.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            if (splitResult == null || splitResult.Length == 0) return info;
-
-            char[] delimiterChars = { ' ', ',', '.', ':' };
-            foreach (string line in splitResult)
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                    continue;
-
-                if (line.Contains("Stream", StringComparison.Ordinal))
-                {
-                    string stream = line.Substring(line.IndexOf('#') + 1);
-                    if (stream.Length != 0)
-                    {
-                        stream = stream.Replace(": ", " ")
-                            .Replace('(', ' ')
-                            .Replace(")", null)
-                            .Replace('[', ' ')
-                            .Replace("]", null)
-                            .Replace("  ", " ");
-                        info.Streams.Add(stream.Trim());
-                    }
-                }
-
-                if (line.Contains("Stream", StringComparison.Ordinal) && line.Contains("Video", StringComparison.Ordinal) && !line.Contains("attached pic", StringComparison.Ordinal))
-                {
-                    string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                    foreach (string split in splitLine)
-                    {
-                        if (split.Contains("Video", StringComparison.Ordinal) && info.vCodec.Length == 0)
-                        {
-                            string[] encoder = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            for (int i = 0; i < encoder.Length; ++i)
-                            {
-                                if (encoder[i].Equals("Video:") && encoder.Length >= i + 2)
-                                {
-                                    info.vCodec = encoder[i + 1];
-                                    break;
-                                }
-                            }
-                        }
-                        else if (info.Pixel.Length == 0 && (split.Contains("yuv", StringComparison.Ordinal) || split.Contains("nv", StringComparison.Ordinal) || split.Contains("rgb", StringComparison.Ordinal) || split.Contains("bgr", StringComparison.Ordinal) || split.Contains("gbr", StringComparison.Ordinal) || split.Contains("gray", StringComparison.Ordinal) || split.Contains("mono", StringComparison.Ordinal)))
-                        {
-                            string[] pixel = split.Split('(', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            if (pixel.Length >= 1)
-                            {
-                                info.Pixel = pixel[0];
-                            }
-                        }
-                        else if (split.Contains("fps", StringComparison.Ordinal))
-                        {
-                            string[] fps = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            if (fps.Length >= 2)
-                            {
-                                info.FPS = double.Parse(fps[0]);
-                            }
-                        }
-                        else if (split.Contains("b/s", StringComparison.Ordinal) && info.vBitrate.Length == 0)
-                        {
-                            info.vBitrate = split;
-                        }
-                        else if (split.Contains('x', StringComparison.Ordinal) && info.Resolution.Length == 0)
-                        {
-                            char[] resolutionDelimiterChars = { 'x', ' ' };
-                            string[] resolution = split.Split(resolutionDelimiterChars, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            uint temp;
-                            if (resolution.Length < 2 || info.Resolution.Length != 0 || uint.TryParse(resolution[0], out temp) == false || uint.TryParse(resolution[1], out temp) == false)
-                                continue;
-
-                            info.Resolution = resolution[0] + 'x' + resolution[1];
-                        }
-                    }
-                }
-                else if (line.Contains("Stream", StringComparison.Ordinal) && line.Contains("Audio", StringComparison.Ordinal))
-                {
-                    string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                    foreach (string split in splitLine)
-                    {
-                        if (split.Contains("Audio", StringComparison.Ordinal) && info.aCodec.Length == 0)
-                        {
-                            string[] encoder = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            for (int i = 0; i < encoder.Length; ++i)
-                            {
-                                if (encoder[i].Equals("Audio:") && encoder.Length >= i + 2)
-                                {
-                                    info.aCodec = encoder[i + 1];
-                                    break;
-                                }
-                            }
-                        }
-                        else if (split.Contains("b/s", StringComparison.Ordinal) && info.aBitrate.Length == 0)
-                        {
-                            string[] bitrate = split.Split('(', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            if (bitrate.Length >= 1)
-                                info.aBitrate = bitrate[0];
-                        }
-                    }
-                }
-                else if (line.Contains("Duration", StringComparison.Ordinal))
-                {
-                    string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                    foreach (string split in splitLine)
-                    {
-                        if (split.Contains("Duration", StringComparison.Ordinal))
-                        {
-                            string[] duration = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            if (duration.Length >= 2)
-                            {
-                                info.Duration = duration[1];
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if (line.Contains("Stream", StringComparison.Ordinal) && line.Contains("Subtitle", StringComparison.Ordinal))
-                {
-                    string subtitle = line.Substring(line.IndexOf('#') + 1);
-                    if (subtitle.Length != 0)
-                    {
-                        subtitle = subtitle.Replace("Subtitle: ", null)
-                            .Replace(": ", " ")
-                            .Replace('(', ' ')
-                            .Replace(")", null)
-                            .Replace('[', ' ')
-                            .Replace("]", null)
-                            .Replace("  ", " ");
-                        info.Subtitles.Add(subtitle.Trim());
-                    }
-                }
-            }
-
-            return info;
         }
 
         private void BatchOpenFileExecutedCommand(object? obj)
@@ -918,7 +782,7 @@ namespace GumCut
 
             var task = Task.Run(() => FFmpegAsync(ffmpegFile, arguments, openCmd, false)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((System.Action)delegate
+                App.Current.Dispatcher.Invoke((Action)delegate
                 {
                     Working = false;
                     stopwatch.Stop();
@@ -1054,7 +918,7 @@ namespace GumCut
                 int addCount = VideoList[selectedIndex].Streams.Count - data.Streams.Count;
                 for (int i = 0; i < addCount; ++i)
                 {
-                    data.Streams.Add(new Stream());
+                    data.Streams.Add(new GumTool.Stream());
                 }
             }
 

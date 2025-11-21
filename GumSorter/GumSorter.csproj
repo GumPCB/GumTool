@@ -9,13 +9,13 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <BaseOutputPath>$(SolutionDir)$(Configuration)\$(Platform)</BaseOutputPath>
     <IntermediateOutputPath>$(SolutionDir)$(Configuration)\$(Platform)\$(AssemblyName)</IntermediateOutputPath>
-    <ApplicationIcon>Cut.ico</ApplicationIcon>
-    <AssemblyVersion>1.4.1</AssemblyVersion>
-    <FileVersion>1.4.1</FileVersion>
+    <ApplicationIcon>Sorter.ico</ApplicationIcon>
+    <AssemblyVersion>1.0</AssemblyVersion>
+    <FileVersion>1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Cut.ico" />
+    <Content Include="Sorter.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,11 +32,11 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(SolutionDir)GumCut\ini\*.*&quot; &quot;$(OutputPath)ini\*.*&quot;" />
+    <Exec Command="copy /Y &quot;$(SolutionDir)GumSorter\ini\*.*&quot; &quot;$(OutputPath)ini\*.*&quot;" />
   </Target>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="if not exist &quot;$(OutputPath)ini&quot; mkdir &quot;$(OutputPath)ini&quot;" />
   </Target>
-  
+
 </Project>

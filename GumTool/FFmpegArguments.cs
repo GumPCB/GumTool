@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace GumCut
+namespace GumTool
 {
     public static class FFmpegArguments
     {

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GumCut"
         mc:Ignorable="d"
-        Title="GumCut v1.4" Width="1200" Height="700" MinWidth="850" MinHeight="600" FontSize="16">
+        Title="GumCut v1.4.1" Width="1200" Height="850" MinWidth="850" MinHeight="600">
     <Window.Resources>
         <local:Cut x:Key="KeyCut"/>
     </Window.Resources>
@@ -13,45 +13,52 @@
         <StaticResource ResourceKey="KeyCut"/>
     </Window.DataContext>
 
-    <Grid>
+    <Grid Margin="1,1,1,1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400" MinWidth="360"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <StackPanel VerticalAlignment="Top" Margin="2,0,2,0">
-
-                <Grid Margin="0,2,0,0">
+            <StackPanel VerticalAlignment="Top">
+                
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="FFmpeg File" VerticalAlignment="Center" Width="100"/>
-                    <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding Data.FFmpegFile}" FontSize="12"/>
-                    <Button Content="&#xE8E5;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding FFmpegOpenButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                    <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding Data.FFmpegFile}"/>
+                    <Button Content="&#xE8E5;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding FFmpegOpenButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
                 </Grid>
 
-
                 <Grid Margin="0,2,0,0">
+                    <Grid Margin="0,6,2,0" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <TextBlock><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">GumPCB</Hyperlink>
+                        </TextBlock>
+                    </Grid>
+                    
                     <StackPanel>
                         <!-- ======================================== FastCut ======================================== -->
-                        <TabControl Margin="0,4,0,0">
+                        <TabControl>
                             <TabItem IsSelected="{Binding FastCutTabControl}">
                                 <TabItem.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xEB9D;" Margin="0,3,0,0" FontSize="18"/>
-                                        <TextBlock Text="Cut" Margin="2,0,0,0" />
+                                        <TextBlock Text="Cut" Margin="2,0,0,0" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </TabItem.Header>
                                 <StackPanel>
+                                    <Grid>
+                                        <Border BorderBrush="Gray" BorderThickness="1"/>
+                                    </Grid>
                                     <Grid Margin="0,2,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -66,7 +73,7 @@
                                             </ListView.Resources>
                                             <ListView.ItemTemplate>
                                                 <DataTemplate>
-                                                    <CheckBox Content="{Binding Line}" IsChecked="{Binding Checked}" FontSize="12"/>
+                                                    <CheckBox Content="{Binding Line}" IsChecked="{Binding Checked}"/>
                                                 </DataTemplate>
                                             </ListView.ItemTemplate>
                                         </ListView>
@@ -87,10 +94,13 @@
                                 <TabItem.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xF7EE;" Margin="0,3,0,0" FontSize="18"/>
-                                        <TextBlock Text="Edit" Margin="2,0,0,0" />
+                                        <TextBlock Text="Edit" Margin="2,0,0,0" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </TabItem.Header>
                                 <StackPanel>
+                                    <Grid>
+                                        <Border BorderBrush="Gray" BorderThickness="1"/>
+                                    </Grid>
                                     <Grid Margin="0,2,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -259,7 +269,7 @@
                                             </ListView.Resources>
                                             <ListView.ItemTemplate>
                                                 <DataTemplate>
-                                                    <CheckBox Content="{Binding Line}" IsChecked="{Binding Checked}" FontSize="12"/>
+                                                    <CheckBox Content="{Binding Line}" IsChecked="{Binding Checked}"/>
                                                 </DataTemplate>
                                             </ListView.ItemTemplate>
                                         </ListView>
@@ -280,10 +290,13 @@
                                 <TabItem.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xF4A9;" Margin="0,3,0,0" FontSize="18"/>
-                                        <TextBlock Text="Image" Margin="2,0,0,0" />
+                                        <TextBlock Text="Image" Margin="2,0,0,0" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </TabItem.Header>
                                 <StackPanel>
+                                    <Grid>
+                                        <Border BorderBrush="Gray" BorderThickness="1"/>
+                                    </Grid>
                                     <Grid Margin="0,2,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -394,10 +407,13 @@
                                 <TabItem.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xED1E;" Margin="0,3,0,0" FontSize="18"/>
-                                        <TextBlock Text="Subtitle" Margin="2,0,0,0" />
+                                        <TextBlock Text="Subtitle" Margin="2,0,0,0" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </TabItem.Header>
                                 <StackPanel>
+                                    <Grid>
+                                        <Border BorderBrush="Gray" BorderThickness="1"/>
+                                    </Grid>
                                     <Grid Margin="0,2,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -412,24 +428,23 @@
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="Subtitle" VerticalAlignment="Center" Width="100"/>
-                                        <ListBox Grid.Column="1" MaxHeight="350" ItemsSource="{Binding Data.Subtitles}" SelectedIndex="{Binding Data.SelectedSubtitle}" SelectionChanged="Subtitles_SelectionChanged" FontSize="12"/>
+                                        <ListBox Grid.Column="1" MaxHeight="350" ItemsSource="{Binding Data.Subtitles}" SelectedIndex="{Binding Data.SelectedSubtitle}" SelectionChanged="Subtitles_SelectionChanged"/>
                                     </Grid>
                                 </StackPanel>
                             </TabItem>
 
                         </TabControl>
                     </StackPanel>
-                    <Grid Margin="0,2,2,0" HorizontalAlignment="Right" VerticalAlignment="Top">
-                        <TextBlock><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">GumPCB</Hyperlink>
-                        </TextBlock>
-                    </Grid>
                 </Grid>
 
+                <Grid>
+                    <Border BorderBrush="Gray" BorderThickness="1"/>
+                </Grid>
                 <!-- ======================================== Time ======================================== -->
-                <Grid Margin="2,2,0,0">
+                <Grid Margin="0,2,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="55"/>
                         <ColumnDefinition Width="4*"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="2*"/>
@@ -454,7 +469,7 @@
                     <TextBox Grid.Column="8" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.Start.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
 
                     <TextBlock Grid.Column="0" Grid.Row="2" Text="End Time" VerticalAlignment="Center" Width="100"/>
-                    <CheckBox Grid.Column="1" Grid.Row="2" Content="&#xE8B5; " VerticalAlignment="Center" IsChecked="{Binding Data.End.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" />
+                    <CheckBox Grid.Column="1" Grid.Row="2" Content="&#xE8B5; " VerticalAlignment="Center" IsChecked="{Binding Data.End.Checked}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
                     <TextBox Grid.Column="2" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Hour}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
                     <TextBlock Grid.Column="3" Grid.Row="2" Text=" : " VerticalAlignment="Center"/>
                     <TextBox Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Minute}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
@@ -464,7 +479,7 @@
                     <TextBox Grid.Column="8" Grid.Row="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding Data.End.Milliseconds}" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
                 </Grid>
 
-                <Grid Margin="2,2,0,0">
+                <Grid Margin="0,2,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="2"/>
@@ -478,21 +493,21 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Open Cmd" VerticalAlignment="Center"/>
                     <CheckBox Grid.Column="2" Content="&#xE737;" VerticalAlignment="Center" IsChecked="{Binding OpenCmd}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                    <Button Grid.Column="4" Content="&#xE756;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding CmdButton}"/>
-                    <Button Grid.Column="6" Content="&#xE954;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding VideoInfoButton}"/>
-                    <Button Grid.Column="8" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" Command="{Binding EraseButton}"/>
+                    <Button Grid.Column="4" Content="&#xE756;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch" Command="{Binding CmdButton}"/>
+                    <Button Grid.Column="6" Content="&#xE954;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch" Command="{Binding VideoInfoButton}"/>
+                    <Button Grid.Column="8" Content="&#xE75C;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch" Command="{Binding EraseButton}"/>
                 </Grid>
             </StackPanel>
 
-            <Grid Margin="0,2,0,0" Grid.Row="1" Height="6">
+            <Grid Grid.Row="1" Height="4">
                 <ProgressBar IsIndeterminate="{Binding Working}"/>
             </Grid>
 
-            <TextBox TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="2" VerticalScrollBarVisibility="Auto" FontSize="14" TextChanged="ScrollToEndTextBox_TextChanged"/>
+            <TextBox TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="2" VerticalScrollBarVisibility="Auto" TextChanged="ScrollToEndTextBox_TextChanged"/>
         </Grid>
 
 
-        <GridSplitter Grid.Column="1" Margin="0,2,0,0" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="6" Background="DarkSlateBlue"/>
+        <GridSplitter Margin="1,0,1,0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="4" Background="DarkSlateBlue"/>
 
         <!-- ======================================== Batch ======================================== -->
         <Grid Grid.Column="2">
@@ -501,7 +516,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel VerticalAlignment="Top">
-                <Grid Margin="2,2,2,0">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="2"/>
@@ -522,14 +537,14 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
 
-                            <Button Grid.Column="0" Grid.Row="0" Content="Load File" Command="{Binding BatchOpenFileButton}"/>
-                            <Button Grid.Column="0" Grid.Row="2" Content="Load Directory" Command="{Binding BatchOpenDirectoryButton}"/>
+                            <Button Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Content="Load File" Command="{Binding BatchOpenFileButton}"/>
+                            <Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Stretch" Content="Load Directory" Command="{Binding BatchOpenDirectoryButton}"/>
 
-                            <Button Grid.Column="2" Grid.Row="0" Content="File Move (Select)" Command="{Binding BatchMoveSelectedButton}"/>
-                            <Button Grid.Column="2" Grid.Row="2" Content="File Move (All)" Command="{Binding BatchMoveAllButton}"/>
+                            <Button Grid.Column="2" Grid.Row="0" HorizontalAlignment="Stretch" Content="File Move (Select)" Command="{Binding BatchMoveSelectedButton}"/>
+                            <Button Grid.Column="2" Grid.Row="2" HorizontalAlignment="Stretch" Content="File Move (All)" Command="{Binding BatchMoveAllButton}"/>
 
-                            <Button Grid.Column="4" Grid.Row="0" Content="List Remove (Select)" Command="{Binding BatchRemoveSelectedButton}"/>
-                            <Button Grid.Column="4" Grid.Row="2" Content="List Remove (All)" Command="{Binding BatchRemoveAllButton}"/>
+                            <Button Grid.Column="4" Grid.Row="0" HorizontalAlignment="Stretch" Content="List Remove (Select)" Command="{Binding BatchRemoveSelectedButton}"/>
+                            <Button Grid.Column="4" Grid.Row="2" HorizontalAlignment="Stretch" Content="List Remove (All)" Command="{Binding BatchRemoveAllButton}"/>
                         </Grid>
                         <Grid Margin="0,2,0,0">
                             <Grid.ColumnDefinitions>
@@ -537,8 +552,8 @@
                                 <ColumnDefinition Width="2"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Button Content=" Save Directory " Command="{Binding BatchSaveDirectoryButton}"/>
-                            <TextBox TextWrapping="NoWrap" Grid.Column="2" Text="{Binding BatchSaveDirectory}" FontSize="12" IsReadOnly="True" PreviewDragOver="SaveDirectoryDragOver" PreviewDrop="SaveDirectoryDrop"/>
+                            <Button Content=" Save Directory " HorizontalAlignment="Stretch" Command="{Binding BatchSaveDirectoryButton}"/>
+                            <TextBox TextWrapping="NoWrap" Grid.Column="2" Text="{Binding BatchSaveDirectory}" IsReadOnly="True" PreviewDragOver="SaveDirectoryDragOver" PreviewDrop="SaveDirectoryDrop"/>
                         </Grid>
                         <Grid Margin="0,2,0,0">
                             <Grid.ColumnDefinitions>
@@ -551,10 +566,10 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="SaveFileName" VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding BatchReplaceNameOld}" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                            <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding BatchReplaceNameOld}" PreviewTextInput="FileNameTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
                             <TextBlock Grid.Column="3" Text=" -> " VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding BatchReplaceNameNew}" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                            <Button Grid.Column="6" Content="Replace" Command="{Binding BatchReplaceNameButton}"/>
+                            <TextBox Grid.Column="4" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding BatchReplaceNameNew}" PreviewTextInput="FileNameTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                            <Button Grid.Column="6" HorizontalAlignment="Stretch" Content="Replace" Command="{Binding BatchReplaceNameButton}"/>
                         </Grid>
                     </StackPanel>
                     <Grid Grid.Column="2">
@@ -563,8 +578,8 @@
                             <RowDefinition Height="2"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <Button x:Name="button" Grid.Row="0" Command="{Binding BatchCutSelectedButton}"/>
-                        <Button x:Name="button1" Grid.Row="2" Command="{Binding BatchCutAllButton}"/>
+                        <Button x:Name="button" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding BatchCutSelectedButton}"/>
+                        <Button x:Name="button1" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding BatchCutAllButton}"/>
                         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" IsEnabled="{Binding IsEnabled, ElementName=button}" >
                             <TextBlock Text="&#xE786;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="48"/>
                             <TextBlock Text=" (Select)" VerticalAlignment="Center"/>
@@ -576,13 +591,13 @@
                     </Grid>
                 </Grid>
                 
-                <Grid Margin="0,2,0,0" Height="6">
+                <Grid Height="4">
                     <ProgressBar Maximum="{Binding BatchProgressMaximum}" Value="{Binding BatchProgressCurrent}"/>
                 </Grid>
             </StackPanel>
 
             <Grid Grid.Row="1">
-                <DataGrid ItemsSource="{Binding VideoList}" CanUserAddRows="False" CanUserDeleteRows="True" AutoGenerateColumns="False" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="BatchDragOver" PreviewDrop="BatchDrop" AllowDrop="True" FontSize="12">
+                <DataGrid ItemsSource="{Binding VideoList}" CanUserAddRows="False" CanUserDeleteRows="True" AutoGenerateColumns="False" SelectionChanged="VideoList_SelectionChanged" PreviewTextInput="FileNameTextBox_PreviewTextInput" PreviewDragOver="BatchDragOver" PreviewDrop="BatchDrop" AllowDrop="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="LoadFile" IsReadOnly="True" Binding="{Binding FileName}"/>
                         <DataGridTextColumn Header="SaveFileName" Binding="{Binding SaveName}"/>
