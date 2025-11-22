@@ -721,19 +721,19 @@ namespace GumSorter
             });
         }
 
-        internal void ThumbnailCreate(VideoInfo info)
+        internal void ThumbnailCreate(VideoInfo temp)
         {
-            if (info == null || info.FileName.Length == 0)
+            if (temp == null || temp.FileName.Length == 0)
             {
-                foreach (VideoInfo temp in VideoList)
+                foreach (VideoInfo info in VideoList)
                 {
-                    if (temp.Thumbnails.Count >= thumbnailCount || temp.Duration.Length == 0)
+                    if (info.Thumbnails.Count >= thumbnailCount || info.Duration.Length == 0)
                         continue;
 
-                    info = temp;
+                    temp = info;
                     break;
                 }
-                if (info == null || info.FileName.Length == 0)
+                if (temp == null || temp.FileName.Length == 0)
                 {
                     Working = false;
                     VideoListGetInfo();
@@ -742,7 +742,7 @@ namespace GumSorter
             }
 
             string tempDir = string.Empty;
-            tempDir = $"{tempDirectory}\\{Path.GetFileNameWithoutExtension(info.FileName)}";
+            tempDir = $"{tempDirectory}\\{Path.GetFileNameWithoutExtension(temp.FileName)}";
             if (Directory.Exists(tempDir))
             {
                 createdthumbnailDirectorys.Add(tempDir);
@@ -750,20 +750,19 @@ namespace GumSorter
 
                 DirectoryInfo dirInfo = new(tempDir);
                 foreach (FileInfo fileInfo in dirInfo.GetFiles())
-                    info.Thumbnails.Add(fileInfo.FullName);
+                    temp.Thumbnails.Add(fileInfo.FullName);
                 
-                foreach (VideoInfo temp in VideoList)
+                if (temp.Thumbnails.Count >= thumbnailCount)
                 {
-                    if (temp.FileName.Equals(info.FileName) == false)
-                        continue;
+                    foreach (VideoInfo info in VideoList)
+                    {
+                        if (info.FileName.Equals(temp.FileName) == false)
+                            continue;
 
-                    foreach (FileInfo fileInfo in dirInfo.GetFiles())
-                        temp.Thumbnails.Add(fileInfo.FullName);
-                }
-
-                if (info.Thumbnails.Count >= thumbnailCount)
-                {
-                    if (thumbnailImage == DefaultThumbnailImage && VideoList.Count > 0 && VideoList[SelectedVideoIndex].FileName.Equals(info.FileName))
+                        foreach (string thumb in temp.Thumbnails)
+                            info.Thumbnails.Add(thumb);
+                    }
+                    if (thumbnailImage == DefaultThumbnailImage && VideoList.Count > 0 && VideoList[SelectedVideoIndex].FileName.Equals(temp.FileName))
                     {
                         ThumbnailImages = VideoList[SelectedVideoIndex].Thumbnails;
                         NextThumbnailImage();
@@ -781,7 +780,7 @@ namespace GumSorter
             }
 
             double totalSeconds = 0.0;
-            string[] splitLine = info.Duration.Split(':', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            string[] splitLine = temp.Duration.Split(':', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             foreach (string split in splitLine)
             {
                 if (double.TryParse(split, out double value))
@@ -790,7 +789,7 @@ namespace GumSorter
             }
             if (totalSeconds < 0.05)
             {
-                info.Thumbnails.Add(DefaultThumbnailImage);
+                temp.Thumbnails.Add(DefaultThumbnailImage);
                 CurrentWorked++;
                 Working = false;
                 VideoListGetInfo();
@@ -799,8 +798,8 @@ namespace GumSorter
 
             data.Fps = thumbnailCount / totalSeconds;
 
-            data.LoadVideo = info.FileName;
-            data.SaveVideo = $"{tempDir}\\{Path.GetFileNameWithoutExtension(info.FileName)}_cut{Path.GetExtension(info.FileName)}";
+            data.LoadVideo = temp.FileName;
+            data.SaveVideo = $"{tempDir}\\{Path.GetFileNameWithoutExtension(temp.FileName)}_cut{Path.GetExtension(temp.FileName)}";
 
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", FFmpegArguments.Image(data, true), false, false)).ContinueWith((antecedent) =>
             {
