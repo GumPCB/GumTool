@@ -177,12 +177,12 @@
                             </Grid>
                         </TabItem>
 
-                        <!-- ======================================== Replace ======================================== -->
+                        <!-- ======================================== Rename ======================================== -->
                         <TabItem>
                             <TabItem.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE792;" FontSize="18"/>
-                                    <TextBlock Text="Replace" VerticalAlignment="Center" />
+                                    <TextBlock Text="Rename" VerticalAlignment="Center" />
                                 </StackPanel>
                             </TabItem.Header>
                             <Grid>
@@ -208,9 +208,9 @@
                                         <ColumnDefinition Width="2"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Apply change" VerticalAlignment="Center" Width="100" Foreground="OrangeRed"/>
-                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding ApplyChangeSelectedButton}" Foreground="OrangeRed"/>
-                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding ApplyChangeAllButton}" Foreground="OrangeRed"/>
+                                    <TextBlock Grid.Column="0" Text="Apply Rename" VerticalAlignment="Center" Width="100" Foreground="OrangeRed"/>
+                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding ApplyRenameSelectedButton}" Foreground="OrangeRed"/>
+                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding ApplyRenameAllButton}" Foreground="OrangeRed"/>
                                 </Grid>
                                 <Grid Margin="0,2,0,0" Grid.Row="2">
                                     <Border BorderBrush="Gray" BorderThickness="1"/>
@@ -352,6 +352,8 @@
                                                     <StackPanel Orientation="Horizontal" >
                                                         <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"/>
                                                         <TextBlock Text=" | " VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center"/>
+                                                        <TextBlock Text=" | " VerticalAlignment="Center"/>
                                                         <TextBlock Text="{Binding vCodec}" VerticalAlignment="Center"/>
                                                         <TextBlock Text=" | " VerticalAlignment="Center"/>
                                                         <TextBlock Text="{Binding aCodec}" VerticalAlignment="Center"/>
@@ -450,6 +452,8 @@
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" >
                                     <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"/>
+                                    <TextBlock Text=" | " VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center"/>
                                     <TextBlock Text=" | " VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding vCodec}" VerticalAlignment="Center"/>
                                     <TextBlock Text=" | " VerticalAlignment="Center"/>

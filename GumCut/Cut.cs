@@ -828,13 +828,9 @@ namespace GumCut
                 if (Directory.Exists(file))
                 {
                     DirectoryInfo directoryInfo = new DirectoryInfo(file);
-                    foreach (FileInfo info in directoryInfo.GetFiles())
+                    foreach (FileInfo info in directoryInfo.GetFiles("*.*", SearchOption.AllDirectories))
                     {
                         AddFileVideoList(info.FullName);
-                    }
-                    foreach (DirectoryInfo info in directoryInfo.GetDirectories())
-                    {
-                        AddVideoList([info.FullName]);
                     }
                 }
                 else if (File.Exists(file))
