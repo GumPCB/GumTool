@@ -18,7 +18,7 @@
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300" MinWidth="240"/>
+                <ColumnDefinition Width="380" MinWidth="240"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="400" MinWidth="300"/>
                 <ColumnDefinition Width="Auto"/>
@@ -27,8 +27,8 @@
 
             <!-- ======================================== Left ======================================== -->
             <Grid Grid.Column="0">
-                <!-- ======================================== Settings ======================================== -->
                 <TabControl>
+                    <!-- ======================================== Settings ======================================== -->
                     <TabItem>
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
@@ -67,7 +67,7 @@
                                     <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Temp Directory" VerticalAlignment="Center" Width="100"/>
-                                <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding TempDirectory}" PreviewDragOver="TempDirectory_DragOver" PreviewDrop="TempDirectory_Drop"/>
+                                <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding TempDirectory}" PreviewDragOver="Directory_DragOver" PreviewDrop="TempDirectory_Drop"/>
                                 <Button Content="&#xE838;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding TempDirectoryButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
                             </Grid>
                             <Grid Margin="0,2,0,0" Grid.Row="3">
@@ -336,7 +336,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <ListView HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding DeleteList}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="VideoList_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
+                                <ListView HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding DeleteList}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
@@ -368,6 +368,69 @@
                                     </ListView.ItemTemplate>
                                 </ListView>
                             </Grid>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- ======================================== Encode ======================================== -->
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE786;" FontSize="18"/>
+                                <TextBlock Text="Encode" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <Border BorderBrush="Gray" BorderThickness="1"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Save Directory" VerticalAlignment="Center" Width="100"/>
+                                <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding SaveDirectory}" PreviewDragOver="Directory_DragOver" PreviewDrop="SaveDirectory_Drop"/>
+                                <Button Content="&#xE838;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding SaveDirectoryButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left">
+                                    <TextBlock Text="FFmpeg" Width="100"/>
+                                    <TextBlock Text="Command" Width="100"/>
+                                </StackPanel>
+                                <TextBox TextWrapping="Wrap" Grid.Column="1" Text="{Binding EncodeCommand}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Encode" VerticalAlignment="Center" Width="100"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding EncodeSelectedButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding EncodeAllButton}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="4">
+                                <ProgressBar Value="{Binding CurrentWorkedEncode}" Maximum="{Binding MaxWorkedEncode}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="5">
+                                <TextBox TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="2" VerticalScrollBarVisibility="Auto" TextChanged="ScrollToEndTextBox_TextChanged"/>
+                            </Grid>
+
                         </Grid>
                     </TabItem>
 
@@ -437,8 +500,8 @@
                         </Grid>
                     </Grid>
                 </Grid>
-                
-                <ListView Grid.Row="1" HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding VideoList}" SelectedIndex="{Binding SelectedVideoIndex}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="VideoList_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
+
+                <ListView Grid.Row="1" HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding VideoList}" SelectedIndex="{Binding SelectedVideoIndex}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
                     <ListView.Resources>
                         <Style TargetType="{x:Type ListViewItem}">
                             <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
@@ -481,7 +544,7 @@
             <!-- ======================================== Right ======================================== -->
             <Grid Grid.Column="4">
                 <Grid>
-                    <Image Stretch="Uniform" Source="{Binding ThumbnailImage}" MouseWheel="ThumbnailImage_Wheel" PreviewDragOver="VideoList_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True"/>
+                    <Image Stretch="Uniform" Source="{Binding ThumbnailImage}" MouseWheel="ThumbnailImage_Wheel" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True"/>
                     <TextBlock Text="{Binding ThumbnailImage}" VerticalAlignment="Top" HorizontalAlignment="Left" TextWrapping="Wrap" Opacity="{Binding IsVisibleThumbnailName}"/>
                 </Grid>
             </Grid>

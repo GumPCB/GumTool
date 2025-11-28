@@ -17,7 +17,12 @@ namespace GumSorter
         private bool working;
         private long currentWorked = 0;
         private long currentWorkedDeleteList = 0;
+        private long currentWorkedEncode = 0;
+        private long maxWorkedEncode = 0;
         private string tempDirectory = "temp";
+        private string saveDirectory = "save";
+        private string encodeCommand = "-map 0 -qp 20 -movflags +faststart -c:v hevc_nvenc -c:a copy";
+        private string resultText = string.Empty;
         private uint thumbnailCount = 10;
         private string thumbnailImage;
         private List<string> thumbnailImages = [];
@@ -30,6 +35,7 @@ namespace GumSorter
 
         public Command FFmpegOpenButton { get; set; }
         public Command TempDirectoryButton { get; set; }
+        public Command SaveDirectoryButton { get; set; }
         public Command VideoListOpenFileButton { get; set; }
         public Command VideoListOpenDirectoryButton { get; set; }
         public Command VideoListMoveSelectedButton { get; set; }
@@ -50,6 +56,8 @@ namespace GumSorter
         public Command ToDirectoryNameAllButton { get; set; }
         public Command ApplyRenameSelectedButton { get; set; }
         public Command ApplyRenameAllButton { get; set; }
+        public Command EncodeSelectedButton { get; set; }
+        public Command EncodeAllButton { get; set; }
 
         public InputData Data
         {
@@ -112,6 +120,22 @@ namespace GumSorter
                 OnPropertyChanged(nameof(CurrentWorkedDeleteList));
             }
         }
+        public long CurrentWorkedEncode
+        {
+            get => currentWorkedEncode; set
+            {
+                currentWorkedEncode = value;
+                OnPropertyChanged(nameof(CurrentWorkedEncode));
+            }
+        }
+        public long MaxWorkedEncode
+        {
+            get => maxWorkedEncode; set
+            {
+                maxWorkedEncode = value;
+                OnPropertyChanged(nameof(MaxWorkedEncode));
+            }
+        }
         public string TempDirectory
         {
             get => tempDirectory; set
@@ -119,6 +143,32 @@ namespace GumSorter
                 tempDirectory = value;
                 OnPropertyChanged(nameof(TempDirectory));
                 SetupfileSave();
+            }
+        }
+        public string SaveDirectory
+        {
+            get => saveDirectory; set
+            {
+                saveDirectory = value;
+                OnPropertyChanged(nameof(SaveDirectory));
+                SetupfileSave();
+            }
+        }
+        public string EncodeCommand
+        {
+            get => encodeCommand; set
+            {
+                encodeCommand = value;
+                OnPropertyChanged(nameof(EncodeCommand));
+                SetupfileSave();
+            }
+        }
+        public string ResultText
+        {
+            get => resultText; set
+            {
+                resultText = value;
+                OnPropertyChanged(nameof(ResultText));
             }
         }
         public uint ThumbnailCount
@@ -199,6 +249,7 @@ namespace GumSorter
         {
             FFmpegOpenButton = new(FFmpegOpenExecutedCommand, EmptyCanExecuteCommand);
             TempDirectoryButton = new(TempDirectoryExecutedCommand, EmptyCanExecuteCommand);
+            SaveDirectoryButton = new(SaveDirectoryExecutedCommand, EmptyCanExecuteCommand);
             VideoListOpenFileButton = new(VideoListOpenFileExecutedCommand, EmptyCanExecuteCommand);
             VideoListOpenDirectoryButton = new(VideoListOpenDirectoryExecutedCommand, EmptyCanExecuteCommand);
             VideoListMoveSelectedButton = new(VideoListMoveSelectedExecutedCommand, EmptyCanExecuteCommand);
@@ -219,6 +270,8 @@ namespace GumSorter
             ToDirectoryNameAllButton = new(ToDirectoryNameAllExecutedCommand, EmptyCanExecuteCommand);
             ApplyRenameSelectedButton = new(ApplyRenameSelectedExecutedCommand, EmptyCanExecuteCommand);
             ApplyRenameAllButton = new(ApplyRenameAllExecutedCommand, EmptyCanExecuteCommand);
+            EncodeSelectedButton = new(EncodeSelectedExecutedCommand, EmptyCanExecuteCommand);
+            EncodeAllButton = new(EncodeAllExecutedCommand, EmptyCanExecuteCommand);
 
             SetupfileLoad();
             IniReplaceLoad();
@@ -240,6 +293,8 @@ namespace GumSorter
             string? thumbnail = sr.ReadLine();
             string? isDelete = sr.ReadLine();
             string? isVisible = sr.ReadLine();
+            string? saveDirectory = sr.ReadLine();
+            string? encodeCommand = sr.ReadLine();
             sr.Close();
 
             if (ffmpeg != null)
@@ -265,6 +320,16 @@ namespace GumSorter
             if (isVisible != null)
             {
                 IsVisibleThumbnailName = isVisible.Equals("1");
+            }
+
+            if (saveDirectory != null)
+            {
+                SaveDirectory = saveDirectory;
+            }
+
+            if (encodeCommand != null)
+            {
+                EncodeCommand = encodeCommand;
             }
         }
         private const string ReplaceFile = "ini\\replace.ini";
@@ -314,6 +379,8 @@ namespace GumSorter
             sw.WriteLine(ThumbnailCount.ToString());
             sw.WriteLine(IsClosingDeleteThumbnail ? '1' : '0');
             sw.WriteLine(IsVisibleThumbnailName ? '1' : '0');
+            sw.WriteLine(SaveDirectory);
+            sw.WriteLine(EncodeCommand);
             sw.Close();
         }
 
@@ -348,7 +415,18 @@ namespace GumSorter
 
             TempDirectory = dialog.FolderName;
         }
+        private void SaveDirectoryExecutedCommand(object? obj)
+        {
+            var dialog = new Microsoft.Win32.OpenFolderDialog();
 
+            bool? result = dialog.ShowDialog();
+
+            if (result == null || result != true)
+                return;
+
+            SaveDirectory = dialog.FolderName;
+        }
+        
         private void VideoListOpenFileExecutedCommand(object? obj)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
@@ -628,6 +706,49 @@ namespace GumSorter
             }
         }
 
+        private void EncodeSelectedExecutedCommand(object? obj) => EncodeVideos(false);
+        private void EncodeAllExecutedCommand(object? obj) => EncodeVideos(true);
+        private List<string> encodeCommands = [];
+        private void EncodeVideos(bool IsAll)
+        {
+            CurrentWorkedEncode = 0;
+            encodeCommands.Clear();
+            foreach (VideoInfo info in VideoList)
+            {
+                if (info.IsSelected == false && IsAll == false)
+                    continue;
+
+                encodeCommands.Add($"-hide_banner -loglevel warning -i \"{info.FileName}\" {EncodeCommand.Trim()} -y \"{SaveDirectory}\\{info.SaveName}\"");
+            }
+            MaxWorkedEncode = encodeCommands.Count;
+
+            RecursiveEncode();
+        }
+        private static Stopwatch stopwatch = new Stopwatch();
+        private void RecursiveEncode()
+        {
+            if (encodeCommands.Count == 0)
+                return;
+
+            string command = encodeCommands[0];
+            encodeCommands.RemoveAt(0);
+            stopwatch.Restart();
+            ResultText += $"====== Working Start : ({CurrentWorkedEncode + 1}/{MaxWorkedEncode}) {DateTime.Now.ToString("F")}\n";
+
+            var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", command, false, false)).ContinueWith((antecedent) =>
+            {
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    CurrentWorkedEncode++;
+                    stopwatch.Stop();
+                    ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
+                    ResultText += $"====== Working End : ({CurrentWorkedEncode}/{MaxWorkedEncode}) {DateTime.Now:F} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds)\n";
+                    FFmpegResultText = string.Empty;
+                    RecursiveEncode();
+                });
+            });
+        }
+
         private bool EmptyCanExecuteCommand(object? obj)
         {
             return true;
@@ -642,6 +763,10 @@ namespace GumSorter
         internal void DragAndDropTempDirectory(string directory)
         {
             TempDirectory = directory;
+        }
+        internal void DragAndDropSaveDirectory(string directory)
+        {
+            SaveDirectory = directory;
         }
 
         private void AddVideoList(string[] files)

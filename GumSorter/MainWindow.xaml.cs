@@ -20,6 +20,11 @@ namespace GumSorter
         {
             InitializeComponent();
         }
+        private void ScrollToEndTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ((TextBox)sender).ScrollToEnd();
+            e.Handled = true;
+        }
 
         private void HyperLink_Click(object sender, RoutedEventArgs e)
         {
@@ -28,7 +33,7 @@ namespace GumSorter
             e.Handled = true;
         }
 
-        private void TempDirectory_DragOver(object sender, DragEventArgs e)
+        private void Directory_DragOver(object sender, DragEventArgs e)
         {
             e.Effects = WindowHelper.IsDirectory(e) != null ? DragDropEffects.Copy : DragDropEffects.None;
             e.Handled = true;
@@ -42,6 +47,15 @@ namespace GumSorter
             if (directory == null) return;
 
             (DataContext as Sorter)?.DragAndDropTempDirectory(directory);
+        }
+        private void SaveDirectory_Drop(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
+
+            var directory = WindowHelper.IsDirectory(e);
+            if (directory == null) return;
+
+            (DataContext as Sorter)?.DragAndDropSaveDirectory(directory);
         }
 
         private void VideoList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -71,7 +85,7 @@ namespace GumSorter
             e.Handled = true;
         }
 
-        private void VideoList_DragOver(object sender, DragEventArgs e)
+        private void FilesOrDirectorys_DragOver(object sender, DragEventArgs e)
         {
             e.Effects = WindowHelper.IsFilesOrDirectorys(e) != null ? DragDropEffects.Copy : DragDropEffects.None;
             e.Handled = true;
