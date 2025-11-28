@@ -124,22 +124,37 @@ namespace GumSorter
                 e.Handled = true;
 
                 ListView listView = (ListView)sender;
-                if (listView.SelectedItem == null || listView.SelectedIndex < 0) return;
+                if (listView.SelectedItems.Count == 0) return;
 
-                VideoCollection videoList = (VideoCollection)listView.ItemsSource;
-
-                int selectedIndex = listView.SelectedIndex;
-                if (videoList.Count == 0 || videoList.Count <= selectedIndex) return;
-
-                (DataContext as Sorter)?.AddDeleteList((VideoInfo)listView.SelectedItem);
-                videoList.RemoveAt(selectedIndex);
-
-                if (videoList.Count == 0)
+                string lastSelectedFileName = string.Empty;
+                foreach (var item in listView.SelectedItems)
                 {
-                    (DataContext as Sorter)?.ClearThumbnailImage();
-                    return;
+                    if (item is VideoInfo info)
+                    {
+                        lastSelectedFileName = info.FileName;
+                    }
                 }
-                else if (selectedIndex >= videoList.Count)
+
+                int selectedIndex = -1;
+                VideoCollection videoList = (VideoCollection)listView.ItemsSource;
+                for (int i = videoList.Count - 1; i >= 0; i--)
+                {
+                    if (videoList[i].IsSelected)
+                    {
+                        if (selectedIndex == -1 && videoList[i].FileName.Equals(lastSelectedFileName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            selectedIndex = i;
+                        }
+                        else if (selectedIndex > 0)
+                        {
+                            selectedIndex--;
+                        }
+                        (DataContext as Sorter)?.AddDeleteList(videoList[i]);
+                        videoList.RemoveAt(i);
+                    }
+                }
+
+                if (videoList.Count <= selectedIndex)
                 {
                     selectedIndex = videoList.Count - 1;
                 }

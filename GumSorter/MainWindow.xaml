@@ -336,7 +336,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <ListView HorizontalAlignment="Stretch" SelectionMode="Single" ItemsSource="{Binding DeleteList}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="VideoList_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
+                                <ListView HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding DeleteList}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="VideoList_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
@@ -438,7 +438,7 @@
                     </Grid>
                 </Grid>
                 
-                <ListView Grid.Row="1" HorizontalAlignment="Stretch" SelectionMode="Single" ItemsSource="{Binding VideoList}" SelectedIndex="{Binding SelectedVideoIndex}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="VideoList_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
+                <ListView Grid.Row="1" HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding VideoList}" SelectedIndex="{Binding SelectedVideoIndex}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="VideoList_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
                     <ListView.Resources>
                         <Style TargetType="{x:Type ListViewItem}">
                             <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
