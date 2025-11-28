@@ -542,9 +542,10 @@
             <GridSplitter Margin="1,0,1,0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="3" Background="DarkSlateBlue"/>
 
             <!-- ======================================== Right ======================================== -->
-            <Grid Grid.Column="4">
+            <Grid Grid.Column="4" MouseWheel="ThumbnailImage_Wheel" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown">
                 <Grid>
-                    <Image Stretch="Uniform" Source="{Binding ThumbnailImage}" MouseWheel="ThumbnailImage_Wheel" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True"/>
+                    <Image Stretch="Fill" Source="{Binding TransparencyImage}"/>
+                    <Image Stretch="Uniform" Source="{Binding ThumbnailImage}"/>
                     <TextBlock Text="{Binding ThumbnailImage}" VerticalAlignment="Top" HorizontalAlignment="Left" TextWrapping="Wrap" Opacity="{Binding IsVisibleThumbnailName}"/>
                 </Grid>
             </Grid>

@@ -9,6 +9,7 @@ namespace GumSorter
     internal class Sorter : INotifyPropertyChanged
     {
         private string DefaultThumbnailImage = "\\ini\\GumSorter.png";
+        private string transparencyImage = "\\ini\\Transparency.png";
 
         private InputData data = new();
         private VideoCollection videoList = [];
@@ -238,6 +239,14 @@ namespace GumSorter
                 OnPropertyChanged(nameof(ReplaceName));
             }
         }
+        public string TransparencyImage
+        {
+            get => transparencyImage; set
+            {
+                transparencyImage = value;
+                OnPropertyChanged(nameof(TransparencyImage));
+            }
+        }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
@@ -279,6 +288,7 @@ namespace GumSorter
 
             DefaultThumbnailImage = Path.GetDirectoryName(Environment.ProcessPath) + DefaultThumbnailImage;
             thumbnailImage = DefaultThumbnailImage;
+            TransparencyImage = Path.GetDirectoryName(Environment.ProcessPath) + transparencyImage;
         }
 
         private const string SetupFile = "ini\\SorterSetup.ini";

@@ -76,12 +76,11 @@ namespace GumCut
 
         private void BatchDrop(object sender, DragEventArgs e)
         {
-            e.Handled = true;
-
             var files = WindowHelper.IsFilesOrDirectorys(e);
             if (files == null) return;
 
             (DataContext as Cut)?.DragAndDropBatch(files);
+            e.Handled = true;
         }
 
         private void SaveDirectoryDragOver(object sender, DragEventArgs e)
@@ -92,17 +91,35 @@ namespace GumCut
 
         private void SaveDirectoryDrop(object sender, DragEventArgs e)
         {
-            e.Handled = true;
-
             var directory = WindowHelper.IsDirectory(e);
             if (directory == null) return;
 
             (DataContext as Cut)?.DragAndDropSaveDirectory(directory);
+            e.Handled = true;
         }
         private void IntTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = UnsignedIntRegex().IsMatch(e.Text);
         private void SelectAllTextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) => ((TextBox)sender).SelectAll();
         private void SelectAllTextBox_GotMouseCapture(object sender, MouseEventArgs e) => ((TextBox)sender).SelectAll();
         private static readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
         private void FileNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = InvalidFileNameChars.Any(e.Text.Contains);
+
+        private void VideoList_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.V && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                if (!Clipboard.ContainsFileDropList()) return;
+                var files = new List<string>();
+                var fileDropList = Clipboard.GetFileDropList();
+                foreach (var item in fileDropList)
+                {
+                    if (item != null)
+                    {
+                        files.Add(item);
+                    }
+                }
+                (DataContext as Cut)?.DragAndDropBatch([.. files]);
+                e.Handled = true;
+            }
+        }
     }
 }

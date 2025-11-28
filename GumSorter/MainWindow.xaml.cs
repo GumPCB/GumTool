@@ -41,21 +41,19 @@ namespace GumSorter
 
         private void TempDirectory_Drop(object sender, DragEventArgs e)
         {
-            e.Handled = true;
-
             var directory = WindowHelper.IsDirectory(e);
             if (directory == null) return;
 
             (DataContext as Sorter)?.DragAndDropTempDirectory(directory);
+            e.Handled = true;
         }
         private void SaveDirectory_Drop(object sender, DragEventArgs e)
         {
-            e.Handled = true;
-
             var directory = WindowHelper.IsDirectory(e);
             if (directory == null) return;
 
             (DataContext as Sorter)?.DragAndDropSaveDirectory(directory);
+            e.Handled = true;
         }
 
         private void VideoList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -93,12 +91,11 @@ namespace GumSorter
 
         private void VideoList_Drop(object sender, DragEventArgs e)
         {
-            e.Handled = true;
-
             var files = WindowHelper.IsFilesOrDirectorys(e);
             if (files == null) return;
             
             (DataContext as Sorter)?.VideoList_DragAndDrop(files);
+            e.Handled = true;
         }
 
         private void ThumbnailImage_Wheel(object sender, MouseWheelEventArgs e)
@@ -135,8 +132,6 @@ namespace GumSorter
             }
             else if (e.Key == Key.Delete)
             {
-                e.Handled = true;
-
                 ListView listView = (ListView)sender;
                 if (listView.SelectedItems.Count == 0) return;
 
@@ -176,11 +171,28 @@ namespace GumSorter
                 listView.SelectedIndex = selectedIndex;
                 listView.ScrollIntoView(listView.SelectedItem);
 
+                e.Handled = true;
+
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Input, new Action(() =>
                 {
                     ListViewItem item = (ListViewItem)listView.ItemContainerGenerator.ContainerFromIndex(selectedIndex);
                     item?.Focus();
                 }));
+            }
+            else if (e.Key == Key.V && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                if (!Clipboard.ContainsFileDropList()) return;
+                var files = new List<string>();
+                var fileDropList = Clipboard.GetFileDropList();
+                foreach (var item in fileDropList)
+                {
+                    if (item != null)
+                    {
+                        files.Add(item);
+                    }
+                }
+                (DataContext as Sorter)?.VideoList_DragAndDrop([.. files]);
+                e.Handled = true;
             }
         }
     }

@@ -501,7 +501,7 @@
                 <ProgressBar IsIndeterminate="{Binding Working}"/>
             </Grid>
 
-            <TextBox TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="2" VerticalScrollBarVisibility="Auto" TextChanged="ScrollToEndTextBox_TextChanged"/>
+            <TextBox TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="2" VerticalScrollBarVisibility="Auto" TextChanged="ScrollToEndTextBox_TextChanged" PreviewDragOver="BatchDragOver" PreviewDrop="BatchDrop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown"/>
         </Grid>
 
 
@@ -595,7 +595,7 @@
             </StackPanel>
 
             <Grid Grid.Row="1">
-                <DataGrid ItemsSource="{Binding VideoList}" CanUserAddRows="False" CanUserDeleteRows="True" AutoGenerateColumns="False" SelectionChanged="VideoList_SelectionChanged" PreviewTextInput="FileNameTextBox_PreviewTextInput" PreviewDragOver="BatchDragOver" PreviewDrop="BatchDrop" AllowDrop="True">
+                <DataGrid ItemsSource="{Binding VideoList}" CanUserAddRows="False" CanUserDeleteRows="True" AutoGenerateColumns="False" SelectionChanged="VideoList_SelectionChanged" PreviewTextInput="FileNameTextBox_PreviewTextInput" PreviewDragOver="BatchDragOver" PreviewDrop="BatchDrop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="LoadFile" IsReadOnly="True" Binding="{Binding FileName}"/>
                         <DataGridTextColumn Header="SaveFileName" Binding="{Binding SaveName}"/>
