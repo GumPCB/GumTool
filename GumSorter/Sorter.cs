@@ -390,7 +390,7 @@ namespace GumSorter
                 return;
 
             CurrentWorked = 0;
-            var task = Task.Run(() => (false)).ContinueWith((antecedent) =>
+            var task = Task.Run(() =>
             {
                 foreach (VideoInfo info in VideoList)
                 {
@@ -467,7 +467,7 @@ namespace GumSorter
                 return;
 
             CurrentWorkedDeleteList = 0;
-            var task = Task.Run(() => (false)).ContinueWith((antecedent) =>
+            var task = Task.Run(() =>
             {
                 foreach (VideoInfo info in DeleteList)
                 {
@@ -520,7 +520,7 @@ namespace GumSorter
                 return;
 
             CurrentWorkedDeleteList = 0;
-            var task = Task.Run(() => (false)).ContinueWith((antecedent) =>
+            var task = Task.Run(() =>
             {
                 for (int i = DeleteList.Count - 1; i >= 0; --i)
                 {

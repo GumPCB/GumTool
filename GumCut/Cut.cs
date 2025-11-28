@@ -676,7 +676,7 @@ namespace GumCut
 
             BatchProgressCurrent = 0;
             BatchProgressMaximum = VideoList.Count;
-            var task = Task.Run(() => (false)).ContinueWith((antecedent) =>
+            var task = Task.Run(() =>
             {
                 foreach (VideoInfo info in VideoList)
                 {
