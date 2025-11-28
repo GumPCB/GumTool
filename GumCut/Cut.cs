@@ -589,27 +589,13 @@ namespace GumCut
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    VideoInfo temp = VideoInfo.SplitInfo(FFmpegResultText, filename);
-                    if (temp.vCodec.Length == 0)
-                        temp.vCodec = "Not Found";
-                    if (temp.aCodec.Length == 0)
-                        temp.aCodec = "Not Found";
                     foreach (VideoInfo info in VideoList)
                     {
-                        if (info.vCodec.Length != 0 || info.FileName.Equals(temp.FileName) == false)
+                        if (info.vCodec.Length != 0 || info.FileName.Equals(filename) == false)
                             continue;
 
-                        info.vCodec = temp.vCodec;
-                        info.Resolution = temp.Resolution;
-                        info.Duration = temp.Duration;
-                        info.FPS = temp.FPS;
-                        info.Pixel = temp.Pixel;
-                        info.vBitrate = temp.vBitrate;
-                        info.aCodec = temp.aCodec;
-                        info.aBitrate = temp.aBitrate;
+                        info.SplitInfo(FFmpegResultText);
                         info.SaveName = Path.GetFileNameWithoutExtension(info.FileName) + "_cut" + Path.GetExtension(info.FileName);
-                        info.Streams = temp.Streams;
-                        info.Subtitles = temp.Subtitles;
                         break;
                     }
 
@@ -688,18 +674,33 @@ namespace GumCut
             if (result == null || result != true)
                 return;
 
-            foreach (VideoInfo info in VideoList)
+            BatchProgressCurrent = 0;
+            BatchProgressMaximum = VideoList.Count;
+            var task = Task.Run(() => (false)).ContinueWith((antecedent) =>
             {
-                if (info.IsSelected == false && IsAll == false)
-                    continue;
-
-                string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
-                File.Move(info.FileName, destFilename);
-                if (File.Exists(destFilename))
+                foreach (VideoInfo info in VideoList)
                 {
-                    info.FileName = destFilename;
+                    if (info.IsSelected == false && IsAll == false)
+                    {
+                        App.Current.Dispatcher.Invoke((Action)delegate
+                        {
+                            BatchProgressCurrent++;
+                        });
+                        continue;
+                    }
+
+                    string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
+                    File.Move(info.FileName, destFilename);
+                    if (File.Exists(destFilename))
+                    {
+                        info.FileName = destFilename;
+                    }
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        BatchProgressCurrent++;
+                    });
                 }
-            }
+            });
         }
 
         private void BatchCutSelectedExecutedCommand(object? obj) => BatchCut(false);
@@ -830,22 +831,23 @@ namespace GumCut
                     DirectoryInfo directoryInfo = new DirectoryInfo(file);
                     foreach (FileInfo info in directoryInfo.GetFiles("*.*", SearchOption.AllDirectories))
                     {
-                        AddFileVideoList(info.FullName);
+                        AddFileVideoList(info);
                     }
                 }
                 else if (File.Exists(file))
                 {
-                    AddFileVideoList(file);
+                    AddFileVideoList(new FileInfo(file));
                 }
             }
         }
 
-        private void AddFileVideoList(string file)
+        private void AddFileVideoList(FileInfo fi)
         {
-            if (file.Contains("Thumbs.db", StringComparison.OrdinalIgnoreCase))
+            if (fi.FullName.Contains("Thumbs.db", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            VideoInfo info = new(file);
+            VideoInfo info = new(fi.FullName);
+            info.FileSize = fi.Length;
             VideoList.Add(info);
         }
 

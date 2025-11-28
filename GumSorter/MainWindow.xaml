@@ -15,15 +15,10 @@
 
 
     <Grid Margin="1,0,1,1">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <ProgressBar Value="{Binding CurrentWorked}" Maximum="{Binding VideoList.Count}"/>
 
-        <Grid Grid.Row="1">
+        <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="360" MinWidth="240"/>
+                <ColumnDefinition Width="300" MinWidth="240"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="400" MinWidth="300"/>
                 <ColumnDefinition Width="Auto"/>
@@ -32,344 +27,351 @@
 
             <!-- ======================================== Left ======================================== -->
             <Grid Grid.Column="0">
-                <Grid>
-                    <Grid Margin="0,6,2,0" HorizontalAlignment="Right" VerticalAlignment="Top">
-                        <TextBlock><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">GumPCB</Hyperlink>
-                        </TextBlock>
-                    </Grid>
+                <!-- ======================================== Settings ======================================== -->
+                <TabControl>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE713;" FontSize="18"/>
+                                <TextBlock Text="Settings" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                    <!-- ======================================== Settings ======================================== -->
-                    <TabControl>
-                        <TabItem>
-                            <TabItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE713;" FontSize="18"/>
-                                    <TextBlock Text="Settings" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </TabItem.Header>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <Grid Grid.Row="0">
-                                    <Border BorderBrush="Gray" BorderThickness="1"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="3*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="FFmpeg File" VerticalAlignment="Center" Width="100"/>
-                                    <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding Data.FFmpegFile}"/>
-                                    <Button Content="&#xE8E5;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding FFmpegOpenButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="3*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Temp Directory" VerticalAlignment="Center" Width="100"/>
-                                    <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding TempDirectory}" PreviewDragOver="TempDirectory_DragOver" PreviewDrop="TempDirectory_Drop"/>
-                                    <Button Content="&#xE838;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding TempDirectoryButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="3">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Thumbnail" VerticalAlignment="Center" Width="100"/>
-                                    <TextBlock Grid.Column="1" Text="&#xE8B9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding ThumbnailCount}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Closing" VerticalAlignment="Center" Width="100"/>
-                                    <CheckBox Grid.Column="1" Content="delete thumbnail" VerticalAlignment="Center" IsChecked="{Binding IsClosingDeleteThumbnail}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Visible" VerticalAlignment="Center" Width="100"/>
-                                    <CheckBox Grid.Column="1" Content="thumbnail name" VerticalAlignment="Center" IsChecked="{Binding IsVisibleThumbnailName}"/>
-                                </Grid>
-                                
+                            <Grid Grid.Row="0">
+                                <Border BorderBrush="Gray" BorderThickness="1"/>
                             </Grid>
-                        </TabItem>
-
-                        <!-- ======================================== Files ======================================== -->
-                        <TabItem>
-                            <TabItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE8B7;" FontSize="18"/>
-                                    <TextBlock Text="Files" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </TabItem.Header>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <Grid Grid.Row="0">
-                                    <Border BorderBrush="Gray" BorderThickness="1"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Load" VerticalAlignment="Center" Width="110"/>
-                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="File" Command="{Binding VideoListOpenFileButton}"/>
-                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="Directory" Command="{Binding VideoListOpenDirectoryButton}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="List Remove" VerticalAlignment="Center" Width="110"/>
-                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding VideoListRemoveSelectedButton}"/>
-                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding VideoListRemoveAllButton}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="3">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Go to DeleteList" VerticalAlignment="Center" Width="110"/>
-                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding VideoListDeleteSelectedButton}"/>
-                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding VideoListDeleteAllButton}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="File Move" VerticalAlignment="Center" Width="110"/>
-                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding VideoListMoveSelectedButton}"/>
-                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding VideoListMoveAllButton}"/>
-                                </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="FFmpeg File" VerticalAlignment="Center" Width="100"/>
+                                <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding Data.FFmpegFile}"/>
+                                <Button Content="&#xE8E5;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding FFmpegOpenButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
                             </Grid>
-                        </TabItem>
+                            <Grid Margin="0,2,0,0" Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Temp Directory" VerticalAlignment="Center" Width="100"/>
+                                <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding TempDirectory}" PreviewDragOver="TempDirectory_DragOver" PreviewDrop="TempDirectory_Drop"/>
+                                <Button Content="&#xE838;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding TempDirectoryButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Thumbnail" VerticalAlignment="Center" Width="100"/>
+                                <TextBlock Grid.Column="1" Text="&#xE8B9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding ThumbnailCount}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Closing" VerticalAlignment="Center" Width="100"/>
+                                <CheckBox Grid.Column="1" Content="delete thumbnail" VerticalAlignment="Center" IsChecked="{Binding IsClosingDeleteThumbnail}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Visible" VerticalAlignment="Center" Width="100"/>
+                                <CheckBox Grid.Column="1" Content="thumbnail name" VerticalAlignment="Center" IsChecked="{Binding IsVisibleThumbnailName}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock HorizontalAlignment="Center"><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">GumPCB.tistory.com</Hyperlink>
+                                </TextBlock>
+                            </Grid>
 
-                        <!-- ======================================== Rename ======================================== -->
-                        <TabItem>
-                            <TabItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE792;" FontSize="18"/>
-                                    <TextBlock Text="Rename" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </TabItem.Header>
-                            <Grid>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- ======================================== Files ======================================== -->
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE8B7;" FontSize="18"/>
+                                <TextBlock Text="Files" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <Border BorderBrush="Gray" BorderThickness="1"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Load" VerticalAlignment="Center" Width="110"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="File" Command="{Binding VideoListOpenFileButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="Directory" Command="{Binding VideoListOpenDirectoryButton}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="List Remove" VerticalAlignment="Center" Width="110"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding VideoListRemoveSelectedButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding VideoListRemoveAllButton}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Go to DeleteList" VerticalAlignment="Center" Width="110"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding VideoListDeleteSelectedButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding VideoListDeleteAllButton}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="File Move" VerticalAlignment="Center" Width="110"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding VideoListMoveSelectedButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding VideoListMoveAllButton}"/>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- ======================================== Rename ======================================== -->
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE792;" FontSize="18"/>
+                                <TextBlock Text="Rename" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <Border BorderBrush="Gray" BorderThickness="1"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Apply Rename" VerticalAlignment="Center" Width="100" Foreground="OrangeRed"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding ApplyRenameSelectedButton}" Foreground="OrangeRed"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding ApplyRenameAllButton}" Foreground="OrangeRed"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="2">
+                                <Border BorderBrush="Gray" BorderThickness="1"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Directory name as File name" VerticalAlignment="Center"/>
+                            </Grid>
+                            <Grid Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" HorizontalAlignment="Stretch" Content="Select" Command="{Binding ToDirectoryNameSelectedButton}"/>
+                                <Button Grid.Column="2" HorizontalAlignment="Stretch" Content="All" Command="{Binding ToDirectoryNameAllButton}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="5">
+                                <Border BorderBrush="Gray" BorderThickness="1"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding ReplaceName.Original}" PreviewTextInput="FileNameTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                                <TextBlock Grid.Column="1" Text="->" Margin="2,0,2,0" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding ReplaceName.Replace}" PreviewTextInput="FileNameTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="3*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" HorizontalAlignment="Stretch" Content="Delete" Command="{Binding ReplaceListDeleteButton}"/>
+                                <Button Grid.Column="2" Margin="2,0,0,0" HorizontalAlignment="Stretch" Content="Replace" Command="{Binding ReplaceNameButton}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="8">
+                                <ListView HorizontalAlignment="Stretch" SelectionMode="Single" ItemsSource="{Binding ReplaceList}" SelectionChanged="ReplaceList_SelectionChanged" >
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Original}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="->" Margin="2,0,2,0" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Replace}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+
+                        </Grid>
+                    </TabItem>
+
+                    <!-- ======================================== Delete ======================================== -->
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE74D;" FontSize="18"/>
+                                <TextBlock Text="Delete" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <Border BorderBrush="Gray" BorderThickness="1"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="File Delete" VerticalAlignment="Center" Width="90" Foreground="OrangeRed"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding DeleteListDeleteSelectedButton}" Foreground="OrangeRed"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding DeleteListDeleteAllButton}" Foreground="OrangeRed"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="2">
+                                <Border BorderBrush="Gray" BorderThickness="1"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="List Remove" VerticalAlignment="Center" Width="90"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding DeleteListRemoveSelectedButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding DeleteListRemoveAllButton}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="File Move" VerticalAlignment="Center" Width="90"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding DeleteListMoveSelectedButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding DeleteListMoveAllButton}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="5">
+                                <ProgressBar Value="{Binding CurrentWorkedDeleteList}" Maximum="{Binding DeleteList.Count}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="6">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-
-                                <Grid Grid.Row="0">
-                                    <Border BorderBrush="Gray" BorderThickness="1"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Apply Rename" VerticalAlignment="Center" Width="100" Foreground="OrangeRed"/>
-                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding ApplyRenameSelectedButton}" Foreground="OrangeRed"/>
-                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding ApplyRenameAllButton}" Foreground="OrangeRed"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="2">
-                                    <Border BorderBrush="Gray" BorderThickness="1"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="3">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Directory name as File name" VerticalAlignment="Center"/>
-                                </Grid>
-                                <Grid Grid.Row="4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" HorizontalAlignment="Stretch" Content="Select" Command="{Binding ToDirectoryNameSelectedButton}"/>
-                                    <Button Grid.Column="2" HorizontalAlignment="Stretch" Content="All" Command="{Binding ToDirectoryNameAllButton}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="5">
-                                    <Border BorderBrush="Gray" BorderThickness="1"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox Grid.Column="0" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding ReplaceName.Original}" PreviewTextInput="FileNameTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                                    <TextBlock Grid.Column="1" Text="->" Margin="2,0,2,0" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding ReplaceName.Replace}" PreviewTextInput="FileNameTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="7">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="10"/>
-                                        <ColumnDefinition Width="3*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" HorizontalAlignment="Stretch" Content="Delete" Command="{Binding ReplaceListDeleteButton}"/>
-                                    <Button Grid.Column="2" Margin="2,0,0,0" HorizontalAlignment="Stretch" Content="Replace" Command="{Binding ReplaceNameButton}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="8">
-                                    <ListView HorizontalAlignment="Stretch" SelectionMode="Single" ItemsSource="{Binding ReplaceList}" SelectionChanged="ReplaceList_SelectionChanged" >
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0" Text="{Binding Original}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                    <TextBlock Grid.Column="1" Text="->" Margin="2,0,2,0" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Column="2" Text="{Binding Replace}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                </Grid>
-                                
-                            </Grid>
-                        </TabItem>
-
-                        <!-- ======================================== Delete ======================================== -->
-                        <TabItem>
-                            <TabItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE74D;" FontSize="18"/>
-                                    <TextBlock Text="Delete" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </TabItem.Header>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                
-                                <Grid Grid.Row="0">
-                                    <Border BorderBrush="Gray" BorderThickness="1"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="File Delete" VerticalAlignment="Center" Width="90" Foreground="OrangeRed"/>
-                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding DeleteListDeleteSelectedButton}" Foreground="OrangeRed"/>
-                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding DeleteListDeleteAllButton}" Foreground="OrangeRed"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="2">
-                                    <Border BorderBrush="Gray" BorderThickness="1"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="3">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="List Remove" VerticalAlignment="Center" Width="90"/>
-                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding DeleteListRemoveSelectedButton}"/>
-                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding DeleteListRemoveAllButton}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="File Move" VerticalAlignment="Center" Width="90"/>
-                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding DeleteListMoveSelectedButton}"/>
-                                    <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding DeleteListMoveAllButton}"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="5">
-                                    <Border BorderBrush="Gray" BorderThickness="1"/>
-                                </Grid>
-                                <Grid Margin="0,2,0,0" Grid.Row="6">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    <ListView HorizontalAlignment="Stretch" SelectionMode="Single" ItemsSource="{Binding DeleteList}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="VideoList_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
-                                        <ListView.Resources>
-                                            <Style TargetType="{x:Type ListViewItem}">
-                                                <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-                                            </Style>
-                                        </ListView.Resources>
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel>
-                                                    <TextBlock Text="{Binding SaveName}" VerticalAlignment="Center"/>
-                                                    <StackPanel Orientation="Horizontal" >
-                                                        <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"/>
-                                                        <TextBlock Text=" | " VerticalAlignment="Center"/>
-                                                        <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center"/>
-                                                        <TextBlock Text=" | " VerticalAlignment="Center"/>
-                                                        <TextBlock Text="{Binding vCodec}" VerticalAlignment="Center"/>
-                                                        <TextBlock Text=" | " VerticalAlignment="Center"/>
-                                                        <TextBlock Text="{Binding aCodec}" VerticalAlignment="Center"/>
-                                                        <TextBlock Text=" | " VerticalAlignment="Center"/>
-                                                        <TextBlock Text="{Binding Pixel}" VerticalAlignment="Center"/>
-                                                    </StackPanel>
+                                <ListView HorizontalAlignment="Stretch" SelectionMode="Single" ItemsSource="{Binding DeleteList}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="VideoList_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
+                                    <ListView.Resources>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                        </Style>
+                                    </ListView.Resources>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding SaveName}" VerticalAlignment="Center"/>
+                                                <StackPanel Orientation="Horizontal" >
+                                                    <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text=" | " VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text=" | " VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding vCodec}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="(" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding vBitrate}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text=") | " VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding aCodec}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="(" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding aBitrate}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text=") | " VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Pixel}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text=" | " VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding FileSizeString}" VerticalAlignment="Center"/>
                                                 </StackPanel>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                </Grid>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
                             </Grid>
-                        </TabItem>
+                        </Grid>
+                    </TabItem>
 
-                    </TabControl>
-                </Grid>
+                </TabControl>
             </Grid>
 
             <GridSplitter Margin="1,0,1,0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="3" Background="DarkSlateBlue"/>
@@ -392,7 +394,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1"/>
+                            <ProgressBar Value="{Binding CurrentWorked}" Maximum="{Binding VideoList.Count}"/>
                         </Grid>
                     </Grid>
                     <Grid Grid.Row="1">
@@ -456,10 +458,16 @@
                                     <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center"/>
                                     <TextBlock Text=" | " VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding vCodec}" VerticalAlignment="Center"/>
-                                    <TextBlock Text=" | " VerticalAlignment="Center"/>
+                                    <TextBlock Text="(" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding vBitrate}" VerticalAlignment="Center"/>
+                                    <TextBlock Text=") | " VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding aCodec}" VerticalAlignment="Center"/>
-                                    <TextBlock Text=" | " VerticalAlignment="Center"/>
+                                    <TextBlock Text="(" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding aBitrate}" VerticalAlignment="Center"/>
+                                    <TextBlock Text=") | " VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding Pixel}" VerticalAlignment="Center"/>
+                                    <TextBlock Text=" | " VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding FileSizeString}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </StackPanel>
                         </DataTemplate>

@@ -40,11 +40,6 @@
                 </Grid>
 
                 <Grid Margin="0,2,0,0">
-                    <Grid Margin="0,6,2,0" HorizontalAlignment="Right" VerticalAlignment="Top">
-                        <TextBlock><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">GumPCB</Hyperlink>
-                        </TextBlock>
-                    </Grid>
-                    
                     <StackPanel>
                         <!-- ======================================== FastCut ======================================== -->
                         <TabControl>
@@ -81,10 +76,13 @@
                                     <Grid Margin="0,2,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="Faststart" VerticalAlignment="Center" Width="100"/>
                                         <CheckBox Grid.Column="1" Content="&#xE704;" VerticalAlignment="Center" IsChecked="{Binding Data.Streaming}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                                        <TextBlock Grid.Column="2" VerticalAlignment="Center"><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">GumPCB.tistory.com</Hyperlink>
+                                        </TextBlock>
                                     </Grid>
                                 </StackPanel>
                             </TabItem>
@@ -609,6 +607,7 @@
                         <DataGridTextColumn Header="vBitrate" IsReadOnly="True" Binding="{Binding vBitrate}"/>
                         <DataGridTextColumn Header="aBitrate" IsReadOnly="True" Binding="{Binding aBitrate}"/>
                         <DataGridTextColumn Header="Pixel" IsReadOnly="True" Binding="{Binding Pixel}"/>
+                        <DataGridTextColumn Header="FileSize" IsReadOnly="True" Binding="{Binding FileSizeString}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

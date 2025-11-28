@@ -16,6 +16,7 @@ namespace GumSorter
         private int selectedVideoIndex = 0;
         private bool working;
         private long currentWorked = 0;
+        private long currentWorkedDeleteList = 0;
         private string tempDirectory = "temp";
         private uint thumbnailCount = 10;
         private string thumbnailImage;
@@ -101,6 +102,14 @@ namespace GumSorter
             {
                 currentWorked = value;
                 OnPropertyChanged(nameof(CurrentWorked));
+            }
+        }
+        public long CurrentWorkedDeleteList
+        {
+            get => currentWorkedDeleteList; set
+            {
+                currentWorkedDeleteList = value;
+                OnPropertyChanged(nameof(CurrentWorkedDeleteList));
             }
         }
         public string TempDirectory
@@ -380,25 +389,43 @@ namespace GumSorter
             if (result == null || result != true)
                 return;
 
-            foreach (VideoInfo info in VideoList)
+            CurrentWorked = 0;
+            var task = Task.Run(() => (false)).ContinueWith((antecedent) =>
             {
-                if (info.IsSelected == false && IsAll == false)
-                    continue;
-
-                string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
-                File.Move(info.FileName, destFilename);
-                if (File.Exists(destFilename))
+                foreach (VideoInfo info in VideoList)
                 {
-                    info.FileName = destFilename;
+                    if (info.IsSelected == false && IsAll == false)
+                    {
+                        App.Current.Dispatcher.Invoke((Action)delegate
+                        {
+                            CurrentWorked++;
+                        });
+                        continue;
+                    }
+
+                    string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
+                    File.Move(info.FileName, destFilename);
+                    if (File.Exists(destFilename))
+                    {
+                        info.FileName = destFilename;
+                    }
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        CurrentWorked++;
+                    });
                 }
-            }
+            });
         }
 
         private void VideoListRemoveSelectedExecutedCommand(object? obj)
         {
-            if (selectedVideoIndex < 0 || selectedVideoIndex >= VideoList.Count) return;
+            for (int i = VideoList.Count - 1; i >= 0; --i)
+            {
+                if (VideoList[i].IsSelected == false)
+                    continue;
 
-            VideoList.RemoveAt(selectedVideoIndex);
+                VideoList.RemoveAt(i);
+            }
         }
 
         private void VideoListRemoveAllExecutedCommand(object? obj)
@@ -408,10 +435,14 @@ namespace GumSorter
 
         private void VideoListDeleteSelectedExecutedCommand(object? obj)
         {
-            if (selectedVideoIndex < 0 || selectedVideoIndex >= VideoList.Count) return;
+            for (int i = VideoList.Count - 1; i >= 0; --i)
+            {
+                if (VideoList[i].IsSelected == false)
+                    continue;
 
-            AddDeleteList(VideoList[selectedVideoIndex]);
-            VideoList.RemoveAt(selectedVideoIndex);
+                AddDeleteList(VideoList[i]);
+                VideoList.RemoveAt(i);
+            }
         }
 
         private void VideoListDeleteAllExecutedCommand(object? obj)
@@ -435,18 +466,32 @@ namespace GumSorter
             if (result == null || result != true)
                 return;
 
-            foreach (VideoInfo info in DeleteList)
+            CurrentWorkedDeleteList = 0;
+            var task = Task.Run(() => (false)).ContinueWith((antecedent) =>
             {
-                if (info.IsSelected == false && IsAll == false)
-                    continue;
-
-                string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
-                File.Move(info.FileName, destFilename);
-                if (File.Exists(destFilename))
+                foreach (VideoInfo info in DeleteList)
                 {
-                    info.FileName = destFilename;
+                    if (info.IsSelected == false && IsAll == false)
+                    {
+                        App.Current.Dispatcher.Invoke((Action)delegate
+                        {
+                            CurrentWorkedDeleteList++;
+                        });
+                        continue;
+                    }
+
+                    string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
+                    File.Move(info.FileName, destFilename);
+                    if (File.Exists(destFilename))
+                    {
+                        info.FileName = destFilename;
+                    }
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        CurrentWorkedDeleteList++;
+                    });
                 }
-            }
+            });
         }
 
         private void DeleteListRemoveSelectedExecutedCommand(object? obj)
@@ -465,48 +510,46 @@ namespace GumSorter
             DeleteList.Clear();
         }
 
-        private void DeleteListDeleteSelectedExecutedCommand(object? obj)
-        {
-            for (int i = DeleteList.Count - 1; i >= 0; --i)
-            {
-                if (DeleteList[i].IsSelected == false || File.Exists(DeleteList[i].FileName) == false)
-                    continue;
-                
-                MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete this file?\n{DeleteList[i].FileName}", "Confirm Deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No)
-                    continue;
+        private void DeleteListDeleteSelectedExecutedCommand(object? obj) => DeleteListDeleteFile(false);
 
-                try
-                {
-                    File.Delete(DeleteList[i].FileName);
-                }
-                catch (IOException)
-                {
-                }
-                DeleteList.RemoveAt(i);
-            }
-        }
-
-        private void DeleteListDeleteAllExecutedCommand(object? obj)
+        private void DeleteListDeleteAllExecutedCommand(object? obj) => DeleteListDeleteFile(true);
+        private void DeleteListDeleteFile(bool IsAll)
         {
-            MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete all file?", "Confirm Deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete file?", "Confirm Deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.No)
                 return;
 
-            foreach (VideoInfo info in DeleteList)
+            CurrentWorkedDeleteList = 0;
+            var task = Task.Run(() => (false)).ContinueWith((antecedent) =>
             {
-                if (File.Exists(info.FileName))
+                for (int i = DeleteList.Count - 1; i >= 0; --i)
                 {
-                    try
+                    if (DeleteList[i].IsSelected == false && IsAll == false)
                     {
-                        File.Delete(info.FileName);
+                        App.Current.Dispatcher.Invoke((Action)delegate
+                        {
+                            CurrentWorkedDeleteList++;
+                        });
+                        continue;
                     }
-                    catch (IOException)
+
+                    if (File.Exists(DeleteList[i].FileName))
                     {
+                        try
+                        {
+                            File.Delete(DeleteList[i].FileName);
+                        }
+                        catch (IOException)
+                        {
+                        }
                     }
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        DeleteList.RemoveAt(i);
+                        CurrentWorkedDeleteList++;
+                    });
                 }
-            }
-            DeleteList.Clear();
+            });
         }
 
         private void ReplaceListDeleteExecutedCommand(object? obj)
@@ -550,40 +593,29 @@ namespace GumSorter
             IniReplaceSave();
         }
 
-        private void ToDirectoryNameSelectedExecutedCommand(object? obj)
-        {
-            if (selectedVideoIndex < 0 || selectedVideoIndex >= VideoList.Count) return;
-
-            string directoryName = Path.GetDirectoryName(VideoList[selectedVideoIndex].FileName) ?? string.Empty;
-            VideoList[selectedVideoIndex].SaveName = directoryName.Length > 0 ? Path.GetFileName(directoryName) + Path.GetExtension(VideoList[selectedVideoIndex].FileName) : VideoList[selectedVideoIndex].SaveName;
-        }
-        private void ToDirectoryNameAllExecutedCommand(object? obj)
+        private void ToDirectoryNameSelectedExecutedCommand(object? obj) => ToDirectoryName(false);
+        private void ToDirectoryNameAllExecutedCommand(object? obj) => ToDirectoryName(true);
+        private void ToDirectoryName(bool IsAll)
         {
             foreach (VideoInfo info in VideoList)
             {
+                if (info.IsSelected == false && IsAll == false)
+                    continue;
+
                 string directoryName = Path.GetDirectoryName(info.FileName) ?? string.Empty;
                 info.SaveName = directoryName.Length > 0 ? Path.GetFileName(directoryName) + Path.GetExtension(info.FileName) : info.SaveName;
             }
         }
 
-        private void ApplyRenameSelectedExecutedCommand(object? obj)
-        {
-            if (selectedVideoIndex < 0 || selectedVideoIndex >= VideoList.Count) return;
-
-            if (VideoList[selectedVideoIndex].SaveName.Equals(Path.GetFileName(VideoList[selectedVideoIndex].FileName), StringComparison.OrdinalIgnoreCase))
-                return;
-
-            string destFilename = Path.GetDirectoryName(VideoList[selectedVideoIndex].FileName) + "\\" + VideoList[selectedVideoIndex].SaveName;
-            File.Move(VideoList[selectedVideoIndex].FileName, destFilename);
-            if (File.Exists(destFilename))
-            {
-                VideoList[selectedVideoIndex].FileName = destFilename;
-            }
-        }
-        private void ApplyRenameAllExecutedCommand(object? obj)
+        private void ApplyRenameSelectedExecutedCommand(object? obj) => ApplyRename(false);
+        private void ApplyRenameAllExecutedCommand(object? obj) => ApplyRename(true);
+        private void ApplyRename(bool IsAll)
         {
             foreach (VideoInfo info in VideoList)
             {
+                if (info.IsSelected == false && IsAll == false)
+                    continue;
+
                 if (info.SaveName.Equals(Path.GetFileName(info.FileName), StringComparison.OrdinalIgnoreCase))
                     continue;
 
@@ -621,26 +653,27 @@ namespace GumSorter
                     DirectoryInfo directoryInfo = new DirectoryInfo(file);
                     foreach (FileInfo info in directoryInfo.GetFiles("*.*", SearchOption.AllDirectories))
                     {
-                        AddFileVideoList(info.FullName);
+                        AddFileVideoList(info);
                     }
                 }
                 else if (File.Exists(file))
                 {
-                    AddFileVideoList(file);
+                    AddFileVideoList(new FileInfo(file));
                 }
             }
         }
 
-        private void AddFileVideoList(string file)
+        private void AddFileVideoList(FileInfo fi)
         {
-            if (file.Contains("Thumbs.db", StringComparison.OrdinalIgnoreCase))
+            if (fi.FullName.Contains("Thumbs.db", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            if (VideoList.Any(v => v.FileName.Equals(file, StringComparison.OrdinalIgnoreCase))
-                || DeleteList.Any(v => v.FileName.Equals(file, StringComparison.OrdinalIgnoreCase)))
+            if (VideoList.Any(v => v.FileName.Equals(fi.FullName, StringComparison.OrdinalIgnoreCase))
+                || DeleteList.Any(v => v.FileName.Equals(fi.FullName, StringComparison.OrdinalIgnoreCase)))
                 return;
 
-            VideoInfo info = new(file);
+            VideoInfo info = new(fi.FullName);
+            info.FileSize = fi.Length;
             VideoList.Add(info);
             if (VideoList.Count == 1)
                 SelectedVideoIndex = 0;
@@ -661,6 +694,8 @@ namespace GumSorter
             DeleteList.Add(deleted);
         }
 
+        private string GetTempDirectory(string filename) => $"{tempDirectory}\\{Path.GetFileNameWithoutExtension(filename)}".TrimEnd();
+        private string GetVideoInfoFile(string filename) => $"{GetTempDirectory(filename)}\\VideoInfo.txt";
         private void VideoListGetInfo()
         {
             if (Working == true)
@@ -678,7 +713,7 @@ namespace GumSorter
                 }
             }
 
-            if (current > (CurrentWorked + 1) || videoList.Count < currentWorked)
+            if (current > (CurrentWorked + 1) || VideoList.Count < currentWorked)
             {
                 CurrentWorked = current - 1;
             }
@@ -692,24 +727,15 @@ namespace GumSorter
 
             if (File.Exists(GetVideoInfoFile(filename)))
             {
-                VideoInfo temp = FileLoadVideoInfo(filename);
                 foreach (VideoInfo info in VideoList)
                 {
-                    if (info.vCodec.Length != 0 || info.FileName.Equals(temp.FileName) == false)
+                    if (info.vCodec.Length != 0 || info.FileName.Equals(filename) == false)
                         continue;
-                    info.vCodec = temp.vCodec;
-                    info.Resolution = temp.Resolution;
-                    info.Duration = temp.Duration;
-                    info.FPS = temp.FPS;
-                    info.Pixel = temp.Pixel;
-                    info.vBitrate = temp.vBitrate;
-                    info.aCodec = temp.aCodec;
-                    info.aBitrate = temp.aBitrate;
-                    info.SaveName = Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
+
+                    info.FileLoad(GetVideoInfoFile(filename));
+                    ThumbnailCreate(info);
                     break;
                 }
-
-                ThumbnailCreate(temp);
                 return;
             }
 
@@ -717,86 +743,22 @@ namespace GumSorter
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    VideoInfo temp = VideoInfo.SplitInfo(FFmpegResultText, filename);
-                    if (temp.vCodec.Length == 0)
-                        temp.vCodec = "Not Found";
-                    if (temp.aCodec.Length == 0)
-                        temp.aCodec = "Not Found";
                     foreach (VideoInfo info in VideoList)
                     {
-                        if (info.vCodec.Length != 0 || info.FileName.Equals(temp.FileName) == false)
+                        if (info.vCodec.Length != 0 || info.FileName.Equals(filename) == false)
                             continue;
 
-                        info.vCodec = temp.vCodec;
-                        info.Resolution = temp.Resolution;
-                        info.Duration = temp.Duration;
-                        info.FPS = temp.FPS;
-                        info.Pixel = temp.Pixel;
-                        info.vBitrate = temp.vBitrate;
-                        info.aCodec = temp.aCodec;
-                        info.aBitrate = temp.aBitrate;
+                        info.SplitInfo(FFmpegResultText);
                         info.SaveName = Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
-                        info.Streams = temp.Streams;
-                        info.Subtitles = temp.Subtitles;
-                        FileSaveVideoInfo(info);
+                        Directory.CreateDirectory(GetTempDirectory(info.FileName));
+                        info.FileSave(GetVideoInfoFile(info.FileName));
+
+                        FFmpegResultText = string.Empty;
+                        ThumbnailCreate(info);
                         break;
                     }
-
-                    FFmpegResultText = string.Empty;
-                    ThumbnailCreate(temp);
                 });
             });
-        }
-
-        private string GetTempDirectory(string filename) => $"{tempDirectory}\\{Path.GetFileNameWithoutExtension(filename)}".TrimEnd();
-        private string GetVideoInfoFile(string filename) => $"{GetTempDirectory(filename)}\\VideoInfo.txt";
-        private void FileSaveVideoInfo(VideoInfo info)
-        {
-            if (info == null || info.FileName.Length == 0 || info.vCodec.Equals("Not Found") || info.Duration.Length == 0)
-                return;
-
-            double totalSeconds = 0.0;
-            string[] splitLine = info.Duration.Split(':', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            foreach (string split in splitLine)
-            {
-                if (double.TryParse(split, out double value))
-                    totalSeconds = totalSeconds * 60.0 + value;
-            }
-            if (totalSeconds < 0.05)
-                return;
-
-            FileStream fs = new(GetVideoInfoFile(info.FileName), FileMode.Create);
-            using StreamWriter sw = new(fs);
-            sw.WriteLine(info.vCodec);
-            sw.WriteLine(info.Resolution);
-            sw.WriteLine(info.Duration);
-            sw.WriteLine(info.FPS);
-            sw.WriteLine(info.Pixel);
-            sw.WriteLine(info.vBitrate);
-            sw.WriteLine(info.aCodec);
-            sw.WriteLine(info.aBitrate);
-            sw.Close();
-        }
-        private VideoInfo FileLoadVideoInfo(string filename)
-        {
-            VideoInfo info = new(filename);
-            string infoFile = GetVideoInfoFile(filename);
-            if (!File.Exists(infoFile))
-                return info;
-
-            using StreamReader sr = new(infoFile);
-            info.vCodec = sr.ReadLine() ?? string.Empty;
-            info.Resolution = sr.ReadLine() ?? string.Empty;
-            info.Duration = sr.ReadLine() ?? string.Empty;
-            if (double.TryParse(sr.ReadLine(), out double fps))
-                info.FPS = fps;
-            info.Pixel = sr.ReadLine() ?? string.Empty;
-            info.vBitrate = sr.ReadLine() ?? string.Empty;
-            info.aCodec = sr.ReadLine() ?? string.Empty;
-            info.aBitrate = sr.ReadLine() ?? string.Empty;
-            sr.Close();
-
-            return info;
         }
 
         private const string JpegSearchPattern = "*.jpg";
@@ -804,56 +766,45 @@ namespace GumSorter
         {
             if (temp == null || temp.FileName.Length == 0)
             {
-                foreach (VideoInfo info in VideoList)
-                {
-                    if (info.Thumbnails.Count >= thumbnailCount || info.Duration.Length == 0)
-                        continue;
-
-                    temp = info;
-                    break;
-                }
-                if (temp == null || temp.FileName.Length == 0)
-                {
-                    Working = false;
-                    VideoListGetInfo();
-                    return;
-                }
+                CurrentWorked++;
+                Working = false;
+                VideoListGetInfo();
+                return;
             }
 
-            string tempDir = GetTempDirectory(temp.FileName);
+            string filename = temp.FileName;
+            string tempDir = GetTempDirectory(filename);
+            createdthumbnailDirectorys.Add(tempDir);
             if (Directory.Exists(tempDir))
             {
-                createdthumbnailDirectorys.Add(tempDir);
-
                 DirectoryInfo dirInfo = new(tempDir);
+                List<string> thumbnails = [];
                 foreach (FileInfo fileInfo in dirInfo.GetFiles(JpegSearchPattern))
-                    temp.Thumbnails.Add(fileInfo.FullName);
+                    thumbnails.Add(fileInfo.FullName);
                 
-                if (temp.Thumbnails.Count >= thumbnailCount)
+                if (thumbnails.Count >= thumbnailCount)
                 {
                     foreach (VideoInfo info in VideoList)
                     {
-                        if (info.FileName.Equals(temp.FileName) == false)
+                        if (info.FileName.Equals(filename) == false)
                             continue;
 
-                        foreach (string thumb in temp.Thumbnails)
+                        foreach (string thumb in thumbnails)
                             info.Thumbnails.Add(thumb);
+
+                        break;
                     }
-                    if (thumbnailImage == DefaultThumbnailImage && VideoList.Count > 0 && VideoList[SelectedVideoIndex].FileName.Equals(temp.FileName))
+                    if (thumbnailImage == DefaultThumbnailImage && VideoList.Count > 0 && VideoList[selectedVideoIndex].FileName.Equals(filename))
                     {
-                        ThumbnailImages = VideoList[SelectedVideoIndex].Thumbnails;
+                        ThumbnailImages = VideoList[selectedVideoIndex].Thumbnails;
                         NextThumbnailImage();
                     }
+
                     CurrentWorked++;
                     Working = false;
                     VideoListGetInfo();
                     return;
                 }
-            }
-            else
-            {
-                Directory.CreateDirectory(tempDir);
-                createdthumbnailDirectorys.Add(tempDir);
             }
 
             double totalSeconds = 0.0;
@@ -862,11 +813,11 @@ namespace GumSorter
             {
                 if (double.TryParse(split, out double value))
                     totalSeconds = totalSeconds * 60.0 + value;
-
             }
             if (totalSeconds < 0.05)
             {
                 temp.Thumbnails.Add(DefaultThumbnailImage);
+
                 CurrentWorked++;
                 Working = false;
                 VideoListGetInfo();
@@ -875,17 +826,22 @@ namespace GumSorter
 
             data.Fps = thumbnailCount / totalSeconds;
 
-            data.LoadVideo = temp.FileName;
-            data.SaveVideo = $"{tempDir}\\{Path.GetFileNameWithoutExtension(temp.FileName)}_cut{Path.GetExtension(temp.FileName)}";
+            data.LoadVideo = filename;
+            data.SaveVideo = $"{tempDir}\\{Path.GetFileNameWithoutExtension(filename)}_cut{Path.GetExtension(filename)}";
+
+            Working = true;
 
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", FFmpegArguments.Image(data, true), false, false)).ContinueWith((antecedent) =>
             {
+                data.LoadVideo = string.Empty;
+                data.SaveVideo = string.Empty;
+                FFmpegResultText = string.Empty;
+
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
-
                     foreach (VideoInfo info in VideoList)
                     {
-                        if (info.FileName.Equals(data.LoadVideo) == false)
+                        if (info.FileName.Equals(filename) == false)
                             continue;
 
                         DirectoryInfo dirInfo = new(tempDir);
@@ -896,16 +852,13 @@ namespace GumSorter
                             info.Thumbnails.Add(DefaultThumbnailImage);
                     }
 
-                    if (thumbnailImage == DefaultThumbnailImage && VideoList.Count > 0 && VideoList[SelectedVideoIndex].FileName.Equals(data.LoadVideo))
+                    if (thumbnailImage == DefaultThumbnailImage && VideoList.Count > 0 && VideoList[selectedVideoIndex].FileName.Equals(filename))
                     {
-                        ThumbnailImages = VideoList[SelectedVideoIndex].Thumbnails;
+                        ThumbnailImages = VideoList[selectedVideoIndex].Thumbnails;
                         NextThumbnailImage();
                     }
 
                     CurrentWorked++;
-                    data.LoadVideo = string.Empty;
-                    data.SaveVideo = string.Empty;
-                    FFmpegResultText = string.Empty;
                     Working = false;
                     VideoListGetInfo();
                 });

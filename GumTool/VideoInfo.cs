@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 
 namespace GumTool
 {
@@ -19,6 +20,7 @@ namespace GumTool
         private string vbitrate = string.Empty;
         private string acodec = string.Empty;
         private string abitrate = string.Empty;
+        private long fileSize;
         private bool isSelected = false;
         public List<string> Streams = [];
         public List<string> Subtitles = [];
@@ -27,6 +29,56 @@ namespace GumTool
         public VideoInfo(string file_name)
         {
             fileName = file_name;
+        }
+
+        public void FileSave(string filename)
+        {
+            if (filename.Length == 0 || vcodec.Equals("Not Found") || duration.Length == 0)
+                return;
+
+            double totalSeconds = 0.0;
+            string[] splitLine = duration.Split(':', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            foreach (string split in splitLine)
+            {
+                if (double.TryParse(split, out double value))
+                    totalSeconds = totalSeconds * 60.0 + value;
+            }
+            if (totalSeconds < 0.05)
+                return;
+
+            FileStream fs = new(filename, FileMode.Create);
+            using StreamWriter sw = new(fs);
+            sw.WriteLine(vcodec);
+            sw.WriteLine(resolution);
+            sw.WriteLine(duration);
+            sw.WriteLine(fps);
+            sw.WriteLine(pixel);
+            sw.WriteLine(vbitrate);
+            sw.WriteLine(acodec);
+            sw.WriteLine(abitrate);
+            sw.WriteLine(fileSize);
+            sw.Close();
+        }
+        public void FileLoad(string filename)
+        {
+            if (filename.Length == 0 || !File.Exists(filename))
+                return;
+
+            SaveName = Path.GetFileNameWithoutExtension(FileName) + Path.GetExtension(FileName);
+
+            using StreamReader sr = new(filename);
+            vCodec = sr.ReadLine() ?? string.Empty;
+            Resolution = sr.ReadLine() ?? string.Empty;
+            Duration = sr.ReadLine() ?? string.Empty;
+            if (double.TryParse(sr.ReadLine(), out double fps))
+                FPS = fps;
+            Pixel = sr.ReadLine() ?? string.Empty;
+            vBitrate = sr.ReadLine() ?? string.Empty;
+            aCodec = sr.ReadLine() ?? string.Empty;
+            aBitrate = sr.ReadLine() ?? string.Empty;
+            if (long.TryParse(sr.ReadLine(), out long fileSize))
+                FileSize = fileSize;
+            sr.Close();
         }
 
         public string FileName
@@ -109,6 +161,29 @@ namespace GumTool
                 OnPropertyChanged(nameof(aBitrate));
             }
         }
+        public long FileSize
+        {
+            get => fileSize; set
+            {
+                fileSize = value;
+                OnPropertyChanged(nameof(FileSize));
+                OnPropertyChanged(nameof(FileSizeString));
+            }
+        }
+        public string FileSizeString
+        {
+            get
+            {
+                if (fileSize < 1024)
+                    return $"{fileSize} B";
+                else if (fileSize < 1048576)
+                    return $"{(fileSize / 1024.0):F2} KB";
+                else if (fileSize < 1073741824)
+                    return $"{(fileSize / 1048576.0):F2} MB";
+                else
+                    return $"{(fileSize / 1073741824.0):F2} GB";
+            }
+        }
         public bool IsSelected
         {
             get => isSelected; set
@@ -125,11 +200,10 @@ namespace GumTool
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public static VideoInfo SplitInfo(string ffmpegResult, string filename)
+        public void SplitInfo(string ffmpegResult)
         {
-            VideoInfo info = new(filename);
             string[]? splitResult = ffmpegResult?.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            if (splitResult == null || splitResult.Length == 0) return info;
+            if (splitResult == null || splitResult.Length == 0) return;
 
             char[] delimiterChars = { ' ', ',', '.', ':' };
             foreach (string line in splitResult)
@@ -148,7 +222,7 @@ namespace GumTool
                             .Replace('[', ' ')
                             .Replace("]", string.Empty)
                             .Replace("  ", " ");
-                        info.Streams.Add(stream.Trim());
+                        Streams.Add(stream.Trim());
                     }
                 }
 
@@ -157,24 +231,24 @@ namespace GumTool
                     string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     foreach (string split in splitLine)
                     {
-                        if (split.Contains("Video", StringComparison.Ordinal) && info.vCodec.Length == 0)
+                        if (split.Contains("Video", StringComparison.Ordinal) && vCodec.Length == 0)
                         {
                             string[] encoder = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             for (int i = 0; i < encoder.Length; ++i)
                             {
                                 if (encoder[i].Equals("Video:") && encoder.Length >= i + 2)
                                 {
-                                    info.vCodec = encoder[i + 1];
+                                    vCodec = encoder[i + 1];
                                     break;
                                 }
                             }
                         }
-                        else if (info.Pixel.Length == 0 && (split.Contains("yuv", StringComparison.Ordinal) || split.Contains("nv", StringComparison.Ordinal) || split.Contains("rgb", StringComparison.Ordinal) || split.Contains("bgr", StringComparison.Ordinal) || split.Contains("gbr", StringComparison.Ordinal) || split.Contains("gray", StringComparison.Ordinal) || split.Contains("mono", StringComparison.Ordinal)))
+                        else if (Pixel.Length == 0 && (split.Contains("yuv", StringComparison.Ordinal) || split.Contains("nv", StringComparison.Ordinal) || split.Contains("rgb", StringComparison.Ordinal) || split.Contains("bgr", StringComparison.Ordinal) || split.Contains("gbr", StringComparison.Ordinal) || split.Contains("gray", StringComparison.Ordinal) || split.Contains("mono", StringComparison.Ordinal)))
                         {
                             string[] pixel = split.Split('(', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             if (pixel.Length >= 1)
                             {
-                                info.Pixel = pixel[0];
+                                Pixel = pixel[0];
                             }
                         }
                         else if (split.Contains("fps", StringComparison.Ordinal))
@@ -184,23 +258,23 @@ namespace GumTool
                             {
                                 if (double.TryParse(fps[0], out double fpsValue))
                                 {
-                                    info.FPS = fpsValue;
+                                    FPS = fpsValue;
                                 }
                             }
                         }
-                        else if (split.Contains("b/s", StringComparison.Ordinal) && info.vBitrate.Length == 0)
+                        else if (split.Contains("b/s", StringComparison.Ordinal) && vBitrate.Length == 0)
                         {
-                            info.vBitrate = split;
+                            vBitrate = split;
                         }
-                        else if (split.Contains('x', StringComparison.Ordinal) && info.Resolution.Length == 0)
+                        else if (split.Contains('x', StringComparison.Ordinal) && Resolution.Length == 0)
                         {
                             char[] resolutionDelimiterChars = { 'x', ' ' };
                             string[] resolution = split.Split(resolutionDelimiterChars, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             uint temp;
-                            if (resolution.Length < 2 || info.Resolution.Length != 0 || uint.TryParse(resolution[0], out temp) == false || uint.TryParse(resolution[1], out temp) == false)
+                            if (resolution.Length < 2 || Resolution.Length != 0 || uint.TryParse(resolution[0], out temp) == false || uint.TryParse(resolution[1], out temp) == false)
                                 continue;
 
-                            info.Resolution = resolution[0] + 'x' + resolution[1];
+                            Resolution = resolution[0] + 'x' + resolution[1];
                         }
                     }
                 }
@@ -209,23 +283,23 @@ namespace GumTool
                     string[] splitLine = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     foreach (string split in splitLine)
                     {
-                        if (split.Contains("Audio", StringComparison.Ordinal) && info.aCodec.Length == 0)
+                        if (split.Contains("Audio", StringComparison.Ordinal) && aCodec.Length == 0)
                         {
                             string[] encoder = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             for (int i = 0; i < encoder.Length; ++i)
                             {
                                 if (encoder[i].Equals("Audio:") && encoder.Length >= i + 2)
                                 {
-                                    info.aCodec = encoder[i + 1];
+                                    aCodec = encoder[i + 1];
                                     break;
                                 }
                             }
                         }
-                        else if (split.Contains("b/s", StringComparison.Ordinal) && info.aBitrate.Length == 0)
+                        else if (split.Contains("b/s", StringComparison.Ordinal) && aBitrate.Length == 0)
                         {
                             string[] bitrate = split.Split('(', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             if (bitrate.Length >= 1)
-                                info.aBitrate = bitrate[0];
+                                aBitrate = bitrate[0];
                         }
                     }
                 }
@@ -239,7 +313,7 @@ namespace GumTool
                             string[] duration = split.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             if (duration.Length >= 2)
                             {
-                                info.Duration = duration[1];
+                                Duration = duration[1];
                                 break;
                             }
                         }
@@ -257,12 +331,17 @@ namespace GumTool
                             .Replace('[', ' ')
                             .Replace("]", string.Empty)
                             .Replace("  ", " ");
-                        info.Subtitles.Add(subtitle.Trim());
+                        Subtitles.Add(subtitle.Trim());
                     }
                 }
             }
 
-            return info;
+
+            if (vCodec.Length == 0)
+                vCodec = "Not Found";
+
+            if (aCodec.Length == 0)
+                aCodec = "Not Found";
         }
     }
     public class ReplaceCollection : ObservableCollection<ReplaceInfo>
