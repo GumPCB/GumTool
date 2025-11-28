@@ -599,6 +599,7 @@ namespace GumCut
                         break;
                     }
 
+                    BatchProgressCurrent++;
                     FFmpegResultText = string.Empty;
                     Working = false;
                     BatchGetInfo();
@@ -616,7 +617,12 @@ namespace GumCut
             if (result == null || result != true)
                 return;
 
+            long beforeCount = VideoList.Count;
+
             AddVideoList(dialog.FileNames);
+
+            BatchProgressCurrent = 0;
+            BatchProgressMaximum = VideoList.Count - beforeCount;
             BatchGetInfo();
         }
 
@@ -630,7 +636,12 @@ namespace GumCut
             if (result == null || result != true)
                 return;
 
+            long beforeCount = VideoList.Count;
+
             AddVideoList(dialog.FolderNames);
+
+            BatchProgressCurrent = 0;
+            BatchProgressMaximum = VideoList.Count - beforeCount;
             BatchGetInfo();
         }
 
@@ -812,8 +823,12 @@ namespace GumCut
 
         internal void DragAndDropBatch(string[] files)
         {
+            long beforeCount = VideoList.Count;
+
             AddVideoList(files);
 
+            BatchProgressCurrent = 0;
+            BatchProgressMaximum = VideoList.Count - beforeCount;
             BatchGetInfo();
         }
 
