@@ -350,22 +350,22 @@ namespace GumTool
 
     public class ReplaceInfo : INotifyPropertyChanged
     {
-        private string original = string.Empty;
-        private string replace = string.Empty;
-        public string Original
+        private string before = string.Empty;
+        private string after = string.Empty;
+        public string Before
         {
-            get => original; set
+            get => before; set
             {
-                original = value;
-                OnPropertyChanged(nameof(Original));
+                before = value;
+                OnPropertyChanged(nameof(Before));
             }
         }
-        public string Replace
+        public string After
         {
-            get => replace; set
+            get => after; set
             {
-                replace = value;
-                OnPropertyChanged(nameof(Replace));
+                after = value;
+                OnPropertyChanged(nameof(After));
             }
         }
         public event PropertyChangedEventHandler? PropertyChanged;

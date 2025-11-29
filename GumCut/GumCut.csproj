@@ -10,8 +10,8 @@
     <BaseOutputPath>$(SolutionDir)$(Configuration)\$(Platform)</BaseOutputPath>
     <IntermediateOutputPath>$(SolutionDir)$(Configuration)\$(Platform)\$(AssemblyName)</IntermediateOutputPath>
     <ApplicationIcon>Cut.ico</ApplicationIcon>
-    <AssemblyVersion>1.4.1</AssemblyVersion>
-    <FileVersion>1.4.1</FileVersion>
+    <AssemblyVersion>1.5</AssemblyVersion>
+    <FileVersion>1.5</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

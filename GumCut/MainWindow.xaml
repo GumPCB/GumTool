@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GumCut"
         mc:Ignorable="d"
-        Title="GumCut v1.4.1" Width="1200" Height="850" MinWidth="850" MinHeight="600">
+        Title="GumCut v1.5" Width="1200" Height="850" MinWidth="850" MinHeight="600">
     <Window.Resources>
         <local:Cut x:Key="KeyCut"/>
     </Window.Resources>
@@ -13,7 +13,7 @@
         <StaticResource ResourceKey="KeyCut"/>
     </Window.DataContext>
 
-    <Grid Margin="1,1,1,1">
+    <Grid Margin="1,0,1,1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400" MinWidth="360"/>
             <ColumnDefinition Width="Auto"/>
@@ -489,7 +489,7 @@
                         <ColumnDefinition Width="2"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Open Cmd" VerticalAlignment="Center"/>
+                    <TextBlock Text="Terminal Open" VerticalAlignment="Center"/>
                     <CheckBox Grid.Column="2" Content="&#xE737;" VerticalAlignment="Center" IsChecked="{Binding OpenCmd}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
                     <Button Grid.Column="4" Content="&#xE756;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch" Command="{Binding CmdButton}"/>
                     <Button Grid.Column="6" Content="&#xE954;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch" Command="{Binding VideoInfoButton}"/>

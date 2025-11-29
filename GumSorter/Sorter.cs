@@ -16,6 +16,7 @@ namespace GumSorter
         private VideoCollection deleteList = [];
         private int selectedVideoIndex = 0;
         private bool working;
+        private bool openCmd;
         private long currentWorked = 0;
         private long currentWorkedDeleteList = 0;
         private long currentWorkedEncode = 0;
@@ -103,6 +104,15 @@ namespace GumSorter
             {
                 working = value;
                 OnPropertyChanged(nameof(Working));
+            }
+        }
+        public bool OpenCmd
+        {
+            get => openCmd; set
+            {
+                openCmd = value;
+                OnPropertyChanged(nameof(OpenCmd));
+                SetupfileSave();
             }
         }
         public long CurrentWorked
@@ -305,6 +315,7 @@ namespace GumSorter
             string? isVisible = sr.ReadLine();
             string? saveDirectory = sr.ReadLine();
             string? encodeCommand = sr.ReadLine();
+            string? opencmd = sr.ReadLine();
             sr.Close();
 
             if (ffmpeg != null)
@@ -341,6 +352,11 @@ namespace GumSorter
             {
                 EncodeCommand = encodeCommand;
             }
+
+            if (opencmd != null)
+            {
+                OpenCmd = opencmd.Equals("1");
+            }
         }
         private const string ReplaceFile = "ini\\replace.ini";
         private void IniReplaceLoad()
@@ -361,8 +377,8 @@ namespace GumSorter
 
                     ReplaceList.Add(new ReplaceInfo()
                     {
-                        Original = split[0],
-                        Replace = split[1]
+                        Before = split[0],
+                        After = split[1]
                     });
                 }
                 sr.Close();
@@ -375,7 +391,7 @@ namespace GumSorter
             using StreamWriter sw = new(fs);
             foreach (ReplaceInfo replace in ReplaceList)
             {
-                sw.WriteLine($"{replace.Original}/{replace.Replace}");
+                sw.WriteLine($"{replace.Before}/{replace.After}");
             }
             sw.Close();
         }
@@ -391,6 +407,7 @@ namespace GumSorter
             sw.WriteLine(IsVisibleThumbnailName ? '1' : '0');
             sw.WriteLine(SaveDirectory);
             sw.WriteLine(EncodeCommand);
+            sw.WriteLine(OpenCmd ? '1' : '0');
             sw.Close();
         }
 
@@ -644,39 +661,39 @@ namespace GumSorter
         {
             for (int i = ReplaceList.Count - 1; i >= 0; --i)
             {
-                if (ReplaceList[i].Original.Equals(replaceName.Original, StringComparison.OrdinalIgnoreCase)
-                    && ReplaceList[i].Replace.Equals(replaceName.Replace, StringComparison.OrdinalIgnoreCase))
+                if (ReplaceList[i].Before.Equals(replaceName.Before, StringComparison.OrdinalIgnoreCase)
+                    && ReplaceList[i].After.Equals(replaceName.After, StringComparison.OrdinalIgnoreCase))
                 {
                     ReplaceList.RemoveAt(i);
                 }
             }
-            ReplaceName.Original = string.Empty;
-            ReplaceName.Replace = string.Empty;
+            ReplaceName.Before = string.Empty;
+            ReplaceName.After = string.Empty;
             IniReplaceSave();
         }
 
         private void ReplaceNameExecutedCommand(object? obj)
         {
-            if (replaceName.Original.Length == 0)
+            if (replaceName.Before.Length == 0)
                 return;
 
             foreach (VideoInfo info in VideoList)
             {
-                info.SaveName = info.SaveName.Replace(replaceName.Original, replaceName.Replace);
+                info.SaveName = info.SaveName.Replace(replaceName.Before, replaceName.After);
             }
 
             for (int i = ReplaceList.Count - 1; i >= 0; --i)
             {
-                if (ReplaceList[i].Original.Equals(replaceName.Original, StringComparison.OrdinalIgnoreCase)
-                    && ReplaceList[i].Replace.Equals(replaceName.Replace, StringComparison.OrdinalIgnoreCase))
+                if (ReplaceList[i].Before.Equals(replaceName.Before, StringComparison.OrdinalIgnoreCase)
+                    && ReplaceList[i].After.Equals(replaceName.After, StringComparison.OrdinalIgnoreCase))
                 {
                     ReplaceList.RemoveAt(i);
                 }
             }
             ReplaceList.Insert(0, new ReplaceInfo()
             {
-                Original = replaceName.Original,
-                Replace = replaceName.Replace
+                Before = replaceName.Before,
+                After = replaceName.After
             });
             IniReplaceSave();
         }
@@ -723,12 +740,13 @@ namespace GumSorter
         {
             CurrentWorkedEncode = 0;
             encodeCommands.Clear();
+            string hideBanner = openCmd ? "" : "-hide_banner -loglevel warning ";
             foreach (VideoInfo info in VideoList)
             {
                 if (info.IsSelected == false && IsAll == false)
                     continue;
 
-                encodeCommands.Add($"-hide_banner -loglevel warning -i \"{info.FileName}\" {EncodeCommand.Trim()} -y \"{SaveDirectory}\\{info.SaveName}\"");
+                encodeCommands.Add($"{hideBanner}-i \"{info.FileName}\" {EncodeCommand.Trim()} -y \"{SaveDirectory}\\{info.SaveName}\"");
             }
             MaxWorkedEncode = encodeCommands.Count;
 
@@ -745,7 +763,7 @@ namespace GumSorter
             stopwatch.Restart();
             ResultText += $"====== Working Start : ({CurrentWorkedEncode + 1}/{MaxWorkedEncode}) {DateTime.Now.ToString("F")}\n";
 
-            var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", command, false, false)).ContinueWith((antecedent) =>
+            var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", command, openCmd, false)).ContinueWith((antecedent) =>
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {

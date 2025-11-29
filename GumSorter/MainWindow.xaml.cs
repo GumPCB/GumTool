@@ -76,8 +76,8 @@ namespace GumSorter
             {
                 (DataContext as Sorter)?.ReplaceName = new ReplaceInfo()
                 {
-                    Original = info.Original,
-                    Replace = info.Replace
+                    Before = info.Before,
+                    After = info.After
                 };
             }
             e.Handled = true;
