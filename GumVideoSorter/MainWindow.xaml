@@ -435,7 +435,7 @@
                                 <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding EncodeAllButton}"/>
                             </Grid>
                             <Grid Margin="0,2,0,0" Grid.Row="5">
-                                <ProgressBar Value="{Binding CurrentWorkedEncode}" Maximum="{Binding MaxWorkedEncode}"/>
+                                <ProgressBar Value="{Binding EncodeProgressCurrent}" Maximum="{Binding EncodeProgressMaximum}"/>
                             </Grid>
                             <Grid Margin="0,2,0,0" Grid.Row="6">
                                 <TextBox TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="2" VerticalScrollBarVisibility="Auto" TextChanged="ScrollToEndTextBox_TextChanged"/>

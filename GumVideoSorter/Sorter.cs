@@ -19,8 +19,8 @@ namespace GumVideoSorter
         private bool openCmd;
         private long currentWorked = 0;
         private long currentWorkedDeleteList = 0;
-        private long currentWorkedEncode = 0;
-        private long maxWorkedEncode = 0;
+        private long encodeProgressCurrent = 0;
+        private long encodeProgressMaximum = 0;
         private string tempDirectory = "temp";
         private string saveDirectory = "save";
         private string encodeCommand = "-map 0 -qp 20 -movflags +faststart -c:v hevc_nvenc -c:a copy";
@@ -131,20 +131,20 @@ namespace GumVideoSorter
                 OnPropertyChanged(nameof(CurrentWorkedDeleteList));
             }
         }
-        public long CurrentWorkedEncode
+        public long EncodeProgressCurrent
         {
-            get => currentWorkedEncode; set
+            get => encodeProgressCurrent; set
             {
-                currentWorkedEncode = value;
-                OnPropertyChanged(nameof(CurrentWorkedEncode));
+                encodeProgressCurrent = value;
+                OnPropertyChanged(nameof(EncodeProgressCurrent));
             }
         }
-        public long MaxWorkedEncode
+        public long EncodeProgressMaximum
         {
-            get => maxWorkedEncode; set
+            get => encodeProgressMaximum; set
             {
-                maxWorkedEncode = value;
-                OnPropertyChanged(nameof(MaxWorkedEncode));
+                encodeProgressMaximum = value;
+                OnPropertyChanged(nameof(EncodeProgressMaximum));
             }
         }
         public string TempDirectory
@@ -735,11 +735,24 @@ namespace GumVideoSorter
 
         private void EncodeSelectedExecutedCommand(object? obj) => EncodeVideos(false);
         private void EncodeAllExecutedCommand(object? obj) => EncodeVideos(true);
-        private List<string> encodeCommands = [];
+        private readonly List<string> encodeCommands = [];
+        private readonly List<string> encodeFileNames = [];
+        private readonly List<long> encodeDurations = [];  // milliseconds
+        private long encodeCurrent = 0;
+        private long encodeMax = 0;
         private void EncodeVideos(bool IsAll)
         {
-            CurrentWorkedEncode = 0;
+            if (!Directory.Exists(SaveDirectory))
+            {
+                Directory.CreateDirectory(SaveDirectory);
+            }
+
+            EncodeProgressCurrent = 0;
+            encodeCurrent = 0;
             encodeCommands.Clear();
+            encodeFileNames.Clear();
+            encodeDurations.Clear();
+            long sumDuration = 0L;
             string hideBanner = openCmd ? "" : "-hide_banner -loglevel warning ";
             foreach (VideoInfo info in VideoList)
             {
@@ -747,8 +760,20 @@ namespace GumVideoSorter
                     continue;
 
                 encodeCommands.Add($"{hideBanner}-i \"{info.FileName}\" {EncodeCommand.Trim()} -y \"{SaveDirectory}\\{info.SaveName}\"");
+                encodeFileNames.Add(info.SaveName);
+
+                long duration = 0L;
+                if (TimeSpan.TryParse(info.Duration, out TimeSpan ts))
+                    duration = (long)(ts.TotalMilliseconds);
+
+                if (duration == 0L)
+                    duration = 1L;
+
+                sumDuration += duration;
+                encodeDurations.Add(duration);
             }
-            MaxWorkedEncode = encodeCommands.Count;
+            EncodeProgressMaximum = sumDuration;
+            encodeMax = encodeCommands.Count;
 
             RecursiveEncode();
         }
@@ -761,16 +786,19 @@ namespace GumVideoSorter
             string command = encodeCommands[0];
             encodeCommands.RemoveAt(0);
             stopwatch.Restart();
-            ResultText += $"====== Working Start : ({CurrentWorkedEncode + 1}/{MaxWorkedEncode}) {DateTime.Now.ToString("F")}\n";
+            ResultText += $"= Working Start : {encodeCurrent + 1}/{encodeMax} - {encodeFileNames.First()}\n";
+            encodeFileNames.RemoveAt(0);
 
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", command, openCmd, false)).ContinueWith((antecedent) =>
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    CurrentWorkedEncode++;
                     stopwatch.Stop();
+                    encodeCurrent++;
                     ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
-                    ResultText += $"====== Working End : ({CurrentWorkedEncode}/{MaxWorkedEncode}) {DateTime.Now:F} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds)\n";
+                    ResultText += $"= Working End : {encodeCurrent}/{encodeMax} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds, {(double)encodeDurations.First() / stopwatch.ElapsedMilliseconds:N3}x)\n";
+                    EncodeProgressCurrent += encodeDurations.First();
+                    encodeDurations.RemoveAt(0);
                     FFmpegResultText = string.Empty;
                     RecursiveEncode();
                 });

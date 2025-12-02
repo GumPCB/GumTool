@@ -726,6 +726,8 @@ namespace GumVideoCutter
         private readonly List<string> inputs = [];
         private readonly List<string> outputs = [];
         private readonly List<long> durations = [];  // milliseconds
+        private long encodeCurrent = 0;
+        private long encodeMax = 0;
         private void BatchCut(bool IsAll)
         {
             if (!Directory.Exists(BatchSaveDirectory))
@@ -737,7 +739,8 @@ namespace GumVideoCutter
             outputs.Clear();
             durations.Clear();
             BatchProgressCurrent = 0L;
-            BatchProgressMaximum = 0L;
+            encodeCurrent = 0;
+            long sumDuration = 0L;
 
             foreach (VideoInfo info in VideoList)
             {
@@ -760,9 +763,11 @@ namespace GumVideoCutter
                 if (duration == 0L)
                     duration = 1L;
 
-                BatchProgressMaximum += duration;
+                sumDuration += duration;
                 durations.Add(duration);
             }
+            BatchProgressMaximum = sumDuration;
+            encodeMax = inputs.Count;
 
             RecursiveBatchCut();
         }
@@ -786,8 +791,7 @@ namespace GumVideoCutter
 
             Working = true;
             stopwatch.Restart();
-            ResultText += $"====== Working Start : {DateTime.Now.ToString("F")}\n";
-            ResultText += $"Working File : {data.LoadVideo}\n";
+            ResultText += $"= Working Start : {encodeCurrent + 1}/{encodeMax} - {data.SaveVideo}\n";
 
             string ffmpegFile = new($"\"{data.FFmpegFile}\"");
             string arguments = GetSelectedTabArguments();
@@ -798,8 +802,9 @@ namespace GumVideoCutter
                 {
                     Working = false;
                     stopwatch.Stop();
+                    encodeCurrent++;
                     ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
-                    ResultText += $"====== Working End : {DateTime.Now:F} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds, {(double)durations.First() / stopwatch.ElapsedMilliseconds:N3}x)\n";
+                    ResultText += $"= Working End : {encodeCurrent}/{encodeMax} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds, {(double)durations.First() / stopwatch.ElapsedMilliseconds:N3}x)\n";
                     data.LoadVideo = string.Empty;
                     data.SaveVideo = string.Empty;
                     FFmpegResultText = string.Empty;
