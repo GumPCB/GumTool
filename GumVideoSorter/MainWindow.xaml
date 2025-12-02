@@ -1,11 +1,11 @@
-﻿<Window x:Class="GumSorter.MainWindow"
+﻿<Window x:Class="GumVideoSorter.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GumSorter"
+        xmlns:local="clr-namespace:GumVideoSorter"
         mc:Ignorable="d"
-        Title="GumSorter v1.0" Width="1200" Height="650" MinWidth="640" MinHeight="240" Closing="MainWindow_Closing">
+        Title="GumVideoSorter v1.0" Width="1200" Height="650" MinWidth="640" MinHeight="240" Closing="MainWindow_Closing">
     <Window.Resources>
         <local:Sorter x:Key="KeySorter"/>
     </Window.Resources>

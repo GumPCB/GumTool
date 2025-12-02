@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace GumSorter
+namespace GumVideoSorter
 {
     /// <summary>
     /// Interaction logic for App.xaml

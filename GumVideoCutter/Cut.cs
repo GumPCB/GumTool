@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 
-namespace GumCut
+namespace GumVideoCutter
 {
     public class Cut : INotifyPropertyChanged
     {

@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace GumCut
+namespace GumVideoCutter
 {
     /// <summary>
     /// Interaction logic for App.xaml

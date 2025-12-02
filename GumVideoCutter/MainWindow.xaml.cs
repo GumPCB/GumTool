@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 
-namespace GumCut
+namespace GumVideoCutter
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

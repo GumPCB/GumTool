@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumCut", "GumCut\GumCut.csproj", "{C09D3FC5-F4E9-48CE-A354-3982B8365C9C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumVideoCutter", "GumVideoCutter\GumVideoCutter.csproj", "{C09D3FC5-F4E9-48CE-A354-3982B8365C9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumSorter", "GumSorter\GumSorter.csproj", "{C94A8122-BFC8-4C7E-8D45-8E776E99BB38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumVideoSorter", "GumVideoSorter\GumVideoSorter.csproj", "{C94A8122-BFC8-4C7E-8D45-8E776E99BB38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumTool", "GumTool\GumTool.csproj", "{C8E89717-35B8-4C21-BEC7-F86EF7BEC2DD}"
 EndProject

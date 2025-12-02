@@ -397,5 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 *.ttf
-/GumCut/Fonts
-/GumSorter/Fonts
+/GumVideoCutter/Fonts
+/GumVideoSorter/Fonts
