@@ -273,7 +273,7 @@ namespace GumVideoCutter
             }
         }
 
-        private const string SetupFile = ".\\ini\\Setup.ini";
+        private const string SetupFile = ".\\ini\\CutterSetup.ini";
 
         private void SetupfileLoad()
         {
