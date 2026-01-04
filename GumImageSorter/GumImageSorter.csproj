@@ -9,13 +9,13 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <BaseOutputPath>$(SolutionDir)$(Configuration)\$(Platform)</BaseOutputPath>
     <IntermediateOutputPath>$(SolutionDir)$(Configuration)\$(Platform)\$(AssemblyName)</IntermediateOutputPath>
-    <ApplicationIcon>Cut.ico</ApplicationIcon>
-    <AssemblyVersion>1.6</AssemblyVersion>
-    <FileVersion>1.6</FileVersion>
+    <ApplicationIcon>ImgSorter.ico</ApplicationIcon>
+    <AssemblyVersion>0.1</AssemblyVersion>
+    <FileVersion>0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Cut.ico" />
+    <Content Include="ImgSorter.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,17 +26,17 @@
     <Resource Include="Fonts\Segoe Fluent Icons.ttf" />
     <!-- https://learn.microsoft.com/ko-kr/windows/apps/design/downloads/ -->
   </ItemGroup>
-  
+
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="Switch.System.Windows.Appearance.DisableFluentThemeWindowBackdrop" Value="True" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(SolutionDir)GumVideoCutter\ini\*.*&quot; &quot;$(OutputPath)ini\*.*&quot;" />
+    <Exec Command="copy /Y &quot;$(SolutionDir)GumImageSorter\ini\*.*&quot; &quot;$(OutputPath)ini\*.*&quot;" />
   </Target>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="if not exist &quot;$(OutputPath)ini&quot; mkdir &quot;$(OutputPath)ini&quot;" />
   </Target>
-  
+
 </Project>

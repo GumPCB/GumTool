@@ -17,10 +17,8 @@ namespace GumVideoSorter
         private int selectedVideoIndex = 0;
         private bool working;
         private bool openCmd;
-        private long currentWorked = 0;
-        private long currentWorkedDeleteList = 0;
-        private long encodeProgressCurrent = 0;
-        private long encodeProgressMaximum = 0;
+        private long progressCurrent = 0;
+        private long progressMaximum = 0;
         private string tempDirectory = "temp";
         private string saveDirectory = "save";
         private string encodeCommand = "-map 0 -qp 20 -movflags +faststart -c:v hevc_nvenc -c:a copy";
@@ -115,36 +113,20 @@ namespace GumVideoSorter
                 SetupfileSave();
             }
         }
-        public long CurrentWorked
+        public long ProgressCurrent
         {
-            get => currentWorked; set
+            get => progressCurrent; set
             {
-                currentWorked = value;
-                OnPropertyChanged(nameof(CurrentWorked));
+                progressCurrent = value;
+                OnPropertyChanged(nameof(ProgressCurrent));
             }
         }
-        public long CurrentWorkedDeleteList
+        public long ProgressMaximum
         {
-            get => currentWorkedDeleteList; set
+            get => progressMaximum; set
             {
-                currentWorkedDeleteList = value;
-                OnPropertyChanged(nameof(CurrentWorkedDeleteList));
-            }
-        }
-        public long EncodeProgressCurrent
-        {
-            get => encodeProgressCurrent; set
-            {
-                encodeProgressCurrent = value;
-                OnPropertyChanged(nameof(EncodeProgressCurrent));
-            }
-        }
-        public long EncodeProgressMaximum
-        {
-            get => encodeProgressMaximum; set
-            {
-                encodeProgressMaximum = value;
-                OnPropertyChanged(nameof(EncodeProgressMaximum));
+                progressMaximum = value;
+                OnPropertyChanged(nameof(ProgressMaximum));
             }
         }
         public string TempDirectory
@@ -271,26 +253,26 @@ namespace GumVideoSorter
             SaveDirectoryButton = new(SaveDirectoryExecutedCommand, EmptyCanExecuteCommand);
             VideoListOpenFileButton = new(VideoListOpenFileExecutedCommand, EmptyCanExecuteCommand);
             VideoListOpenDirectoryButton = new(VideoListOpenDirectoryExecutedCommand, EmptyCanExecuteCommand);
-            VideoListMoveSelectedButton = new(VideoListMoveSelectedExecutedCommand, EmptyCanExecuteCommand);
-            VideoListMoveAllButton = new(VideoListMoveAllExecutedCommand, EmptyCanExecuteCommand);
+            VideoListMoveSelectedButton = new(VideoListMoveSelectedExecutedCommand, WorkingCanExecuteCommand);
+            VideoListMoveAllButton = new(VideoListMoveAllExecutedCommand, WorkingCanExecuteCommand);
             VideoListRemoveSelectedButton = new(VideoListRemoveSelectedExecutedCommand, EmptyCanExecuteCommand);
             VideoListRemoveAllButton = new(VideoListRemoveAllExecutedCommand, EmptyCanExecuteCommand);
-            VideoListDeleteSelectedButton = new(VideoListDeleteSelectedExecutedCommand, EmptyCanExecuteCommand);
-            VideoListDeleteAllButton = new(VideoListDeleteAllExecutedCommand, EmptyCanExecuteCommand);
-            DeleteListMoveSelectedButton = new(DeleteListMoveSelectedExecutedCommand, EmptyCanExecuteCommand);
-            DeleteListMoveAllButton = new(DeleteListMoveAllExecutedCommand, EmptyCanExecuteCommand);
+            VideoListDeleteSelectedButton = new(VideoListDeleteSelectedExecutedCommand, WorkingCanExecuteCommand);
+            VideoListDeleteAllButton = new(VideoListDeleteAllExecutedCommand, WorkingCanExecuteCommand);
+            DeleteListMoveSelectedButton = new(DeleteListMoveSelectedExecutedCommand, WorkingCanExecuteCommand);
+            DeleteListMoveAllButton = new(DeleteListMoveAllExecutedCommand, WorkingCanExecuteCommand);
             DeleteListRemoveSelectedButton = new(DeleteListRemoveSelectedExecutedCommand, EmptyCanExecuteCommand);
             DeleteListRemoveAllButton = new(DeleteListRemoveAllExecutedCommand, EmptyCanExecuteCommand);
-            DeleteListDeleteSelectedButton = new(DeleteListDeleteSelectedExecutedCommand, EmptyCanExecuteCommand);
-            DeleteListDeleteAllButton = new(DeleteListDeleteAllExecutedCommand, EmptyCanExecuteCommand);
+            DeleteListDeleteSelectedButton = new(DeleteListDeleteSelectedExecutedCommand, WorkingCanExecuteCommand);
+            DeleteListDeleteAllButton = new(DeleteListDeleteAllExecutedCommand, WorkingCanExecuteCommand);
             ReplaceListDeleteButton = new(ReplaceListDeleteExecutedCommand, EmptyCanExecuteCommand);
-            ReplaceNameButton = new(ReplaceNameExecutedCommand, EmptyCanExecuteCommand);
+            ReplaceNameButton = new(ReplaceNameExecutedCommand, WorkingCanExecuteCommand);
             ToDirectoryNameSelectedButton = new(ToDirectoryNameSelectedExecutedCommand, EmptyCanExecuteCommand);
             ToDirectoryNameAllButton = new(ToDirectoryNameAllExecutedCommand, EmptyCanExecuteCommand);
-            ApplyRenameSelectedButton = new(ApplyRenameSelectedExecutedCommand, EmptyCanExecuteCommand);
-            ApplyRenameAllButton = new(ApplyRenameAllExecutedCommand, EmptyCanExecuteCommand);
-            EncodeSelectedButton = new(EncodeSelectedExecutedCommand, EmptyCanExecuteCommand);
-            EncodeAllButton = new(EncodeAllExecutedCommand, EmptyCanExecuteCommand);
+            ApplyRenameSelectedButton = new(ApplyRenameSelectedExecutedCommand, WorkingCanExecuteCommand);
+            ApplyRenameAllButton = new(ApplyRenameAllExecutedCommand, WorkingCanExecuteCommand);
+            EncodeSelectedButton = new(EncodeSelectedExecutedCommand, WorkingCanExecuteCommand);
+            EncodeAllButton = new(EncodeAllExecutedCommand, WorkingCanExecuteCommand);
 
             SetupfileLoad();
             IniReplaceLoad();
@@ -494,31 +476,41 @@ namespace GumVideoSorter
             if (result == null || result != true)
                 return;
 
-            CurrentWorked = 0;
+            ProgressCurrent = 0;
+            ProgressMaximum = VideoList.Count;
+            Working = true;
             var task = Task.Run(() =>
             {
                 foreach (VideoInfo info in VideoList)
                 {
                     if (info.IsSelected == false && IsAll == false)
                     {
-                        App.Current.Dispatcher.Invoke((Action)delegate
-                        {
-                            CurrentWorked++;
-                        });
+                        progressCurrent++;
                         continue;
                     }
 
                     string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
-                    File.Move(info.FileName, destFilename);
+                    try
+                    {
+                        File.Move(info.FileName, destFilename);
+                    }
+                    catch (IOException)
+                    {
+                    }
                     if (File.Exists(destFilename))
                     {
                         info.FileName = destFilename;
                     }
-                    App.Current.Dispatcher.Invoke((Action)delegate
+                    App.Current.Dispatcher.Invoke(delegate
                     {
-                        CurrentWorked++;
+                        ProgressCurrent++;
                     });
                 }
+
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Working = false;
+                });
             });
         }
 
@@ -571,31 +563,41 @@ namespace GumVideoSorter
             if (result == null || result != true)
                 return;
 
-            CurrentWorkedDeleteList = 0;
+            ProgressCurrent = 0;
+            ProgressMaximum = DeleteList.Count;
+            Working = true;
             var task = Task.Run(() =>
             {
                 foreach (VideoInfo info in DeleteList)
                 {
                     if (info.IsSelected == false && IsAll == false)
                     {
-                        App.Current.Dispatcher.Invoke((Action)delegate
-                        {
-                            CurrentWorkedDeleteList++;
-                        });
+                        progressCurrent++;
                         continue;
                     }
 
                     string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
-                    File.Move(info.FileName, destFilename);
+                    try
+                    {
+                        File.Move(info.FileName, destFilename);
+                    }
+                    catch (IOException)
+                    {
+                    }
                     if (File.Exists(destFilename))
                     {
                         info.FileName = destFilename;
                     }
-                    App.Current.Dispatcher.Invoke((Action)delegate
+                    App.Current.Dispatcher.Invoke(delegate
                     {
-                        CurrentWorkedDeleteList++;
+                        ProgressCurrent++;
                     });
                 }
+
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Working = false;
+                });
             });
         }
 
@@ -624,17 +626,16 @@ namespace GumVideoSorter
             if (result == MessageBoxResult.No)
                 return;
 
-            CurrentWorkedDeleteList = 0;
+            ProgressCurrent = 0;
+            ProgressMaximum = DeleteList.Count;
+            Working = true;
             var task = Task.Run(() =>
             {
                 for (int i = DeleteList.Count - 1; i >= 0; --i)
                 {
                     if (DeleteList[i].IsSelected == false && IsAll == false)
                     {
-                        App.Current.Dispatcher.Invoke((Action)delegate
-                        {
-                            CurrentWorkedDeleteList++;
-                        });
+                        progressCurrent++;
                         continue;
                     }
 
@@ -648,12 +649,17 @@ namespace GumVideoSorter
                         {
                         }
                     }
-                    App.Current.Dispatcher.Invoke((Action)delegate
+                    App.Current.Dispatcher.Invoke(delegate
                     {
                         DeleteList.RemoveAt(i);
-                        CurrentWorkedDeleteList++;
+                        ProgressCurrent++;
                     });
                 }
+
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Working = false;
+                });
             });
         }
 
@@ -716,21 +722,48 @@ namespace GumVideoSorter
         private void ApplyRenameAllExecutedCommand(object? obj) => ApplyRename(true);
         private void ApplyRename(bool IsAll)
         {
-            foreach (VideoInfo info in VideoList)
+            ProgressCurrent = 0;
+            ProgressMaximum = VideoList.Count;
+            Working = true;
+            var task = Task.Run(() =>
             {
-                if (info.IsSelected == false && IsAll == false)
-                    continue;
-
-                if (info.SaveName.Equals(Path.GetFileName(info.FileName), StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                string destFilename = Path.GetDirectoryName(info.FileName) + "\\" + info.SaveName;
-                File.Move(info.FileName, destFilename);
-                if (File.Exists(destFilename))
+                foreach (VideoInfo info in VideoList)
                 {
-                    info.FileName = destFilename;
+                    if (info.IsSelected == false && IsAll == false)
+                    {
+                        progressCurrent++;
+                        continue;
+                    }
+
+                    if (info.SaveName.Equals(Path.GetFileName(info.FileName), StringComparison.OrdinalIgnoreCase))
+                    {
+                        progressCurrent++;
+                        continue;
+                    }
+
+                    string destFilename = Path.GetDirectoryName(info.FileName) + "\\" + info.SaveName;
+                    try
+                    {
+                        File.Move(info.FileName, destFilename);
+                    }
+                    catch (IOException)
+                    {
+                    }
+                    if (File.Exists(destFilename))
+                    {
+                        info.FileName = destFilename;
+                    }
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        ProgressCurrent++;
+                    });
                 }
-            }
+
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Working = false;
+                });
+            });
         }
 
         private void EncodeSelectedExecutedCommand(object? obj) => EncodeVideos(false);
@@ -747,7 +780,7 @@ namespace GumVideoSorter
                 Directory.CreateDirectory(SaveDirectory);
             }
 
-            EncodeProgressCurrent = 0;
+            ProgressCurrent = 0;
             encodeCurrent = 0;
             encodeCommands.Clear();
             encodeFileNames.Clear();
@@ -772,7 +805,7 @@ namespace GumVideoSorter
                 sumDuration += duration;
                 encodeDurations.Add(duration);
             }
-            EncodeProgressMaximum = sumDuration;
+            ProgressMaximum = sumDuration;
             encodeMax = encodeCommands.Count;
 
             RecursiveEncode();
@@ -788,18 +821,20 @@ namespace GumVideoSorter
             stopwatch.Restart();
             ResultText += $"= Working Start : {encodeCurrent + 1}/{encodeMax} - {encodeFileNames.First()}\n";
             encodeFileNames.RemoveAt(0);
+            Working = true;
 
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", command, openCmd, false)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                App.Current.Dispatcher.Invoke(delegate
                 {
                     stopwatch.Stop();
                     encodeCurrent++;
                     ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
                     ResultText += $"= Working End : {encodeCurrent}/{encodeMax} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds, {(double)encodeDurations.First() / stopwatch.ElapsedMilliseconds:N3}x)\n";
-                    EncodeProgressCurrent += encodeDurations.First();
+                    ProgressCurrent += encodeDurations.First();
                     encodeDurations.RemoveAt(0);
                     FFmpegResultText = string.Empty;
+                    Working = false;
                     RecursiveEncode();
                 });
             });
@@ -808,6 +843,10 @@ namespace GumVideoSorter
         private bool EmptyCanExecuteCommand(object? obj)
         {
             return true;
+        }
+        private bool WorkingCanExecuteCommand(object? obj)
+        {
+            return !Working;
         }
 
         internal void VideoList_DragAndDrop(string[] files)
@@ -894,9 +933,14 @@ namespace GumVideoSorter
                 }
             }
 
-            if (current > (CurrentWorked + 1) || VideoList.Count < currentWorked)
+            if (current > (ProgressCurrent + 1) || VideoList.Count < ProgressCurrent)
             {
-                CurrentWorked = current - 1;
+                ProgressCurrent = current - 1;
+            }
+
+            if (VideoList.Count != ProgressMaximum)
+            {
+                ProgressMaximum = VideoList.Count;
             }
 
             if (filename.Length == 0)
@@ -922,7 +966,7 @@ namespace GumVideoSorter
 
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + filename + "\"", false, false)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                App.Current.Dispatcher.Invoke(delegate
                 {
                     foreach (VideoInfo info in VideoList)
                     {
@@ -947,7 +991,7 @@ namespace GumVideoSorter
         {
             if (temp == null || temp.FileName.Length == 0)
             {
-                CurrentWorked++;
+                ProgressCurrent++;
                 Working = false;
                 VideoListGetInfo();
                 return;
@@ -981,7 +1025,7 @@ namespace GumVideoSorter
                         NextThumbnailImage();
                     }
 
-                    CurrentWorked++;
+                    ProgressCurrent++;
                     Working = false;
                     VideoListGetInfo();
                     return;
@@ -999,7 +1043,7 @@ namespace GumVideoSorter
             {
                 temp.Thumbnails.Add(DefaultThumbnailImage);
 
-                CurrentWorked++;
+                ProgressCurrent++;
                 Working = false;
                 VideoListGetInfo();
                 return;
@@ -1018,7 +1062,7 @@ namespace GumVideoSorter
                 data.SaveVideo = string.Empty;
                 FFmpegResultText = string.Empty;
 
-                App.Current.Dispatcher.Invoke((Action)delegate
+                App.Current.Dispatcher.Invoke(delegate
                 {
                     foreach (VideoInfo info in VideoList)
                     {
@@ -1039,7 +1083,7 @@ namespace GumVideoSorter
                         NextThumbnailImage();
                     }
 
-                    CurrentWorked++;
+                    ProgressCurrent++;
                     Working = false;
                     VideoListGetInfo();
                 });
@@ -1080,15 +1124,17 @@ namespace GumVideoSorter
             if (IsClosingDeleteThumbnail == false)
                 return;
 
+            ThumbnailImage = DefaultThumbnailImage;
+            ThumbnailImages = [DefaultThumbnailImage];
+
             foreach (string dir in createdthumbnailDirectorys)
             {
                 try
                 {
                     Directory.Delete(dir, true);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Debug.WriteLine($"Failed to delete directory '{dir}': {ex}");
                 }
             }
             createdthumbnailDirectorys.Clear();

@@ -1,11 +1,11 @@
-﻿<Window x:Class="GumVideoSorter.MainWindow"
+﻿<Window x:Class="GumImageSorter.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GumVideoSorter"
+        xmlns:local="clr-namespace:GumImageSorter"
         mc:Ignorable="d"
-        Title="GumVideoSorter v1.1" Width="1200" Height="650" MinWidth="640" MinHeight="240" Closing="MainWindow_Closing">
+        Title="GumImageSorter v0.1" Width="1200" Height="650" MinWidth="640" MinHeight="240">
     <Window.Resources>
         <local:Sorter x:Key="KeySorter"/>
     </Window.Resources>
@@ -31,7 +31,7 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="380" MinWidth="240"/>
+                <ColumnDefinition Width="240" MinWidth="240"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="400" MinWidth="300"/>
                 <ColumnDefinition Width="Auto"/>
@@ -41,85 +41,6 @@
             <!-- ======================================== Left ======================================== -->
             <Grid Grid.Column="0">
                 <TabControl>
-                    <!-- ======================================== Settings ======================================== -->
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE713;" FontSize="18"/>
-                                <TextBlock Text="Settings" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0">
-                                <ProgressBar IsIndeterminate="{Binding Working}"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="3*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="FFmpeg File" VerticalAlignment="Center" Width="100"/>
-                                <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding Data.FFmpegFile}"/>
-                                <Button Content="&#xE8E5;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding FFmpegOpenButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="3*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Temp Directory" VerticalAlignment="Center" Width="100"/>
-                                <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding TempDirectory}" PreviewDragOver="Directory_DragOver" PreviewDrop="TempDirectory_Drop"/>
-                                <Button Content="&#xE838;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding TempDirectoryButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Thumbnail" VerticalAlignment="Center" Width="100"/>
-                                <TextBlock Grid.Column="1" Text="&#xE8B9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
-                                <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding ThumbnailCount}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Closing" VerticalAlignment="Center" Width="100"/>
-                                <CheckBox Grid.Column="1" Content="delete thumbnail" VerticalAlignment="Center" IsChecked="{Binding IsClosingDeleteThumbnail}"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Visible" VerticalAlignment="Center" Width="100"/>
-                                <CheckBox Grid.Column="1" Content="thumbnail name" VerticalAlignment="Center" IsChecked="{Binding IsVisibleThumbnailName}"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock HorizontalAlignment="Center"><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">GumPCB.tistory.com</Hyperlink>
-                                </TextBlock>
-                            </Grid>
-
-                        </Grid>
-                    </TabItem>
-
                     <!-- ======================================== Files ======================================== -->
                     <TabItem>
                         <TabItem.Header>
@@ -130,6 +51,7 @@
                         </TabItem.Header>
                         <Grid>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -148,8 +70,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="Load" VerticalAlignment="Center" Width="110"/>
-                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="File" Command="{Binding VideoListOpenFileButton}"/>
-                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="Directory" Command="{Binding VideoListOpenDirectoryButton}"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="File" Command="{Binding ImageListOpenFileButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="Directory" Command="{Binding ImageListOpenDirectoryButton}"/>
                             </Grid>
                             <Grid Margin="0,2,0,0" Grid.Row="2">
                                 <Grid.ColumnDefinitions>
@@ -159,8 +81,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="List Remove" VerticalAlignment="Center" Width="110"/>
-                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding VideoListRemoveSelectedButton}"/>
-                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding VideoListRemoveAllButton}"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding ImageListRemoveSelectedButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding ImageListRemoveAllButton}"/>
                             </Grid>
                             <Grid Margin="0,2,0,0" Grid.Row="3">
                                 <Grid.ColumnDefinitions>
@@ -170,8 +92,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="Go to DeleteList" VerticalAlignment="Center" Width="110"/>
-                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding VideoListDeleteSelectedButton}"/>
-                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding VideoListDeleteAllButton}"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding ImageListDeleteSelectedButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding ImageListDeleteAllButton}"/>
                             </Grid>
                             <Grid Margin="0,2,0,0" Grid.Row="4">
                                 <Grid.ColumnDefinitions>
@@ -181,8 +103,15 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="File Move" VerticalAlignment="Center" Width="110"/>
-                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding VideoListMoveSelectedButton}"/>
-                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding VideoListMoveAllButton}"/>
+                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding ImageListMoveSelectedButton}"/>
+                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding ImageListMoveAllButton}"/>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock HorizontalAlignment="Center"><Hyperlink NavigateUri="https://gumpcb.tistory.com" Click="HyperLink_Click" Cursor="Hand">GumPCB.tistory.com</Hyperlink>
+                                </TextBlock>
                             </Grid>
                         </Grid>
                     </TabItem>
@@ -343,13 +272,13 @@
                                 <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding DeleteListMoveAllButton}"/>
                             </Grid>
                             <Grid Margin="0,2,0,0" Grid.Row="5">
-                                <Border BorderBrush="Gray" BorderThickness="1"/>
+                                <ProgressBar Value="{Binding CurrentWorkedDeleteList}" Maximum="{Binding DeleteList.Count}"/>
                             </Grid>
                             <Grid Margin="0,2,0,0" Grid.Row="6">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <ListView HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding DeleteList}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
+                                <ListView HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding DeleteList}" SelectionChanged="ImageList_SelectionChanged" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="ImageList_Drop" AllowDrop="True" PreviewKeyDown="ImageList_PreviewKeyDown" >
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
@@ -360,19 +289,11 @@
                                             <StackPanel>
                                                 <TextBlock Text="{Binding SaveName}" VerticalAlignment="Center"/>
                                                 <StackPanel Orientation="Horizontal" >
-                                                    <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Format}" VerticalAlignment="Center"/>
                                                     <TextBlock Text=" | " VerticalAlignment="Center"/>
-                                                    <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center"/>
-                                                    <TextBlock Text=" | " VerticalAlignment="Center"/>
-                                                    <TextBlock Text="{Binding vCodec}" VerticalAlignment="Center"/>
-                                                    <TextBlock Text="(" VerticalAlignment="Center"/>
-                                                    <TextBlock Text="{Binding vBitrate}" VerticalAlignment="Center"/>
-                                                    <TextBlock Text=") | " VerticalAlignment="Center"/>
-                                                    <TextBlock Text="{Binding aCodec}" VerticalAlignment="Center"/>
-                                                    <TextBlock Text="(" VerticalAlignment="Center"/>
-                                                    <TextBlock Text="{Binding aBitrate}" VerticalAlignment="Center"/>
-                                                    <TextBlock Text=") | " VerticalAlignment="Center"/>
-                                                    <TextBlock Text="{Binding Pixel}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Width}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="x" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Height}" VerticalAlignment="Center"/>
                                                     <TextBlock Text=" | " VerticalAlignment="Center"/>
                                                     <TextBlock Text="{Binding FileSizeString}" VerticalAlignment="Center"/>
                                                 </StackPanel>
@@ -381,79 +302,6 @@
                                     </ListView.ItemTemplate>
                                 </ListView>
                             </Grid>
-                        </Grid>
-                    </TabItem>
-
-                    <!-- ======================================== Encode ======================================== -->
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE786;" FontSize="18"/>
-                                <TextBlock Text="Encode" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0">
-                                <ProgressBar IsIndeterminate="{Binding Working}"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="3*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Save Directory" VerticalAlignment="Center" Width="100"/>
-                                <TextBox TextWrapping="NoWrap" IsReadOnly="True" Grid.Column="1" Text="{Binding SaveDirectory}" PreviewDragOver="Directory_DragOver" PreviewDrop="SaveDirectory_Drop"/>
-                                <Button Content="&#xE838;" Margin="2,0,0,0" Grid.Column="2" Command="{Binding SaveDirectoryButton}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Stretch"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left">
-                                    <TextBlock Text="FFmpeg" Width="100"/>
-                                    <TextBlock Text="Command" Width="100"/>
-                                </StackPanel>
-                                <TextBox TextWrapping="Wrap" Grid.Column="1" Text="{Binding EncodeCommand}"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="2"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Terminal Open" VerticalAlignment="Center" Width="100"/>
-                                <CheckBox Grid.Column="2" Content="&#xE756;" VerticalAlignment="Center" IsChecked="{Binding OpenCmd}" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="2"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Encode" VerticalAlignment="Center" Width="100"/>
-                                <Button Grid.Column="1" HorizontalAlignment="Stretch" Content="Select" Command="{Binding EncodeSelectedButton}"/>
-                                <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding EncodeAllButton}"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="5">
-                                <Border BorderBrush="Gray" BorderThickness="1"/>
-                            </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="6">
-                                <TextBox TextWrapping="Wrap" Text="{Binding ResultText}" Grid.Row="2" VerticalScrollBarVisibility="Auto" TextChanged="ScrollToEndTextBox_TextChanged"/>
-                            </Grid>
-
                         </Grid>
                     </TabItem>
 
@@ -481,25 +329,15 @@
                             <ColumnDefinition Width="2"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="2"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE74D;" FontSize="18"/>
                         <TextBlock Grid.Column="1" Text="{Binding DeleteList.Count}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         <Border Grid.Column="2" Height="18" BorderBrush="Gray" BorderThickness="1"/>
                         <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE786;" FontSize="18"/>
                         <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding SelectedVideoIndexCount}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding SelectedImageIndexCount}" VerticalAlignment="Center"/>
                             <TextBlock Text=" / " VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding VideoList.Count}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <Border Grid.Column="5" Height="18" BorderBrush="Gray" BorderThickness="1"/>
-                        <TextBlock Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="./Fonts/#Segoe Fluent Icons" Text="&#xE91B;" FontSize="18"/>
-                        <StackPanel Grid.Column="7" Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding CurrentThumbnailIndex}" VerticalAlignment="Center"/>
-                            <TextBlock Text=" / " VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding ThumbnailImages.Count}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ImageList.Count}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Grid>
                     <Grid Grid.Row="1">
@@ -507,15 +345,13 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1"/>
-                            <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1"/>
                         </Grid>
                     </Grid>
                 </Grid>
 
-                <ListView Grid.Row="1" HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding VideoList}" SelectedIndex="{Binding SelectedVideoIndex}" SelectionChanged="VideoList_SelectionChanged" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown" >
+                <ListView Grid.Row="1" HorizontalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding ImageList}" SelectedIndex="{Binding SelectedImageIndex}" SelectionChanged="ImageList_SelectionChanged" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="ImageList_Drop" AllowDrop="True" PreviewKeyDown="ImageList_PreviewKeyDown" >
                     <ListView.Resources>
                         <Style TargetType="{x:Type ListViewItem}">
                             <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
@@ -530,19 +366,11 @@
                                     <TextBlock Text="{Binding SaveName}" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" >
-                                    <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Format}" VerticalAlignment="Center"/>
                                     <TextBlock Text=" | " VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center"/>
-                                    <TextBlock Text=" | " VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding vCodec}" VerticalAlignment="Center"/>
-                                    <TextBlock Text="(" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding vBitrate}" VerticalAlignment="Center"/>
-                                    <TextBlock Text=") | " VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding aCodec}" VerticalAlignment="Center"/>
-                                    <TextBlock Text="(" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding aBitrate}" VerticalAlignment="Center"/>
-                                    <TextBlock Text=") | " VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding Pixel}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Width}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="x" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Height}" VerticalAlignment="Center"/>
                                     <TextBlock Text=" | " VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding FileSizeString}" VerticalAlignment="Center"/>
                                 </StackPanel>
@@ -556,15 +384,14 @@
             <GridSplitter Margin="1,0,1,0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="3" Background="DarkSlateBlue"/>
 
             <!-- ======================================== Right ======================================== -->
-            <Grid Grid.Column="4" MouseWheel="ThumbnailImage_Wheel" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="VideoList_Drop" AllowDrop="True" PreviewKeyDown="VideoList_PreviewKeyDown">
+            <Grid Grid.Column="4" PreviewDragOver="FilesOrDirectorys_DragOver" PreviewDrop="ImageList_Drop" AllowDrop="True" PreviewKeyDown="ImageList_PreviewKeyDown">
                 <Grid>
                     <Image Stretch="Fill" Source="{Binding TransparencyImage}"/>
                     <Image Stretch="Uniform" Source="{Binding ThumbnailImage}"/>
-                    <TextBlock Text="{Binding ThumbnailImage}" VerticalAlignment="Top" HorizontalAlignment="Left" TextWrapping="Wrap" Opacity="{Binding IsVisibleThumbnailName}"/>
                 </Grid>
             </Grid>
 
         </Grid>
     </Grid>
-    
+
 </Window>

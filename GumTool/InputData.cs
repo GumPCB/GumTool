@@ -38,6 +38,7 @@ namespace GumTool
         private int bufsize;                // Edit
         private double crf = -1.0;          // Edit
         private int qp = -1;                // Edit
+        private int cq = -1;                // Edit
         private int saveZeroCount = 5;      // Image
         private int qscale;                 // Edit, Image
         private int qscaleAudio;            // Edit
@@ -47,6 +48,9 @@ namespace GumTool
         private int selectedSubtitle;       // Subtitle
         private List<string> subtitles = [];// Subtitle
         private StreamCollection streams = [];  // Cut, Edit
+        private VideoCollection concatList = []; // Concat
+        private string concatFileName = string.Empty; // Concat
+        private string concatFileExt = string.Empty; // Concat
 
         public void EditTabClear()
         {
@@ -71,6 +75,7 @@ namespace GumTool
             Bufsize = 0;
             CRF = -1.0;
             QP = -1;
+            CQ = -1;
             Qscale = 0;
             QscaleAudio = 0;
         }
@@ -96,6 +101,13 @@ namespace GumTool
         {
             SelectedSubtitleEncoder = 0;
             Subtitles = [];
+        }
+
+        public void ConcatTabClear()
+        {
+            ConcatList = [];
+            ConcatFileName = string.Empty;
+            ConcatFileExt = string.Empty;
         }
 
         public string FFmpegFile
@@ -373,6 +385,14 @@ namespace GumTool
                 OnPropertyChanged(nameof(QP));
             }
         }
+        public int CQ
+        {
+            get => cq; set
+            {
+                cq = value;
+                OnPropertyChanged(nameof(CQ));
+            }
+        }
         public int ImageFormat
         {
             get => imageFormat; set
@@ -451,6 +471,33 @@ namespace GumTool
             {
                 streams = value;
                 OnPropertyChanged(nameof(Streams));
+            }
+        }
+        public VideoCollection ConcatList
+        {
+            get => concatList;
+            set
+            {
+                concatList = value;
+                OnPropertyChanged(nameof(ConcatList));
+            }
+        }
+        public string ConcatFileName
+        {
+            get => concatFileName;
+            set
+            {
+                concatFileName = value;
+                OnPropertyChanged(nameof(ConcatFileName));
+            }
+        }
+        public string ConcatFileExt
+        {
+            get => concatFileExt;
+            set
+            {
+                concatFileExt = value;
+                OnPropertyChanged(nameof(ConcatFileExt));
             }
         }
 

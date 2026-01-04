@@ -106,6 +106,40 @@ namespace GumTool
             return arguments;
         }
 
+        public static string Concat(in InputData data, bool hide_banner, string saveDirectory, string concatTextFile)
+        {
+            // https://stackoverflow.com/questions/43578882/ffmpeg-concat-makes-video-longer
+            // %FFMPEG_PATH% -hide_banner -loglevel warning -f concat -safe 0 -i concat.txt -movflags +faststart -c copy -y %OUT_FILE%
+            string arguments = new("-f concat -safe 0 ");
+
+            if (hide_banner)
+            {
+                arguments = "-hide_banner -loglevel warning " + arguments;
+            }
+
+            arguments += $"-i \"{ConcatFileSave(data, concatTextFile)}\" ";
+
+            if (data.Streaming)
+                arguments += "-movflags +faststart ";
+
+            arguments += $"-c copy -y \"{saveDirectory}\\{data.ConcatFileName}{data.ConcatFileExt}\"";
+
+            return arguments;
+        }
+
+        private static string ConcatFileSave(in InputData data, string concatTextFile)
+        {
+            FileStream fs = new(concatTextFile, FileMode.Create);
+            using StreamWriter sw = new(fs);
+            foreach (VideoInfo info in data.ConcatList)
+            {
+                sw.WriteLine($"file '{info.FileName}'");
+            }
+            sw.Close();
+
+            return concatTextFile;
+        }
+
         private static string SS_TO(in InputData data)
         {
             string time = string.Empty;
@@ -184,6 +218,11 @@ namespace GumTool
             if (data.QP > -1)
             {
                 bitrate += "-qp " + data.QP + " ";
+            }
+
+            if (data.CQ > -1)
+            {
+                bitrate += "-cq " + data.CQ + " ";
             }
 
             if (data.SelectedPreset != 0 && data.Presets.Count > data.SelectedPreset)
@@ -411,10 +450,6 @@ namespace GumTool
     }
 
 }
-// 영상파일 합치기
-// https://stackoverflow.com/questions/43578882/ffmpeg-concat-makes-video-longer
-// ffmpeg.exe -f concat -safe 0 -i sss.txt -movflags +faststart -c copy -y Sum.mp4
-// sss.txt => file 'Z:\bbb\3_cut.mp4'
 
 // ffmpeg.exe -hide_banner -h encoder=libx265
 // ffmpeg.exe -hide_banner -h encoder=hevc_nvenc

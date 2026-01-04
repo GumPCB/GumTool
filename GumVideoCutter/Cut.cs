@@ -13,6 +13,7 @@ namespace GumVideoCutter
         private bool editTabControl;
         private bool imageTabControl;
         private bool subtitleTabControl;
+        private bool concatTabControl;
         private bool openCmd;
         private string resultText = string.Empty;
         private VideoCollection videoList = [];
@@ -21,12 +22,14 @@ namespace GumVideoCutter
         private long batchProgressMaximum;
         private string batchReplaceNameOld = "_cut";
         private string batchReplaceNameNew = string.Empty;
+        private string concatTextFile = "\\ini\\concat.txt";
         public Command FFmpegOpenButton { get; set; }
         public Command CmdButton { get; set; }
         public Command VideoInfoButton { get; set; }
         public Command EraseButton { get; set; }
         public Command EraseCRFButton { get; set; }
         public Command EraseQPButton { get; set; }
+        public Command EraseCQButton { get; set; }
         public Command BatchOpenFileButton { get; set; }
         public Command BatchOpenDirectoryButton { get; set; }
         public Command BatchSaveDirectoryButton { get; set; }
@@ -37,6 +40,8 @@ namespace GumVideoCutter
         public Command BatchCutSelectedButton { get; set; }
         public Command BatchCutAllButton { get; set; }
         public Command BatchReplaceNameButton { get; set; }
+        public Command ConcatAddSelectButton { get; set; }
+        public Command ConcatAddAllButton { get; set; }
 
         public InputData Data
         {
@@ -66,6 +71,7 @@ namespace GumVideoCutter
                 data.EditTabClear();
                 data.ImageTabClear();
                 data.SubtitleTabClear();
+                data.ConcatTabClear();
                 UpdateStreams();
             }
         }
@@ -79,6 +85,7 @@ namespace GumVideoCutter
 
                 data.ImageTabClear();
                 data.SubtitleTabClear();
+                data.ConcatTabClear();
                 UpdateStreams();
             }
         }
@@ -92,6 +99,7 @@ namespace GumVideoCutter
 
                 data.EditTabClear();
                 data.SubtitleTabClear();
+                data.ConcatTabClear();
             }
         }
         public bool SubtitleTabControl
@@ -104,7 +112,21 @@ namespace GumVideoCutter
 
                 data.EditTabClear();
                 data.ImageTabClear();
+                data.ConcatTabClear();
                 UpdateSubtitles();
+            }
+        }
+        public bool ConcatTabControl
+        {
+            get => concatTabControl; set
+            {
+                concatTabControl = value;
+                OnPropertyChanged(nameof(ConcatTabControl));
+                if (concatTabControl == false) return;
+
+                data.EditTabClear();
+                data.ImageTabClear();
+                data.SubtitleTabClear();
             }
         }
         public bool OpenCmd
@@ -189,6 +211,7 @@ namespace GumVideoCutter
             EraseButton = new(EraseExecutedCommand, EmptyCanExecuteCommand);
             EraseCRFButton = new(EraseCRFExecutedCommand, EmptyCanExecuteCommand);
             EraseQPButton = new(EraseQPExecutedCommand, EmptyCanExecuteCommand);
+            EraseCQButton = new(EraseCQExecutedCommand, EmptyCanExecuteCommand);
             BatchOpenFileButton = new(BatchOpenFileExecutedCommand, EmptyCanExecuteCommand);
             BatchOpenDirectoryButton = new(BatchOpenDirectoryExecutedCommand, EmptyCanExecuteCommand);
             BatchSaveDirectoryButton = new(BatchSaveDirectoryExecutedCommand, EmptyCanExecuteCommand);
@@ -199,9 +222,21 @@ namespace GumVideoCutter
             BatchCutSelectedButton = new(BatchCutSelectedExecutedCommand, BatchCutCanExecuteCommand);
             BatchCutAllButton = new(BatchCutAllExecutedCommand, BatchCutCanExecuteCommand);
             BatchReplaceNameButton = new(BatchReplaceNameExecutedCommand, EmptyCanExecuteCommand);
+            ConcatAddSelectButton = new(ConcatAddSelectExecutedCommand, EmptyCanExecuteCommand);
+            ConcatAddAllButton = new(ConcatAddAllExecutedCommand, EmptyCanExecuteCommand);
 
             SetupfileLoad();
             IniFileLoad();
+
+            concatTextFile = Path.GetDirectoryName(Environment.ProcessPath) + concatTextFile;
+        }
+
+        internal void Release()
+        {
+            if (File.Exists(concatTextFile))
+            {
+                File.Delete(concatTextFile);
+            }
         }
 
         private const string LevelsFile = ".\\ini\\levels.ini";
@@ -318,7 +353,7 @@ namespace GumVideoCutter
             ResultText += "===== Get Encoder Info : ";
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -encoders", false, true)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                App.Current.Dispatcher.Invoke(delegate
                 {
                     SplitEncoderInfo(FFmpegResultText);
                     if (data.VideoEncoders.Count == 0)
@@ -409,6 +444,9 @@ namespace GumVideoCutter
 
             if (subtitleTabControl == true)
                 return FFmpegArguments.Subtitle(data, !openCmd);
+
+            if (concatTabControl == true)
+                return FFmpegArguments.Concat(data, !openCmd, BatchSaveDirectory, concatTextFile);
 
             return string.Empty;
         }
@@ -508,7 +546,7 @@ namespace GumVideoCutter
             ResultText += "===== Get Video Info : " + fileName + "\n";
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + fileName + "\"", false, false)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                App.Current.Dispatcher.Invoke(delegate
                 {
                     if (SplitVideoInfo(FFmpegResultText) == false)
                     {
@@ -561,6 +599,10 @@ namespace GumVideoCutter
         {
             data.QP = -1;
         }
+        private void EraseCQExecutedCommand(object? obj)
+        {
+            data.CQ = -1;
+        }
 
         private void BatchGetInfo()
         {
@@ -587,7 +629,7 @@ namespace GumVideoCutter
             Working = true;
             var task = Task.Run(() => FFmpegAsync("\"" + data.FFmpegFile + "\"", "-hide_banner -i \"" + filename + "\"", false, false)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                App.Current.Dispatcher.Invoke(delegate
                 {
                     foreach (VideoInfo info in VideoList)
                     {
@@ -693,20 +735,23 @@ namespace GumVideoCutter
                 {
                     if (info.IsSelected == false && IsAll == false)
                     {
-                        App.Current.Dispatcher.Invoke((Action)delegate
-                        {
-                            BatchProgressCurrent++;
-                        });
+                        batchProgressCurrent++;
                         continue;
                     }
 
                     string destFilename = dialog.FolderName + "\\" + Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
-                    File.Move(info.FileName, destFilename);
+                    try
+                    {
+                        File.Move(info.FileName, destFilename);
+                    }
+                    catch (IOException)
+                    {
+                    }
                     if (File.Exists(destFilename))
                     {
                         info.FileName = destFilename;
                     }
-                    App.Current.Dispatcher.Invoke((Action)delegate
+                    App.Current.Dispatcher.Invoke(delegate
                     {
                         BatchProgressCurrent++;
                     });
@@ -733,6 +778,12 @@ namespace GumVideoCutter
             if (!Directory.Exists(BatchSaveDirectory))
             {
                 Directory.CreateDirectory(BatchSaveDirectory);
+            }
+
+            if (concatTabControl == true)
+            {
+                ConcatCut();
+                return;
             }
 
             inputs.Clear();
@@ -798,7 +849,7 @@ namespace GumVideoCutter
 
             var task = Task.Run(() => FFmpegAsync(ffmpegFile, arguments, openCmd, false)).ContinueWith((antecedent) =>
             {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                App.Current.Dispatcher.Invoke(delegate
                 {
                     Working = false;
                     stopwatch.Stop();
@@ -815,6 +866,37 @@ namespace GumVideoCutter
             });
         }
 
+        private void ConcatCut()
+        {
+            if (Working == true)
+            {
+                ResultText += "Working...\n";
+                return;
+            }
+
+            Working = true;
+            stopwatch.Restart();
+            BatchProgressCurrent = 0L;
+            BatchProgressMaximum = 1L;
+            ResultText += $"= Working Start : {data.ConcatFileName}.{data.ConcatFileExt}\n";
+
+            string ffmpegFile = new($"\"{data.FFmpegFile}\"");
+            string arguments = GetSelectedTabArguments();
+
+            var task = Task.Run(() => FFmpegAsync(ffmpegFile, arguments, openCmd, false)).ContinueWith((antecedent) =>
+            {
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Working = false;
+                    stopwatch.Stop();
+                    ResultText += (FFmpegResultText.Length == 0) ? "========= Success! =========\n" : FFmpegResultText;
+                    ResultText += $"= Working End : {data.ConcatFileName}.{data.ConcatFileExt} ({stopwatch.ElapsedMilliseconds / 1000L} Seconds)\n";
+                    FFmpegResultText = string.Empty;
+                    BatchProgressCurrent = 1L;
+                });
+            });
+        }
+
         private void BatchReplaceNameExecutedCommand(object? obj)
         {
             if (batchReplaceNameOld.Length == 0)
@@ -824,6 +906,45 @@ namespace GumVideoCutter
             {
                 info.SaveName = info.SaveName.Replace(batchReplaceNameOld, batchReplaceNameNew);
             }
+        }
+
+        private void ConcatAddSelectExecutedCommand(object? obj)
+        {
+            for (int i = 0; i < VideoList.Count; ++i)
+            {
+                if (VideoList[i].IsSelected == false)
+                    continue;
+
+                AddConcatList(VideoList[i]);
+            }
+        }
+
+        private void ConcatAddAllExecutedCommand(object? obj)
+        {
+            foreach (VideoInfo info in VideoList)
+            {
+                AddConcatList(info);
+            }
+        }
+
+        internal void AddConcatList(VideoInfo info)
+        {
+            if (info == null)
+                return;
+
+            if (data.ConcatList.Count == 0)
+            {
+                data.ConcatFileName = Path.GetFileNameWithoutExtension(info.FileName);
+                data.ConcatFileExt = Path.GetExtension(info.FileName);
+            }
+
+            VideoInfo add = new(info.FileName);
+
+            add.SaveName = Path.GetFileNameWithoutExtension(info.FileName) + Path.GetExtension(info.FileName);
+            add.IsSelected = false;
+            add.Duration = info.Duration;
+            add.FileSize = info.FileSize;
+            data.ConcatList.Add(add);
         }
 
         internal void DragAndDropBatch(string[] files)

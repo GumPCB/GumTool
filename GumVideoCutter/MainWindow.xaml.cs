@@ -121,5 +121,44 @@ namespace GumVideoCutter
                 e.Handled = true;
             }
         }
+
+        private void Concat_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                ListView listView = (ListView)sender;
+                if (listView.SelectedItems.Count == 0) return;
+
+                int selectedIndex = -1;
+                VideoCollection videoList = (VideoCollection)listView.ItemsSource;
+                for (int i = videoList.Count - 1; i >= 0; i--)
+                {
+                    if (videoList[i].IsSelected)
+                    {
+                        selectedIndex = i;
+                        videoList.RemoveAt(i);
+                        break;
+                    }
+                }
+
+                if (videoList.Count <= selectedIndex)
+                {
+                    selectedIndex = videoList.Count - 1;
+                }
+
+                listView.SelectedIndex = selectedIndex;
+                listView.ScrollIntoView(listView.SelectedItem);
+
+                e.Handled = true;
+
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Input, new Action(() =>
+                {
+                    ListViewItem item = (ListViewItem)listView.ItemContainerGenerator.ContainerFromIndex(selectedIndex);
+                    item?.Focus();
+                }));
+            }
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) => (DataContext as Cut)?.Release();
     }
 }
