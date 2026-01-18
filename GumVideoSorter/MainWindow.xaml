@@ -31,9 +31,9 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="380" MinWidth="240"/>
+                <ColumnDefinition Width="380"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="400" MinWidth="300"/>
+                <ColumnDefinition Width="400"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -51,6 +51,7 @@
                         </TabItem.Header>
                         <Grid>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -87,13 +88,24 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Format" VerticalAlignment="Center" Width="100"/>
+                                <TextBlock Grid.Column="1" Text="&#xE91B;" VerticalAlignment="Center" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18"/>
+                                <ComboBox Grid.Column="3" ItemsSource="{Binding ImageFormatType}" SelectedIndex="{Binding ImageFormat}"  />
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="Thumbnail" VerticalAlignment="Center" Width="100"/>
                                 <TextBlock Grid.Column="1" Text="&#xE8B9;" FontFamily="./Fonts/#Segoe Fluent Icons" FontSize="18" VerticalAlignment="Center"/>
                                 <TextBox Grid.Column="2" TextWrapping="NoWrap" TextAlignment="Center" Text="{Binding ThumbnailCount}" Margin="2,0,0,0" PreviewTextInput="IntTextBox_PreviewTextInput" GotMouseCapture="SelectAllTextBox_GotMouseCapture" GotKeyboardFocus="SelectAllTextBox_GotKeyboardFocus"/>
                             </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="4">
+                            <Grid Margin="0,2,0,0" Grid.Row="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition/>
@@ -101,7 +113,7 @@
                                 <TextBlock Text="Closing" VerticalAlignment="Center" Width="100"/>
                                 <CheckBox Grid.Column="1" Content="delete thumbnail" VerticalAlignment="Center" IsChecked="{Binding IsClosingDeleteThumbnail}"/>
                             </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="5">
+                            <Grid Margin="0,2,0,0" Grid.Row="6">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition/>
@@ -109,7 +121,7 @@
                                 <TextBlock Text="Visible" VerticalAlignment="Center" Width="100"/>
                                 <CheckBox Grid.Column="1" Content="thumbnail name" VerticalAlignment="Center" IsChecked="{Binding IsVisibleThumbnailName}"/>
                             </Grid>
-                            <Grid Margin="0,2,0,0" Grid.Row="6">
+                            <Grid Margin="0,2,0,0" Grid.Row="7">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>

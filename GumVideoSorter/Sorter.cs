@@ -32,6 +32,9 @@ namespace GumVideoSorter
         private List<string> createdthumbnailDirectorys = [];
         private ReplaceCollection replaceList = [];
         private ReplaceInfo replaceName = new();
+        private int imageFormat = 1;
+        private List<string> imageFormatType = ["PNG", "JPG"];
+        private bool needSetupFileSave = false;
 
         public Command FFmpegOpenButton { get; set; }
         public Command TempDirectoryButton { get; set; }
@@ -110,7 +113,7 @@ namespace GumVideoSorter
             {
                 openCmd = value;
                 OnPropertyChanged(nameof(OpenCmd));
-                SetupfileSave();
+                needSetupFileSave = true;
             }
         }
         public long ProgressCurrent
@@ -135,7 +138,7 @@ namespace GumVideoSorter
             {
                 tempDirectory = value;
                 OnPropertyChanged(nameof(TempDirectory));
-                SetupfileSave();
+                needSetupFileSave = true;
             }
         }
         public string SaveDirectory
@@ -144,7 +147,7 @@ namespace GumVideoSorter
             {
                 saveDirectory = value;
                 OnPropertyChanged(nameof(SaveDirectory));
-                SetupfileSave();
+                needSetupFileSave = true;
             }
         }
         public string EncodeCommand
@@ -153,7 +156,7 @@ namespace GumVideoSorter
             {
                 encodeCommand = value;
                 OnPropertyChanged(nameof(EncodeCommand));
-                SetupfileSave();
+                needSetupFileSave = true;
             }
         }
         public string ResultText
@@ -170,7 +173,7 @@ namespace GumVideoSorter
             {
                 thumbnailCount = value;
                 OnPropertyChanged(nameof(ThumbnailCount));
-                SetupfileSave();
+                needSetupFileSave = true;
             }
         }
         public string ThumbnailImage
@@ -203,7 +206,7 @@ namespace GumVideoSorter
             {
                 isClosingDeleteThumbnail = value;
                 OnPropertyChanged(nameof(IsClosingDeleteThumbnail));
-                SetupfileSave();
+                needSetupFileSave = true;
             }
         }
         public bool IsVisibleThumbnailName
@@ -212,7 +215,7 @@ namespace GumVideoSorter
             {
                 isVisibleThumbnailName = value;
                 OnPropertyChanged(nameof(IsVisibleThumbnailName));
-                SetupfileSave();
+                needSetupFileSave = true;
             }
         }
         public ReplaceCollection ReplaceList
@@ -237,6 +240,32 @@ namespace GumVideoSorter
             {
                 transparencyImage = value;
                 OnPropertyChanged(nameof(TransparencyImage));
+            }
+        }
+        public int ImageFormat
+        {
+            get => imageFormat; set
+            {
+                imageFormat = value;
+                OnPropertyChanged(nameof(ImageFormat));
+                data.ImageFormat = imageFormat + 1;
+                if (imageFormat == 0)
+                {
+                    thumbnailSearchPattern = "*.png";
+                }
+                else
+                {
+                    thumbnailSearchPattern = "*.jpg";
+                }
+                needSetupFileSave = true;
+            }
+        }
+        public List<string> ImageFormatType
+        {
+            get => imageFormatType; set
+            {
+                imageFormatType = value;
+                OnPropertyChanged(nameof(ImageFormatType));
             }
         }
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -274,9 +303,9 @@ namespace GumVideoSorter
             EncodeSelectedButton = new(EncodeSelectedExecutedCommand, WorkingCanExecuteCommand);
             EncodeAllButton = new(EncodeAllExecutedCommand, WorkingCanExecuteCommand);
 
+            ImageFormat = 1;
             SetupfileLoad();
             IniReplaceLoad();
-            data.ImageFormat = 2; // JPG
 
             DefaultThumbnailImage = Path.GetDirectoryName(Environment.ProcessPath) + DefaultThumbnailImage;
             thumbnailImage = DefaultThumbnailImage;
@@ -298,6 +327,7 @@ namespace GumVideoSorter
             string? saveDirectory = sr.ReadLine();
             string? encodeCommand = sr.ReadLine();
             string? opencmd = sr.ReadLine();
+            string? imageformat = sr.ReadLine();
             sr.Close();
 
             if (ffmpeg != null)
@@ -339,6 +369,13 @@ namespace GumVideoSorter
             {
                 OpenCmd = opencmd.Equals("1");
             }
+
+            if (imageformat != null && int.TryParse(imageformat, out int imgfmt))
+            {
+                ImageFormat = imgfmt;
+            }
+
+            needSetupFileSave = false;
         }
         private const string ReplaceFile = "ini\\replace.ini";
         private void IniReplaceLoad()
@@ -390,7 +427,10 @@ namespace GumVideoSorter
             sw.WriteLine(SaveDirectory);
             sw.WriteLine(EncodeCommand);
             sw.WriteLine(OpenCmd ? '1' : '0');
+            sw.WriteLine(ImageFormat.ToString());
             sw.Close();
+
+            needSetupFileSave = false;
         }
 
         private void FFmpegOpenExecutedCommand(object? obj)
@@ -986,7 +1026,7 @@ namespace GumVideoSorter
             });
         }
 
-        private const string JpegSearchPattern = "*.jpg";
+        private string thumbnailSearchPattern = "*.jpg";
         internal void ThumbnailCreate(VideoInfo temp)
         {
             if (temp == null || temp.FileName.Length == 0)
@@ -1004,7 +1044,7 @@ namespace GumVideoSorter
             {
                 DirectoryInfo dirInfo = new(tempDir);
                 List<string> thumbnails = [];
-                foreach (FileInfo fileInfo in dirInfo.GetFiles(JpegSearchPattern))
+                foreach (FileInfo fileInfo in dirInfo.GetFiles(thumbnailSearchPattern))
                     thumbnails.Add(fileInfo.FullName);
                 
                 if (thumbnails.Count >= thumbnailCount)
@@ -1070,7 +1110,7 @@ namespace GumVideoSorter
                             continue;
 
                         DirectoryInfo dirInfo = new(tempDir);
-                        foreach (FileInfo fileInfo in dirInfo.GetFiles(JpegSearchPattern))
+                        foreach (FileInfo fileInfo in dirInfo.GetFiles(thumbnailSearchPattern))
                             info.Thumbnails.Add(fileInfo.FullName);
 
                         if (info.Thumbnails.Count == 0)
@@ -1119,25 +1159,30 @@ namespace GumVideoSorter
             process.Close();
         }
 
-        internal void DeleteThumbnailDirectorys()
+        internal void WindowClosing()
         {
-            if (IsClosingDeleteThumbnail == false)
-                return;
-
-            ThumbnailImage = DefaultThumbnailImage;
-            ThumbnailImages = [DefaultThumbnailImage];
-
-            foreach (string dir in createdthumbnailDirectorys)
+            if (needSetupFileSave)
             {
-                try
-                {
-                    Directory.Delete(dir, true);
-                }
-                catch (Exception)
-                {
-                }
+                SetupfileSave();
             }
-            createdthumbnailDirectorys.Clear();
+
+            if (IsClosingDeleteThumbnail)
+            {
+                ThumbnailImage = DefaultThumbnailImage;
+                ThumbnailImages = [DefaultThumbnailImage];
+
+                foreach (string dir in createdthumbnailDirectorys)
+                {
+                    try
+                    {
+                        Directory.Delete(dir, true);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+                createdthumbnailDirectorys.Clear();
+            }
         }
 
         internal void NextThumbnailImage()

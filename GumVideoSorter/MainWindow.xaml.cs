@@ -116,7 +116,7 @@ namespace GumVideoSorter
         private void SelectAllTextBox_GotMouseCapture(object sender, MouseEventArgs e) => ((TextBox)sender).SelectAll();
         private static readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
         private void FileNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = InvalidFileNameChars.Any(e.Text.Contains);
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) => (DataContext as Sorter)?.DeleteThumbnailDirectorys();
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) => (DataContext as Sorter)?.WindowClosing();
 
         private void VideoList_PreviewKeyDown(object sender, KeyEventArgs e)
         {
