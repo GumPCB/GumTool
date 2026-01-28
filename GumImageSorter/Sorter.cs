@@ -2,22 +2,22 @@
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace GumImageSorter
 {
     internal class Sorter : INotifyPropertyChanged
     {
-        private string DefaultThumbnailImage = "\\ini\\GumImageSorter.png";
-        private string transparencyImage = "\\ini\\Transparency.png";
-
         private ImageCollection imageList = [];
         private ImageCollection deleteList = [];
         private int selectedImageIndex = 0;
         private bool working;
         private long progressCurrent = 0;
         private long progressMaximum = 0;
-        private string thumbnailImage;
+        private BitmapImage defaultThumbnailImage = new();
+        private ImageSource transparencyImage = new BitmapImage();
+        private ImageSource thumbnailImage = new BitmapImage();
         private ReplaceCollection replaceList = [];
         private ReplaceInfo replaceName = new();
 
@@ -95,14 +95,6 @@ namespace GumImageSorter
                 OnPropertyChanged(nameof(ProgressMaximum));
             }
         }
-        public string ThumbnailImage
-        {
-            get => thumbnailImage; set
-            {
-                thumbnailImage = value;
-                OnPropertyChanged(nameof(ThumbnailImage));
-            }
-        }
         public ReplaceCollection ReplaceList
         {
             get => replaceList; set
@@ -119,12 +111,20 @@ namespace GumImageSorter
                 OnPropertyChanged(nameof(ReplaceName));
             }
         }
-        public string TransparencyImage
+        public ImageSource TransparencyImage
         {
             get => transparencyImage; set
             {
                 transparencyImage = value;
                 OnPropertyChanged(nameof(TransparencyImage));
+            }
+        }
+        public ImageSource ThumbnailImage
+        {
+            get => thumbnailImage; set
+            {
+                thumbnailImage = value;
+                OnPropertyChanged(nameof(ThumbnailImage));
             }
         }
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -158,11 +158,35 @@ namespace GumImageSorter
             ApplyRenameAllButton = new(ApplyRenameAllExecutedCommand, WorkingCanExecuteCommand);
 
             IniReplaceLoad();
-
-            DefaultThumbnailImage = Path.GetDirectoryName(Environment.ProcessPath) + DefaultThumbnailImage;
-            thumbnailImage = DefaultThumbnailImage;
-            TransparencyImage = Path.GetDirectoryName(Environment.ProcessPath) + transparencyImage;
+            LoadBitmapImage();
         }
+
+        private void LoadBitmapImage()
+        {
+            {
+                string path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ini\\GumImageSorter.png";
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(path, UriKind.Absolute);
+                bitmap.EndInit();
+                bitmap.Freeze();
+                defaultThumbnailImage = bitmap;
+                thumbnailImage = defaultThumbnailImage;
+            }
+
+            {
+                string path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ini\\Transparency.png";
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(path, UriKind.Absolute);
+                bitmap.EndInit();
+                bitmap.Freeze();
+                TransparencyImage = bitmap;
+            }
+        }
+
         private const string ReplaceFile = "ini\\replace.ini";
         private void IniReplaceLoad()
         {
@@ -244,10 +268,6 @@ namespace GumImageSorter
             ProgressCurrent = 0;
             ProgressMaximum = ImageList.Count;
             Working = true;
-
-            ThumbnailImage = DefaultThumbnailImage;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
 
             var task = Task.Run(() =>
             {
@@ -337,10 +357,6 @@ namespace GumImageSorter
             ProgressMaximum = DeleteList.Count;
             Working = true;
 
-            ThumbnailImage = DefaultThumbnailImage;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
             var task = Task.Run(() =>
             {
                 foreach (ImageInfo info in DeleteList)
@@ -404,10 +420,6 @@ namespace GumImageSorter
             ProgressCurrent = 0;
             ProgressMaximum = DeleteList.Count;
             Working = true;
-
-            ThumbnailImage = DefaultThumbnailImage;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
 
             var task = Task.Run(() =>
             {
@@ -506,10 +518,6 @@ namespace GumImageSorter
             ProgressMaximum = ImageList.Count;
             Working = true;
 
-            ThumbnailImage = DefaultThumbnailImage;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
             var task = Task.Run(() =>
             {
                 foreach (ImageInfo info in ImageList)
@@ -606,10 +614,17 @@ namespace GumImageSorter
         {
             if (imageInfo.Format.Length == 0)
             {
-                ThumbnailImage = DefaultThumbnailImage;
+                ThumbnailImage = defaultThumbnailImage;
                 return;
             }
-            ThumbnailImage = imageInfo.FileName;
+
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.UriSource = new Uri(imageInfo.FileName, UriKind.Absolute);
+            bitmap.EndInit();
+            bitmap.Freeze();
+            ThumbnailImage = bitmap;
         }
         internal void AddDeleteList(ImageInfo deleted)
         {
@@ -660,9 +675,9 @@ namespace GumImageSorter
                     App.Current.Dispatcher.Invoke(delegate
                     {
                         ProgressCurrent++;
-                        if (thumbnailImage == DefaultThumbnailImage && ImageList.Count > 0 && ImageList[selectedImageIndex].FileName.Equals(info.FileName) && info.Format.Length != 0)
+                        if (thumbnailImage == defaultThumbnailImage && ImageList.Count > 0 && ImageList[selectedImageIndex].FileName.Equals(info.FileName) && info.Format.Length != 0)
                         {
-                            ThumbnailImage = info.FileName;
+                            ImageSelectionChanged(info);
                         }
                     });
                 }

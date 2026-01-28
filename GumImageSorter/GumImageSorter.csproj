@@ -10,8 +10,8 @@
     <BaseOutputPath>$(SolutionDir)$(Configuration)\$(Platform)</BaseOutputPath>
     <IntermediateOutputPath>$(SolutionDir)$(Configuration)\$(Platform)\$(AssemblyName)</IntermediateOutputPath>
     <ApplicationIcon>ImgSorter.ico</ApplicationIcon>
-    <AssemblyVersion>0.1</AssemblyVersion>
-    <FileVersion>0.1</FileVersion>
+    <AssemblyVersion>1.0</AssemblyVersion>
+    <FileVersion>1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
