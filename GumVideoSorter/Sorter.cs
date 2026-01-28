@@ -1170,6 +1170,8 @@ namespace GumVideoSorter
             {
                 ThumbnailImage = DefaultThumbnailImage;
                 ThumbnailImages = [DefaultThumbnailImage];
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
                 foreach (string dir in createdthumbnailDirectorys)
                 {

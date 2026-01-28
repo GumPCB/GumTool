@@ -244,6 +244,11 @@ namespace GumImageSorter
             ProgressCurrent = 0;
             ProgressMaximum = ImageList.Count;
             Working = true;
+
+            ThumbnailImage = DefaultThumbnailImage;
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
             var task = Task.Run(() =>
             {
                 foreach (ImageInfo info in ImageList)
@@ -331,6 +336,11 @@ namespace GumImageSorter
             ProgressCurrent = 0;
             ProgressMaximum = DeleteList.Count;
             Working = true;
+
+            ThumbnailImage = DefaultThumbnailImage;
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
             var task = Task.Run(() =>
             {
                 foreach (ImageInfo info in DeleteList)
@@ -391,10 +401,14 @@ namespace GumImageSorter
             if (result == MessageBoxResult.No)
                 return;
 
-            ThumbnailImage = DefaultThumbnailImage;
             ProgressCurrent = 0;
             ProgressMaximum = DeleteList.Count;
             Working = true;
+
+            ThumbnailImage = DefaultThumbnailImage;
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
             var task = Task.Run(() =>
             {
                 for (int i = DeleteList.Count - 1; i >= 0; --i)
@@ -491,6 +505,11 @@ namespace GumImageSorter
             ProgressCurrent = 0;
             ProgressMaximum = ImageList.Count;
             Working = true;
+
+            ThumbnailImage = DefaultThumbnailImage;
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
             var task = Task.Run(() =>
             {
                 foreach (ImageInfo info in ImageList)
