@@ -20,6 +20,9 @@ namespace GumImageSorter
         private ImageSource thumbnailImage = new BitmapImage();
         private ReplaceCollection replaceList = [];
         private ReplaceInfo replaceName = new();
+        private bool isLoadMemory = false;
+        private bool needSetupFileSave = false;
+        private bool needReplaceFileSave = false;
 
         public Command ImageListOpenFileButton { get; set; }
         public Command ImageListOpenDirectoryButton { get; set; }
@@ -127,6 +130,15 @@ namespace GumImageSorter
                 OnPropertyChanged(nameof(ThumbnailImage));
             }
         }
+        public bool IsLoadMemory
+        {
+            get => isLoadMemory; set
+            {
+                isLoadMemory = value;
+                OnPropertyChanged(nameof(IsLoadMemory));
+                needSetupFileSave = true;
+            }
+        }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
@@ -157,8 +169,35 @@ namespace GumImageSorter
             ApplyRenameSelectedButton = new(ApplyRenameSelectedExecutedCommand, WorkingCanExecuteCommand);
             ApplyRenameAllButton = new(ApplyRenameAllExecutedCommand, WorkingCanExecuteCommand);
 
+            SetupfileLoad();
             IniReplaceLoad();
             LoadBitmapImage();
+        }
+        private const string SetupFile = "ini\\ImageSorterSetup.ini";
+        private void SetupfileLoad()
+        {
+            if (!File.Exists(SetupFile))
+                return;
+
+            using StreamReader sr = new(SetupFile);
+            string? isDelete = sr.ReadLine();
+            sr.Close();
+
+            if (isDelete != null)
+            {
+                IsLoadMemory = isDelete.Equals("1");
+            }
+
+            needSetupFileSave = false;
+        }
+        private void SetupfileSave()
+        {
+            FileStream fs = new(SetupFile, FileMode.Create);
+            using StreamWriter sw = new(fs);
+            sw.WriteLine(IsLoadMemory ? '1' : '0');
+            sw.Close();
+
+            needSetupFileSave = false;
         }
 
         private void LoadBitmapImage()
@@ -223,6 +262,8 @@ namespace GumImageSorter
                 sw.WriteLine($"{replace.Before}/{replace.After}");
             }
             sw.Close();
+
+            needReplaceFileSave = false;
         }
                 
         private void ImageListOpenFileExecutedCommand(object? obj)
@@ -467,7 +508,7 @@ namespace GumImageSorter
             }
             ReplaceName.Before = string.Empty;
             ReplaceName.After = string.Empty;
-            IniReplaceSave();
+            needReplaceFileSave = true;
         }
 
         private void ReplaceNameExecutedCommand(object? obj)
@@ -493,7 +534,7 @@ namespace GumImageSorter
                 Before = replaceName.Before,
                 After = replaceName.After
             });
-            IniReplaceSave();
+            needReplaceFileSave = true;
         }
 
         private void ToDirectoryNameSelectedExecutedCommand(object? obj) => ToDirectoryName(false);
@@ -618,13 +659,20 @@ namespace GumImageSorter
                 return;
             }
 
-            BitmapImage bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.UriSource = new Uri(imageInfo.FileName, UriKind.Absolute);
-            bitmap.EndInit();
-            bitmap.Freeze();
-            ThumbnailImage = bitmap;
+            if (isLoadMemory)
+            {
+                ThumbnailImage = imageInfo.Image;
+            }
+            else
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(imageInfo.FileName, UriKind.Absolute);
+                bitmap.EndInit();
+                bitmap.Freeze();
+                ThumbnailImage = bitmap;
+            }
         }
         internal void AddDeleteList(ImageInfo deleted)
         {
@@ -667,6 +715,16 @@ namespace GumImageSorter
                                 info.Format = decoder.CodecInfo.FriendlyName.Replace(" Decoder", string.Empty);
                                 info.Pixel = decoder.Frames[0].Format.ToString();
                             }
+                            if (isLoadMemory)
+                            {
+                                BitmapImage bitmap = new BitmapImage();
+                                bitmap.BeginInit();
+                                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                                bitmap.StreamSource = fs;
+                                bitmap.EndInit();
+                                bitmap.Freeze();
+                                info.Image = bitmap;
+                            }
                         }
                     }
                     catch (Exception)
@@ -687,6 +745,19 @@ namespace GumImageSorter
                     Working = false;
                 });
             });
+        }
+
+        internal void WindowClosing()
+        {
+            if (needSetupFileSave)
+            {
+                SetupfileSave();
+            }
+
+            if (needReplaceFileSave)
+            {
+                IniReplaceSave();
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace GumImageSorter
 {
@@ -18,6 +20,7 @@ namespace GumImageSorter
         private string pixel = string.Empty;
         private long fileSize;
         private bool isSelected = false;
+        private ImageSource image = new BitmapImage();
 
         public ImageInfo(string file_name)
         {
@@ -109,6 +112,14 @@ namespace GumImageSorter
             {
                 isSelected = value;
                 OnPropertyChanged(nameof(IsSelected));
+            }
+        }
+        public ImageSource Image
+        {
+            get => image; set
+            {
+                image = value;
+                OnPropertyChanged(nameof(Image));
             }
         }
 

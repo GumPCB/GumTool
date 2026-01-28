@@ -35,6 +35,7 @@ namespace GumVideoSorter
         private int imageFormat = 1;
         private List<string> imageFormatType = ["PNG", "JPG"];
         private bool needSetupFileSave = false;
+        private bool needReplaceFileSave = false;
 
         public Command FFmpegOpenButton { get; set; }
         public Command TempDirectoryButton { get; set; }
@@ -413,6 +414,8 @@ namespace GumVideoSorter
                 sw.WriteLine($"{replace.Before}/{replace.After}");
             }
             sw.Close();
+
+            needReplaceFileSave = false;
         }
 
         private void SetupfileSave()
@@ -715,7 +718,7 @@ namespace GumVideoSorter
             }
             ReplaceName.Before = string.Empty;
             ReplaceName.After = string.Empty;
-            IniReplaceSave();
+            needReplaceFileSave = true;
         }
 
         private void ReplaceNameExecutedCommand(object? obj)
@@ -741,7 +744,7 @@ namespace GumVideoSorter
                 Before = replaceName.Before,
                 After = replaceName.After
             });
-            IniReplaceSave();
+            needReplaceFileSave = true;
         }
 
         private void ToDirectoryNameSelectedExecutedCommand(object? obj) => ToDirectoryName(false);
@@ -1184,6 +1187,11 @@ namespace GumVideoSorter
                     }
                 }
                 createdthumbnailDirectorys.Clear();
+            }
+
+            if (needReplaceFileSave)
+            {
+                IniReplaceSave();
             }
         }
 

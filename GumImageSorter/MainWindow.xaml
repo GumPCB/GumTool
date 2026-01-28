@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GumImageSorter"
         mc:Ignorable="d"
-        Title="GumImageSorter v1.0" Width="1200" Height="650" MinWidth="640" MinHeight="240">
+        Title="GumImageSorter v1.0" Width="1200" Height="650" MinWidth="640" MinHeight="240" Closing="MainWindow_Closing">
     <Window.Resources>
         <local:Sorter x:Key="KeySorter"/>
     </Window.Resources>
@@ -51,6 +51,7 @@
                         </TabItem.Header>
                         <Grid>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -107,6 +108,14 @@
                                 <Button Grid.Column="3" HorizontalAlignment="Stretch" Content="All" Command="{Binding ImageListMoveAllButton}"/>
                             </Grid>
                             <Grid Margin="0,2,0,0" Grid.Row="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Image" VerticalAlignment="Center" Width="110"/>
+                                <CheckBox Grid.Column="1" Content="Load Memory" VerticalAlignment="Center" IsChecked="{Binding IsLoadMemory}" />
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Grid.Row="6">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
