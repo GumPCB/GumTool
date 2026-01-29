@@ -659,7 +659,7 @@ namespace GumImageSorter
                 return;
             }
 
-            if (isLoadMemory)
+            if (isLoadMemory && imageInfo.Image != null && imageInfo.Image.PixelWidth > 0)
             {
                 ThumbnailImage = imageInfo.Image;
             }
@@ -672,6 +672,14 @@ namespace GumImageSorter
                 bitmap.EndInit();
                 bitmap.Freeze();
                 ThumbnailImage = bitmap;
+                if (isLoadMemory)
+                {
+                    imageInfo.Image = bitmap;
+                }
+                else if (imageInfo.Image != null && imageInfo.Image.PixelWidth > 0)
+                {
+                    imageInfo.Image = null;
+                }
             }
         }
         internal void AddDeleteList(ImageInfo deleted)
